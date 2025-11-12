@@ -10,7 +10,7 @@ interface ButtonProps {
     loading?:boolean;
 }
 const SIZE_STYLES = {
-    sm: 'px-3 py-1.5 text-sm',
+    sm: 'px-4 py-2 text-sm',
     md: 'px-4 py-2 text-base',
     lg: 'px-15 py-5 text-lg',
 };
@@ -37,7 +37,7 @@ const AppButton:React.FC<ButtonProps> = (
         <button
             className={`
             inline-flex items-center justify-center
-            rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2
+            rounded-full font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 gap-2
             ${variantClasses} ${sizeClasses}
             ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
             ${className}
@@ -45,7 +45,7 @@ const AppButton:React.FC<ButtonProps> = (
             onClick={onClick}
         >
             {loading && (
-                <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                <Loader2 className="animate-spin h-5 w-5 " />
             )}
 
             {loading?  <div></div> :children}</button>

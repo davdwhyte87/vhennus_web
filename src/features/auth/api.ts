@@ -1,9 +1,21 @@
 
 import {api} from '../../Shared/api.ts'
 
-export async function login():Promise<void> {
-    const {data} = await api.post('/login').then(res=>res.data)
-    return data
+
+export interface LoginData{
+    user_name:string;
+    password:string;
+}
+
+export interface LoginResponse{
+    token:string;
+    email_confirmed:boolean;
+    email:string;
+}
+
+export async function login(data:LoginData):Promise<LoginResponse> {
+    const result = await api.post('/login', data)
+    return result.data.data
 }
 
 export interface SignupData {
