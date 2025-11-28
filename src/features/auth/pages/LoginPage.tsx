@@ -5,6 +5,7 @@ import AppButton from "../../../Shared/components/Button.tsx";
 import {login, type LoginData} from "../api.ts";
 import {toast} from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { getUserLocalData, saveUserLocalData, type UserLocalData } from "../../../Shared/AuthData.ts";
 
 
 const tlogo = await  import("../../../assets/tlogo.png")
@@ -35,6 +36,13 @@ const LoginPage:React.FC = ()=>{
             localStorage.setItem("tokenAuth", res.token)
             console.log(res)
             await new Promise(resolve => setTimeout(resolve, 50));
+
+            const data:UserLocalData = {
+                token:res.token,
+                user_name:userName,
+
+            }
+            saveUserLocalData(data)
             console.log("Login successful token ----",  localStorage.getItem("tokenAuth"))
 
             navigate("/home/feeds")
@@ -65,13 +73,15 @@ const LoginPage:React.FC = ()=>{
                 onChange={handlePasswordChange}
                 placeholder="Password"
                 className="w-full"
-                showIcon={true}
+                showIcon={false}
+                isPassword ={true}
                 type={"password"}
                 inactiveIcon={<EyeOff/>}
                 activeIcon={<Eye/>}
                 value={password}/>
-
-            <AppButton loading={isLoginButtonLoading}  onClick={()=>handleLoginClick()}>Login</AppButton>
+            <div>
+                <AppButton size="lg" loading={isLoginButtonLoading}  onClick={()=>handleLoginClick()}>Login</AppButton>
+            </div>
             <text className="text-base underline text-center"><a href="/signup">Sign up</a></text>
         </div>
     )

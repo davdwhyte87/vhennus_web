@@ -45,7 +45,7 @@ const AppButton:React.FC<ButtonProps> = (
             onClick={onClick}
         >
             {loading && (
-                <Loader2 className="animate-spin h-5 w-5 " />
+                <Loader2 className="animate-spin h-5 w-5" />
             )}
 
             {loading?  <div></div> :children}</button>

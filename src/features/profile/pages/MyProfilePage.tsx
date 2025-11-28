@@ -83,7 +83,7 @@ const MyProfilePage:React.FC = ()=>{
                         <text className="text-base text-gray-500 text-start">
                             {userProfile?.bio || "No bio yet." }
                         </text>
-                        <div className="flex flex-row space-x-2">
+                        <div onClick={()=>navigate("/my_friends")} className="flex flex-row space-x-2">
                             <text className="cursor-pointer underline text-base text-start">
                                 {userFriends.length}
                             </text>
@@ -94,11 +94,11 @@ const MyProfilePage:React.FC = ()=>{
                         <text className="text-xl font-bold text-start">
                             Friends
                         </text>
-                        <div className="shadow-lg cursor-pointer active:bg-gray-300 hover:bg-gray-300 flex flex-row space-x-3 p-5 rounded-lg overflow-x-auto">
+                        <div onClick={()=>navigate("/find_friends")} className="shadow-lg cursor-pointer active:bg-gray-300 hover:bg-gray-300 flex flex-row space-x-3 p-5 rounded-lg overflow-x-auto">
                             <UserPlus/>
                             <text className="text-base font-medium">Add Friend</text>
                         </div>
-                        <div className="shadow-lg cursor-pointer active:bg-gray-300 hover:bg-gray-300 flex flex-row space-x-3 p-5 rounded-lg overflow-x-auto">
+                        <div onClick={()=>navigate("/my_friend_requests")} className="shadow-lg cursor-pointer active:bg-gray-300 hover:bg-gray-300 flex flex-row space-x-3 p-5 rounded-lg overflow-x-auto">
                             <ListCheck/>
                             <text className="text-base font-medium">Requests</text>
                         </div>

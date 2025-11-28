@@ -1,6 +1,6 @@
 // src/components/PostTextArea.tsx (or wherever you keep your components)
 
-import React, { type TextareaHTMLAttributes } from 'react';
+import React, { useEffect, useRef, type TextareaHTMLAttributes } from 'react';
 
 // Extend TextareaHTMLAttributes to inherit all standard textarea props
 // and add our custom ones.
@@ -19,11 +19,28 @@ const TextArea: React.FC<PostTextAreaProps> = ({
   value,
   onChange,
   placeholder = "What's on your mind?", // Default placeholder
-  rows = 5, // Default number of rows
+  rows = 1, // Default number of rows
   className = '', // Default to an empty string to safely append Tailwind classes
   ...rest // Capture any other standard textarea props
 }) => {
   const generatedId = id || `textarea-${Math.random().toString(36).substr(2, 9)}`;
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+
+        if (textareaRef.current) {
+            const textarea = textareaRef.current;
+            
+            // Step A: Reset height to 'auto'. This ensures the textarea can shrink
+            // if lines of content are deleted.
+            textarea.style.height = 'auto';
+            
+            // Step B: Set the new height based on the scrollHeight, which is the 
+            // exact height needed to show all content without a scrollbar.
+            // Adding a small buffer (e.g., 2px) can help prevent flicker.
+            textarea.style.height = `${textarea.scrollHeight + 2}px`;
+        }
+    }, [value]);
+
 
   return (
     <div className="mb-4 w-full">
@@ -33,6 +50,7 @@ const TextArea: React.FC<PostTextAreaProps> = ({
         </label>
       )}
       <textarea
+      ref={textareaRef}
         id={generatedId}
         name={name}
         value={value}
@@ -44,7 +62,8 @@ const TextArea: React.FC<PostTextAreaProps> = ({
           bg-white border border-gray-300 rounded-md shadow-sm
           focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
           sm:text-sm
-          resize-y
+          resize-none
+          overflow-y min-h-[2.5rem] max-h-[5rem]
           ${className}
         `}
         {...rest} // Spread any additional props like `readOnly`, `disabled`, etc.

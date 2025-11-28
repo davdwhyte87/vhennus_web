@@ -1,5 +1,5 @@
 import {useState} from "react";
-import type {LucideIcon} from "lucide-react";
+import {Loader2, type LucideIcon} from "lucide-react";
 
 interface InputProps {
     id?: string;
@@ -16,6 +16,10 @@ interface InputProps {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
     className?: string;
+    isPassword?:boolean;
+    icon?:React.ReactElement<LucideIcon>;
+    iconClick?:()=>void;
+    loading?:boolean;
 }
 
 const InputFIeld:React.FC<InputProps> = (
@@ -32,7 +36,12 @@ const InputFIeld:React.FC<InputProps> = (
         showIcon,
         onChange,
         onBlur,
-        className=''
+        className='',
+        isPassword=false,
+        icon,
+        iconClick,
+        loading=false
+
     }
 ) => {
     const inputId = id || name;
@@ -68,7 +77,10 @@ const InputFIeld:React.FC<InputProps> = (
                     onBlur={onBlur}
                     className={`${baseStyle} ${errorStyles} ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                 />
-                {(showIcon) && (
+
+                {
+                isPassword
+                 && (
                     <button
                         type="button"
                         onClick={handleIconClick}
@@ -79,6 +91,18 @@ const InputFIeld:React.FC<InputProps> = (
                         {!toggled && inactiveIcon}
                     </button>
                 )}
+
+                {showIcon?  
+                
+                <button
+                        type="button"
+                        onClick={iconClick}
+                        disabled={disabled}
+                        className="absolute inset-y-0 right-0 text-white flex items-center p-3 bg-primary   hover:bg-gray-200 active:bg-gray-200"
+                    >
+                        {loading?   <Loader2 className="animate-spin h-5 w-5" />: icon}
+                    </button>: null }
+                
             </div>
             {error && (
                 <p className="mt-1 text-sm text-red-600" role="alert">

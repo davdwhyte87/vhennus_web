@@ -4,11 +4,13 @@ import { ListCheck, MessageSquare, Plus, UserPlus } from "lucide-react";
 import Post from "../../Feed/Components/Post";
 import { getAllMyPosts, getAllUserMyPosts, type PostFeed } from "../../Feed/api";
 import { toast } from "react-toastify";
-import { getOtherUserProfileAPI, getUserProfileAPI, type Friend, type UserProfile } from "../api";
+import { getOtherUserProfileAPI, getUserProfileAPI, sendFriendRequest, type Friend, type UserProfile } from "../api";
 import { use, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BackNav from "../../../Shared/components/BackNav";
 import PageLoad from "../../../Shared/components/PageLoad";
+import axios from "axios";
+import { getUserLocalData } from "../../../Shared/AuthData";
 
 
 const profileImage = (await import("../../../assets/profile2.png")).default
@@ -20,8 +22,9 @@ const UserProfilePage:React.FC = ()=>{
     const [userPosts, setUserPosts] = useState<PostFeed[]>([]);
     const navigate = useNavigate();
     const [getProfileLoading, setGetProfileLoading] = useState<boolean>(false)
-
-
+    const [isSendFriendReuqestLoading, setIsSendFriendRequestLoading] = useState<boolean>(false)
+    const [myUserName, setMyUserName] = useState<string>("")
+    const [isFriends, setIsFriends] = useState<boolean>(false)
     const getUserProfile = async ()=>{
         // fetch user profile from api
         setGetProfileLoading(true)
@@ -30,6 +33,7 @@ const UserProfilePage:React.FC = ()=>{
             const resp = await getOtherUserProfileAPI(id);
             console.log("User profile fetched successfully", resp);
             setUserProfile(resp.data.profile);
+            
             setUserFriends(resp.data.friends);
             setGetProfileLoading(false)
 
@@ -55,11 +59,46 @@ const UserProfilePage:React.FC = ()=>{
         }
     }
 
+    const handleSendFriendRequest = async ()=>{
+        setIsSendFriendRequestLoading(true);
+        // send friend request to user
+        try{
+            const resp = await sendFriendRequest(userProfile!.user_name);
+            console.log("Friend request sent successfully", resp);
+            toast.success("Friend request sent successfully");
+            setIsSendFriendRequestLoading(false);
+        }
+        catch(err){
+            if (axios.isAxiosError(err)) {
+                console.error("Error sending friend request", err.response?.data?.message);
+                toast.error( err.response?.data?.message || "Error sending friend request");
+            }else{
+                console.error("Error sending friend request", err);
+                toast.error("Error sending friend request");
+            }
+       
+            setIsSendFriendRequestLoading(false);
+        }   
+    }
+
     useEffect(()=>{
+        const user =getUserLocalData()
+        if(user){
+            setMyUserName(user.user_name)
+        }
         getUserProfile();  
         getMyPosts(); 
     }, []);
 
+    useEffect(()=>{
+
+        userFriends.forEach((friend)=>{
+            if (friend.user_name == myUserName ){
+                console.log("setting friend to ture")
+                setIsFriends(true)
+            }
+        })
+    }, [userFriends, myUserName])
     return(
         <div>
             <BackNav/>
@@ -81,10 +120,10 @@ const UserProfilePage:React.FC = ()=>{
                             </div>
                         </div>
                         <div className="flex flex-row w-full justify-between px-5">
-                            <AppButton variant="primary" size="sm" onClick={()=>{navigate("/editprofile")}}>
+                            <AppButton loading={isSendFriendReuqestLoading} disabled={userFriends.some(friend => friend.user_name === getUserLocalData()?.user_name)} variant="primary" size="sm" onClick={()=>{handleSendFriendRequest()}}>
                                 Send Request
                             </AppButton>
-                            <AppButton variant="outline" className="p-3" size="sm" onClick={()=>{navigate("/editprofile")}}>
+                            <AppButton variant="outline" disabled={!isFriends}  className="p-3" size="sm" onClick={()=>{navigate(`/chat/single_chat/${userProfile?.user_name}`)}}>
                                 Message   <MessageSquare />
                             </AppButton>
                         </div>

@@ -23,6 +23,28 @@ export const getOtherUserProfileAPI = async (userName:string): Promise<GenericRe
 }
 
 
+export interface FriendRequestResp{
+    id:string;
+    name:string;
+    user_name:string;
+    requester:string;
+    status:FriendRequestStatus;
+    created_at:string;
+    updated_at:string;
+    image:string;
+}
+
+export type FriendRequestStatus = "PENDING" | "ACCEPTED" | "DECLINED";
+
+
+export const sendFriendRequest = async (userName:string): Promise<GenericResponse<FriendRequestResp>> => {
+    console.log("Sending friend request to ", userName);
+    const response = await api.post(`/api/v1/auth/user/friend_request/send`, {user_name:userName}, { headers: customHeaders });
+    console.log(response.data);
+    return response.data;
+}
+
+
 export interface UserProfile{
     id:string;
     user_name:string;
@@ -61,6 +83,30 @@ export interface UpdateProfileReq{
 
 export const UpdateUserProfileAPI = async (data:UpdateProfileReq): Promise<GenericResponse<UserProfile>> => {
     const response = await api.post('/api/v1/auth/profile/update',data, { headers: customHeaders });
+    console.log(response.data);
+    return response.data;
+}
+
+export const SearchUserProfileAPI = async (userName:string): Promise<GenericResponse<Friend[]>> => {
+    const response = await api.get(`/api/v1/auth/profile/search/${userName}`, { headers: customHeaders });
+    console.log(response.data);
+    return response.data;
+}
+
+export const getMyFriendRequestsAPI = async (): Promise<GenericResponse<FriendRequestResp[]>> => {
+    const response = await api.get(`/api/v1/auth/user/friend_requests`, { headers: customHeaders });
+    console.log(response.data);
+    return response.data;
+}
+
+export const acceptFriendRequestsAPI = async (id:string): Promise<GenericResponse<FriendRequestResp[]>> => {
+    const response = await api.get(`/api/v1/auth/user/friend_request/accept/${id}`, { headers: customHeaders });
+    console.log(response.data);
+    return response.data;
+}
+
+export const rejectFriendRequestsAPI = async (id:string): Promise<GenericResponse<FriendRequestResp[]>> => {
+    const response = await api.get(`/api/v1/auth/user/friend_request/reject/${id}`, { headers: customHeaders });
     console.log(response.data);
     return response.data;
 }
