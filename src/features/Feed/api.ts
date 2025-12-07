@@ -63,6 +63,7 @@ export interface SinglePostResponse{
   comments:Comment[];
   post:PostFeed;
 }
+
 export const getSinglePost = async (id:string): Promise<GenericResponse<SinglePostResponse>> => {
     const response = await api.get(`/api/v1/auth/post/single/${id}`, { headers: customHeaders });
     console.log(response.data);

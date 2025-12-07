@@ -6,31 +6,31 @@ import { signup, type SignupData} from "../api.ts";
 import {toast} from "react-toastify";
 import {isAllLowercase, isValidEmailStrict} from "../../../Shared/utils.ts";
 import axios from "axios";
+import { useAuthStore } from "../useAuthStore.ts";
+import { useNavigate } from "react-router-dom";
 
 
 const tlogo = await  import("../../../assets/tlogo.png")
 
 const SignupPage:React.FC = ()=>{
-    const [userName, setUserName] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [email, setEmail] = useState<string>("");
-    const [referralCode, setReferralCode] = useState<string>("");
-    const [confirmPassword, setConfirmPassword] = useState<string>("");
-    const [isSignupButtonLoading, setIsSingupButtonLoading] = useState<boolean>(false);
+    const authStore = useAuthStore()
+    const navigate = useNavigate()
+
+
     const handleUserNameChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
-        setUserName(e.target.value)
+        authStore.setState({userName:e.target.value})
     }
     const handlePasswordChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
-        setPassword(e.target.value)
+        authStore.setState({password:e.target.value})
     }
     const handleEmailChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
-        setEmail(e.target.value)
+        authStore.setState({email:e.target.value})
     }
     const handleReferralCodeChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
-        setReferralCode(e.target.value)
+       authStore.setState({referralCode:e.target.value})
     }
     const handleConfirmPasswordChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
-        setConfirmPassword(e.target.value)
+        authStore.setState({confirmPassword:e.target.value})
     }
 
     const validatePassword = (userName:string,email:string, password:string, confirmPassword:string):boolean=>{
@@ -58,24 +58,27 @@ const SignupPage:React.FC = ()=>{
 
     }
     const handleSignupClick = async ()=>{
-        setIsSingupButtonLoading(true)
-        if(!validatePassword(userName,email, password, confirmPassword)){
-            setIsSingupButtonLoading(false)
+        
+        if(!validatePassword(authStore.userName,authStore.email, authStore.password, authStore.confirmPassword)){
             return
         }
+
+        authStore.setState({signupLoading:true})
         try{
             const data:SignupData = {
-                user_name: userName,
-                password: password,
-                email: email,
+                user_name: authStore.userName,
+                password: authStore.password,
+                email: authStore.email,
                 user_type: "User",
-                referral: referralCode,
+                referral: authStore.referralCode,
             }
             const res = await signup(data)
             toast.success("Signup successful")
             console.log(res)
+            authStore.setState({emailToBeVerified:authStore.email})
+            navigate("/confirm_email")
         }catch(err){
-            setIsSingupButtonLoading(false)
+            authStore.setState({signupLoading:false})
             if (axios.isAxiosError(err)){
                 toast.error(err.response?.data?.message||"Error signing up")
             }else {
@@ -85,59 +88,65 @@ const SignupPage:React.FC = ()=>{
 
         }
         finally {
-            setIsSingupButtonLoading(false)
+            authStore.setState({signupLoading:false})
             console.log("finally")
         }
     }
-    console.log(import.meta.env.VITE_API_URL)
+   
     return (
         // oyinye , boma
-        <div className="flex flex-col items-center w-full h-full space-y-4">
-            <div><img src={tlogo.default}  className="w-64 h-64"/></div>
-            <text className={'text-xl font-bold'}>Create Account</text>
+        <div className="flex flex-col items-center w-full h-full space-y-4 p-10">
+            <div><img src={tlogo.default}  className="w-32 h-32"/></div>
+            <text className={'text-2xl font-bold'}>Create Account</text>
             <InputFIeld
                 name="Username"
                 onChange={handleUserNameChange}
                 placeholder="Username"
                 className="w-full"
-                value={userName}/>
+                value={authStore.userName}/>
             <InputFIeld
                 name="Email"
                 onChange={handleEmailChange}
                 placeholder="Email"
                 className="w-full"
                 type={'email'}
-                value={email}/>
+                value={authStore.email}/>
             <InputFIeld
                 id="password"
                 name="Password"
                 onChange={handlePasswordChange}
                 placeholder="Password"
                 className="w-full"
-                showIcon={true}
+                isPassword={true}
                 type={"password"}
                 inactiveIcon={<EyeOff/>}
                 activeIcon={<Eye/>}
-                value={password}/>
+                value={authStore.password}/>
             <InputFIeld
                 id="password"
                 name="Confirm Password"
                 onChange={handleConfirmPasswordChange}
                 placeholder="Confirm Password"
                 className="w-full"
-                showIcon={true}
+                isPassword={true}
                 type={"password"}
                 inactiveIcon={<EyeOff/>}
                 activeIcon={<Eye/>}
-                value={confirmPassword}/>
+                value={authStore.confirmPassword}/>
             <InputFIeld
                 name="Ref"
                 onChange={handleReferralCodeChange}
                 placeholder="Referal Code"
                 className="w-full"
-                value={referralCode}/>
+                value={authStore.referralCode}/>
 
-            <AppButton loading={isSignupButtonLoading}  onClick={()=>handleSignupClick()}>Signup</AppButton>
+        
+            <AppButton
+            className="w-full"
+            size="lg"  
+            loading={authStore.signupLoading}  
+            onClick={()=>handleSignupClick()}>Signup</AppButton> 
+            
             <text className="text-base underline text-center"><a href="/login">Login</a></text>
         </div>
     )

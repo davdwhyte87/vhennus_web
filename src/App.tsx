@@ -19,6 +19,7 @@ import MyFriendRequestsPage from './features/profile/pages/MyFriendRequestsPage.
 import MyFriendsPage from './features/profile/pages/MyFriendsPage.tsx';
 import SingleChatPage from './features/chats/Pages/SingleChatPage.tsx';
 import HomePageI from './features/home/pages/HomePage.tsx';
+import ConfirmEmailPage from './features/auth/pages/ConfirmEmailPage.tsx';
 // import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
 // import router from "./routes/routes.ts"
 
@@ -30,6 +31,7 @@ const  App:React.FC = ()=> {
                 <Route path='/' element={<HomePageI/>}></Route>
                 <Route path="login" element={<LoginPage/>}></Route>
                 <Route path={"signup"} element={<SignupPage/>}></Route>
+                <Route path='confirm_email' element={<ConfirmEmailPage/>}></Route>
                 <Route path='home/feeds/create-post' element={<CreateFeedPage/>}></Route>
                  <Route path="home/post/:id">
                         <Route index element={<SinglePostPage/>}></Route> 
