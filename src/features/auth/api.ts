@@ -49,3 +49,22 @@ export async function getCodeAPI(data:GetCodeData):Promise<void> {
     return resp
 }
 
+export interface  GetResetCodePassData{
+    user_name:string;
+}
+export async function getResetPasswordCodeAPI(data:GetResetCodePassData):Promise<LoginResponse> {
+    const result = await api.post('/get_reset_password_code', data)
+    return result.data.data
+}
+
+export interface  ChangePasswordData{
+    user_name:string;
+    code:string;
+    password:string;
+}
+
+export async function changePasswordAPI(data:ChangePasswordData):Promise<LoginResponse> {
+    const result = await api.post('/change_password', data)
+    return result.data.data
+}
+

@@ -13,6 +13,7 @@ import ChatNav from "../../../Shared/components/ChatNav"
 import TextArea from "../../../Shared/components/TextArea"
 import AppButton from "../../../Shared/components/Button"
 import formatISOTime from "../../../Shared/formatISOString"
+import { useAuthStore } from "../../auth/useAuthStore"
 
 
 const profileImage = (await import("../../../assets/profile2.png")).default
@@ -26,7 +27,7 @@ const SingleChatPage:React.FC = ()=>{
     const [chatMessages, setChatMessages] = useState<Chat[]>([])
     const [searchParams, setSearchParams] = useSearchParams();
     const pairId = searchParams.get("pair_id")
-    const userData = getUserLocalData()
+    const authStore = useAuthStore()
     const [chatPair, setChatPair] = useState<ChatPair |null>(null)
     const scrollableContainerRef = useRef<HTMLDivElement>(null);
   
@@ -45,10 +46,10 @@ const SingleChatPage:React.FC = ()=>{
             
             if (axios.isAxiosError(err)) {
                 console.error("Error getting chats", err.response?.data?.message);
-                toast.error( err.response?.data?.message || "Error getting chats");
+                //toast.error( err.response?.data?.message || "Error getting chats");
             }else{
                 console.error("Error getting chats", err);
-                toast.error("Error getting chats from API");
+                //toast.error("Error getting chats from API");
             }
         }
     }
@@ -61,11 +62,12 @@ const SingleChatPage:React.FC = ()=>{
         }catch(err){
             
             if (axios.isAxiosError(err)) {
+                // silent error
                 console.error("Error getting chat pair", err.response?.data?.message);
-                toast.error( err.response?.data?.message || "Error getting chat pair");
+                //toast.error( err.response?.data?.message || "Error getting chat pair");
             }else{
                 console.error("Error getting chat pair", err);
-                toast.error("Error getting chat pair");
+                //toast.error("Error getting chat pair");
             }
         }
     }
@@ -91,7 +93,7 @@ const SingleChatPage:React.FC = ()=>{
             let chat:Chat ={
                 id: "",
                 pair_id: pairId?pairId:"",
-                sender: userData?.user_name?userData?.user_name:"",
+                sender: authStore.authUserName?authStore.authUserName:"",
                 receiver: id?id:"",
                 message: message,
                 created_at: date.toISOString(),
@@ -117,7 +119,7 @@ const SingleChatPage:React.FC = ()=>{
     return(
         <div>
             <ChatNav userName={id} image={
-                    (userData?.user_name == chatPair?.user1)? chatPair?.user2_image|| profileImage:  chatPair?.user1_image|| profileImage
+                    (authStore.authUserName == chatPair?.user1)? chatPair?.user2_image|| profileImage:  chatPair?.user1_image|| profileImage
                      
                     }/>
             <main className="">
@@ -125,7 +127,8 @@ const SingleChatPage:React.FC = ()=>{
                     <div ref={scrollableContainerRef} className="flex-1 overflow-y-auto pb-28">
                         <div className="flex flex-col space-y-3 p-2">
                             {chatMessages.map((chat)=>(
-                             <ChatComponent isSender={userData?.user_name==chat.sender} chat={chat} />   
+                                
+                             <ChatComponent isSender={authStore.authUserName==chat.sender} chat={chat} />   
                             ))}
                             
                         </div>

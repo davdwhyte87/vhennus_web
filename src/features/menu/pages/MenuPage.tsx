@@ -14,7 +14,7 @@ const MenuPage:React.FC = () => {
                     <MenuItem text="Wallet" icon={Wallet} page=""/> 
                     <MenuItem text="Profile" icon={User} page="/myprofile"/>
                     <MenuItem text="Earnings" icon={Bitcoin} page=""/> 
-                    <MenuItem text="Logout" icon={X} page="" />
+                    <MenuItem text="Logout" icon={X} page="/logout" />
                 </div>
             </main>
         </div>

@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { useAuthStore } from "../auth/useAuthStore";
 
 // Define types for the events you will use
 interface ServerToClientEvents {
@@ -186,7 +187,7 @@ class ChatClient {
 
     private getToken(): string | null {
         // Fetches the token from localStorage
-        return localStorage.getItem('tokenAuth');
+        return useAuthStore.getState().token
     }
 
     private connect(): void {
@@ -230,6 +231,7 @@ class ChatClient {
         this.socket.onmessage = (event: MessageEvent) => {
             try {
                 const message: Chat = JSON.parse(event.data);
+                console.log('new message', message)
                 this.messageHandler(message); // Pass message to React context handler
             } catch (error) {
                 console.error("Failed to parse incoming message:", error);

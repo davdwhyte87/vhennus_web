@@ -75,7 +75,7 @@ const FriendComponent:React.FC<FriendsComponentProps> = ({friend})=>{
                 <text className="text-gray-400">@{friend.user_name}</text>
             </div>
             <div>
-                <AppButton variant="outline" size="sm" onClick={()=>{navigate("/editprofile")}}>
+                <AppButton variant="outline" size="sm" onClick={()=>{navigate(`/chat/single_chat/${friend.user_name}`)}}>
                     <MessageSquare/>
                 </AppButton>
             </div>

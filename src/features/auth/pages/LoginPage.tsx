@@ -6,67 +6,68 @@ import {login, type LoginData} from "../api.ts";
 import {toast} from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { getUserLocalData, saveUserLocalData, type UserLocalData } from "../../../Shared/AuthData.ts";
+import { useAuthStore } from "../useAuthStore.ts";
+import axios from "axios";
 
 
 const tlogo = await  import("../../../assets/tlogo.png")
 
 const LoginPage:React.FC = ()=>{
-    const [userName, setUserName] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [isLoginButtonLoading, setIsLoginButtonLoading] = useState<boolean>(false);
+    
     const navigate = useNavigate();
-
+    const authStore = useAuthStore()
 
 
     const handleUserNameChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
-        setUserName(e.target.value)
+        authStore.setState({userName:e.target.value})
     }
     const handlePasswordChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
-        setPassword(e.target.value)
+        authStore.setState({password:e.target.value})
     }
 
     const handleLoginClick = async ()=>{
-        setIsLoginButtonLoading(true)
+
+        authStore.setState({isLoginLoading:true})
         try{
             const loginData:LoginData={
-                user_name:userName,
-                password:password
+                user_name:authStore.userName,
+                password:authStore.password
             }
             const res = await login(loginData)
-            localStorage.setItem("tokenAuth", res.token)
-            console.log(res)
-            await new Promise(resolve => setTimeout(resolve, 50));
-
-            const data:UserLocalData = {
-                token:res.token,
-                user_name:userName,
-
+            authStore.setState({token:res.token, authUserName:authStore.userName})
+            console.log("Login successful token ----", res.token)
+            if(res.email_confirmed){
+               navigate("/home/feeds") 
+            }else{
+                authStore.setState({emailToBeVerified:res.email})
+                navigate("/verify_email")   
             }
-            saveUserLocalData(data)
-            console.log("Login successful token ----",  localStorage.getItem("tokenAuth"))
-
-            navigate("/home/feeds")
+            
         }catch(err){
-            setIsLoginButtonLoading(false)
-            console.log(err)
-            toast.error("Error logging in")
+              authStore.setState({isLoginLoading:false})
+            if (axios.isAxiosError(err)){
+                toast.error(err.response?.data?.message||"Error logging in")
+            }else {
+                toast.error("Error logging in")
+            }
+        
         }
         finally {
-            setIsLoginButtonLoading(false)
-            console.log("finally")
+            authStore.setState({isLoginLoading:false})
+            
         }
     }
     console.log(import.meta.env.VITE_API_URL)
     return (
         // oyinye , boma
         <div className="flex flex-col items-center p-5 w-full h-full space-y-4">
-            <div><img src={tlogo.default}  className="w-64 h-64"/></div>
+            <div><img src={tlogo.default}  className="w-32 h-32"/></div>
             <InputFIeld
                 name="Username"
                 onChange={handleUserNameChange}
                 placeholder="Username"
                 className="w-full"
-                value={userName}/>
+                value={authStore.userName}/>
             <InputFIeld
                 id="password"
                 name="Password"
@@ -78,11 +79,14 @@ const LoginPage:React.FC = ()=>{
                 type={"password"}
                 inactiveIcon={<EyeOff/>}
                 activeIcon={<Eye/>}
-                value={password}/>
+                value={authStore.password}/>
             <div>
-                <AppButton size="lg" loading={isLoginButtonLoading}  onClick={()=>handleLoginClick()}>Login</AppButton>
+                <AppButton size="lg" loading={authStore.isLoginLoading}  onClick={()=>handleLoginClick()}>Login</AppButton>
             </div>
             <text className="text-base underline text-center"><a href="/signup">Sign up</a></text>
+            
+            <text className="text-base underline text-center"><a href="/forgot_password">Forgot Password?</a></text>
+
         </div>
     )
 }

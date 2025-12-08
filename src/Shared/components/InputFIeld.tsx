@@ -55,7 +55,7 @@ const InputFIeld:React.FC<InputProps> = (
     const handleIconClick = () => {
         const next = !toggled;
         setToggled(next);
-        if (id == "password"){
+        if (isPassword){
             if(toggled){
                 setFieldType("password")
             }else {

@@ -20,11 +20,16 @@ import MyFriendsPage from './features/profile/pages/MyFriendsPage.tsx';
 import SingleChatPage from './features/chats/Pages/SingleChatPage.tsx';
 import HomePageI from './features/home/pages/HomePage.tsx';
 import ConfirmEmailPage from './features/auth/pages/ConfirmEmailPage.tsx';
+import ForgotPasswordPage from './features/auth/pages/ForgotPassword.tsx';
+import ProtectedLayout from './features/auth/components/ProtectedRoutesLayout.tsx';
+import { LogoutPage } from './features/auth/pages/LogoutPage.tsx';
+
 // import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
 // import router from "./routes/routes.ts"
 
 // const queryClient = new QueryClient()
 const  App:React.FC = ()=> {
+   
     return (
         <BrowserRouter>
             <Routes>
@@ -32,27 +37,33 @@ const  App:React.FC = ()=> {
                 <Route path="login" element={<LoginPage/>}></Route>
                 <Route path={"signup"} element={<SignupPage/>}></Route>
                 <Route path='confirm_email' element={<ConfirmEmailPage/>}></Route>
-                <Route path='home/feeds/create-post' element={<CreateFeedPage/>}></Route>
-                 <Route path="home/post/:id">
-                        <Route index element={<SinglePostPage/>}></Route> 
-                </Route>
-                <Route path="home" element={<HomeLayout/>}>
-                    <Route path="feeds">
-                        <Route index element={<HomePage/>}></Route> 
-                    </Route>
-                    <Route path='menu' element={<MenuPage/>}></Route>
-                    <Route path="chats" element={<AllChatsPage/>}/>
-                </Route>
-                <Route path="myprofile" element={<MyProfilePage/>}></Route>
-                <Route path='user_profile/:id' element={<UserProfilePage/>}></Route>
-                <Route path="editprofile" element={<EditProfilePage/>}></Route>
-                <Route path='find_friends' element={<FindFriendsPage/>}></Route>
-                <Route path='my_friend_requests' element ={<MyFriendRequestsPage/>}></Route>
-                <Route path='my_friends' element={<MyFriendsPage/>}></Route>
+                <Route path='forgot_password' element={<ForgotPasswordPage/>} ></Route>
+                <Route path='logout' element={<LogoutPage/>} ></Route>
 
-                <Route path='chat'>
-                    <Route path='single_chat/:id' element={<SingleChatPage/>}></Route>
+                <Route element={<ProtectedLayout/>}>
+                    <Route path='home/feeds/create-post' element={<CreateFeedPage/>}></Route>
+                    <Route path="home/post/:id">
+                            <Route index element={<SinglePostPage/>}></Route> 
+                    </Route>
+                    <Route path="home" element={<HomeLayout/>}>
+                        <Route path="feeds">
+                            <Route index element={<HomePage/>}></Route> 
+                        </Route>
+                        <Route path='menu' element={<MenuPage/>}></Route>
+                        <Route path="chats" element={<AllChatsPage/>}/>
+                    </Route>
+                    <Route path="myprofile" element={<MyProfilePage/>}></Route>
+                    <Route path='user_profile/:id' element={<UserProfilePage/>}></Route>
+                    <Route path="editprofile" element={<EditProfilePage/>}></Route>
+                    <Route path='find_friends' element={<FindFriendsPage/>}></Route>
+                    <Route path='my_friend_requests' element ={<MyFriendRequestsPage/>}></Route>
+                    <Route path='my_friends' element={<MyFriendsPage/>}></Route>
+
+                    <Route path='chat'>
+                        <Route path='single_chat/:id' element={<SingleChatPage/>}></Route>
+                    </Route>
                 </Route>
+               
             </Routes>
         </BrowserRouter>
     )

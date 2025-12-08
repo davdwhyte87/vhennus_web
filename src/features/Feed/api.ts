@@ -2,10 +2,6 @@ import axios from 'axios';
 import { api, type GenericResponse } from '../../Shared/api';
 
 
-const customHeaders = {
-        'Authorization': localStorage.getItem('tokenAuth'),
-        'Content-Type': 'application/json',
-    };
 
 
 
@@ -28,26 +24,26 @@ export interface PostFeed{
 }
 
 export const createPost = async (data: CreatePostData): Promise<void> => {
-    const response = await api.post('/api/v1/auth/post/create', data, { headers: customHeaders });
+    const response = await api.post('/api/v1/auth/post/create', data);
     console.log(response.data);
     return response.data;
 }
 
 export const getPostFeeds = async (): Promise<GenericResponse<PostFeed[]>> => {
-    const response = await api.get('/api/v1/auth/post/all', { headers: customHeaders });
+    const response = await api.get('/api/v1/auth/post/all');
     console.log(response.data);
     return response.data;
 }
 
 
 export const getAllMyPosts = async (): Promise<GenericResponse<PostFeed[]>> => {
-    const response = await api.get('/api/v1/auth/post/allmy', { headers: customHeaders });
+    const response = await api.get('/api/v1/auth/post/allmy');
     console.log(response.data);
     return response.data;
 }
 
 export const getAllUserMyPosts = async (userName:string): Promise<GenericResponse<PostFeed[]>> => {
-    const response = await api.get(`/api/v1/auth/post/all/${userName}`, { headers: customHeaders });
+    const response = await api.get(`/api/v1/auth/post/all/${userName}`);
     console.log(response.data);
     return response.data;
 }
@@ -65,13 +61,13 @@ export interface SinglePostResponse{
 }
 
 export const getSinglePost = async (id:string): Promise<GenericResponse<SinglePostResponse>> => {
-    const response = await api.get(`/api/v1/auth/post/single/${id}`, { headers: customHeaders });
+    const response = await api.get(`/api/v1/auth/post/single/${id}`);
     console.log(response.data);
     return response.data;
 }
 
 export const likePost = async (id:string): Promise<GenericResponse<string>> => {
-    const response = await api.get(`/api/v1/auth/post/like/${id}`, { headers: customHeaders });
+    const response = await api.get(`/api/v1/auth/post/like/${id}`);
     console.log(response.data);
     return response.data;
 }
@@ -80,7 +76,7 @@ export interface AddCommentReq{
   text:string;
 }
 export const addComment = async (comment:AddCommentReq, id:string): Promise<GenericResponse<string>> => {
-    const response = await api.post(`/api/v1/auth/post/${id}/comment/create`, comment, { headers: customHeaders });
+    const response = await api.post(`/api/v1/auth/post/${id}/comment/create`, comment);
     console.log(response.data);
     return response.data;
 }

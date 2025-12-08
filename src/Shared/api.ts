@@ -1,5 +1,7 @@
 
 import axios from 'axios';
+import { useAuthStore } from '../features/auth/useAuthStore';
+
 
 export const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -8,30 +10,37 @@ export const api = axios.create({
 });
 
 
-api.interceptors.request.use((config) => {
-    console.log('Request headers being sent:', config.headers);
-    console.log('Full token from localStorage:', localStorage.getItem('tokenAuth'));
-    return config;
-});
 
-// Add response interceptor to see errors
-api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        console.error('API Error:', error);
-        if (error.response) {
-            console.error('Response status:', error.response.status);
-            console.error('Response headers:', error.response.headers);
-        }
-        return Promise.reject(error);
-    }
-);
-// add a JWT auth token if you have one
-api.interceptors.request.use(config => {
-    const token = localStorage.getItem('tokenAuth');
-    if (token) config.headers!['Authorization'] = token;
-    return config;
-});
+
+export const setupAxiosInterceptors = (getToken: () => string | null) => {
+
+
+
+
+ 
+}
+
+  // add a JWT auth token if you have one
+  api.interceptors.request.use(config => {
+      const token = useAuthStore.getState().token;
+      if (token) config.headers!['Authorization'] = token;
+      console.log('Request headers being sent:', config.headers);
+      return config;
+  });
+
+
+ // Add response interceptor to see errors
+  api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+          console.error('API Error:', error);
+          if (error.response) {
+              console.error('Response status:', error.response.status);
+              console.error('Response headers:', error.response.headers);
+          }
+          return Promise.reject(error);
+      }
+  );
 
 
 export interface GenericResponse<T> {

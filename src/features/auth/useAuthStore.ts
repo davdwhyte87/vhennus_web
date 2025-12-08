@@ -10,6 +10,9 @@ interface AuthState{
     referralCode:string;
     signupError:string | null;
     signupLoading:boolean;
+
+    //login
+    isLoginLoading:boolean;
     //verify email
     isVerifyEmail:boolean;
     emailToBeVerified:string
@@ -18,8 +21,13 @@ interface AuthState{
     isConfirmEmailLoading:boolean;
     confirmationCode:string;
 
+    // forgot password
+    isGetChangePasswordCodeLoading:boolean
+    isChangePasswordLoading:boolean
+
     // auth stuff
     token:string;
+    authUserName:string;
     setState:(state:Partial<AuthState>)=>void
 }
 
@@ -32,12 +40,18 @@ export const useAuthStore = create<AuthState>()(
         referralCode:'',
         signupError:null,
         signupLoading:false,
+
+        isLoginLoading:false,
         
         isVerifyEmail:false,
         confirmationCode:'',
         isConfirmEmailLoading:false,
         emailToBeVerified:'',
+
+        isGetChangePasswordCodeLoading:false,
+        isChangePasswordLoading:false,
         token:'',
+        authUserName:'',
         setState:(newState)=>set((state)=>({...state, ...newState}))
 
     }),
@@ -46,7 +60,8 @@ export const useAuthStore = create<AuthState>()(
         storage: createJSONStorage(()=>localStorage),
         partialize:(state)=>({
             token:state.token,
-            emailToBeVerified:state.emailToBeVerified
+            emailToBeVerified:state.emailToBeVerified,
+            authUserName:state.authUserName
         })
     }
 )
