@@ -17,15 +17,6 @@ export const blockChainAPI = axios.create({
 
 
 
-
-export const setupAxiosInterceptors = (getToken: () => string | null) => {
-
-
-
-
- 
-}
-
   // add a JWT auth token if you have one
   api.interceptors.request.use(config => {
       const token = useAuthStore.getState().token;

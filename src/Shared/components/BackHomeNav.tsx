@@ -1,7 +1,7 @@
 
 import { useNavigate } from "react-router-dom";
 import AppButton from "./Button";
-import { ArrowLeft, Home } from "lucide-react";
+import {  Home } from "lucide-react";
 
 
 interface BackHomeNavProp{

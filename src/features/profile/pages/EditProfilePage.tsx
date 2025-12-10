@@ -2,12 +2,12 @@ import { Camera } from "lucide-react"
 import AppButton from "../../../Shared/components/Button"
 import InputFIeld from "../../../Shared/components/InputFIeld"
 import TextArea from "../../../Shared/components/TextArea"
-import App from "../../../App"
+
 import { useEffect, useRef, useState } from "react"
 import { uploadImageDirect } from "../../../Shared/api"
 import { toast } from "react-toastify"
 import { getUserProfileAPI, UpdateUserProfileAPI, type UpdateProfileReq, type UserProfile } from "../api"
-import { set } from "date-fns"
+
 import BackNav from "../../../Shared/components/BackNav"
 import PageLoad from "../../../Shared/components/PageLoad"
 
@@ -20,7 +20,7 @@ const EditProfilePage:React.FC = ()=>{
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);
     const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
-    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [_selectedImage, setSelectedImage] = useState<File | null>(null);
     const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);

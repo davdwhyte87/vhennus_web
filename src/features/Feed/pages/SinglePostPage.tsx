@@ -1,17 +1,17 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Post from "../Components/Post.tsx";
-import {ArrowLeft, Plus} from "lucide-react";
+
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import { addComment, getPostFeeds, getSinglePost, type Comment, type PostFeed } from "../api.ts";
+import { addComment, getSinglePost, type Comment, type PostFeed } from "../api.ts";
 import RelativeTime from "../../../Shared/components/RelativeTime.tsx";
 import AppButton from "../../../Shared/components/Button.tsx";
 import TextArea from "../../../Shared/components/TextArea.tsx";
-import { se } from "date-fns/locale";
+
 import BackNav from "../../../Shared/components/BackNav.tsx";
 
 const SinglePostPage:React.FC = ()=>{
-    const navigate = useNavigate();
+    
     const { id } = useParams<{ id: string }>();
     const [post, setPost] = useState<PostFeed | null>(null);
     const [comments, setComments] = useState<Comment[]>([]);

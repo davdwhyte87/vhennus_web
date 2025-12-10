@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 
 const Footer = ({ 
   organizationName = "Purple Innovation Inc.", 
   email = "contact@purpleinnovation.com" 
 }) => {
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [currentYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
     const handleSmoothScroll = (e: MouseEvent) => {

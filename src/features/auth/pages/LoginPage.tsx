@@ -1,11 +1,11 @@
 import InputFIeld from "../../../Shared/components/InputFIeld.tsx";
-import {useState} from "react";
+
 import {Eye, EyeOff} from "lucide-react";
 import AppButton from "../../../Shared/components/Button.tsx";
 import {login, type LoginData} from "../api.ts";
 import {toast} from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { getUserLocalData, saveUserLocalData, type UserLocalData } from "../../../Shared/AuthData.ts";
+
 import { useAuthStore } from "../useAuthStore.ts";
 import axios from "axios";
 

@@ -14,15 +14,11 @@ export const AddWalletPage = ()=>{
      const handleAddressChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
         walletStore.setState({walletAddress:e.target.value})
     }
-    const handleWalletNameChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
-        walletStore.setState({walletName:e.target.value})
-    }
+   
     const handleSeedPhraseChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
         walletStore.setState({seedPhrase:e.target.value})
     }
-    const handleConfirmSeedPhraseChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
-        walletStore.setState({confirmSeedPhrase:e.target.value})
-    }
+  
 
     const validateData = ():boolean=>{
         if(walletStore.walletAddress.length < 1){

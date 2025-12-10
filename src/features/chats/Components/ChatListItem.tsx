@@ -1,11 +1,9 @@
 import { useNavigate } from "react-router-dom"
 import type { ChatPair } from "../api"
-import { getUserLocalData } from "../../../Shared/AuthData"
-import RelativeTime from "../../../Shared/components/RelativeTime"
+
 import formatISOTime from "../../../Shared/formatISOString"
 import { useAuthStore } from "../../auth/useAuthStore"
 
-const prof = await import("../../../assets/react.svg")
 
 
 const profileImage = (await import("../../../assets/profile2.png")).default
@@ -16,7 +14,7 @@ export interface ChatPairItemProps{
 const ChatListItem:React.FC<ChatPairItemProps> = ({pair})=>{
     const navigate = useNavigate()
     const authStore = useAuthStore()
-    const userData = getUserLocalData()
+  
     const handleOpenChat = (id:string)=>{
         navigate(`/chat/single_chat/${id}?pair_id=${pair.id}`)
 

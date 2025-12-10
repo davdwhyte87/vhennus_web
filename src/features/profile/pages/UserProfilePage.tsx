@@ -1,11 +1,11 @@
 import type React from "react";
 import AppButton from "../../../Shared/components/Button";
-import { ListCheck, MessageSquare, Plus, UserPlus } from "lucide-react";
+import {  MessageSquare } from "lucide-react";
 import Post from "../../Feed/Components/Post";
-import { getAllMyPosts, getAllUserMyPosts, type PostFeed } from "../../Feed/api";
+import {  getAllUserMyPosts, type PostFeed } from "../../Feed/api";
 import { toast } from "react-toastify";
-import { getOtherUserProfileAPI, getUserProfileAPI, sendFriendRequest, type Friend, type UserProfile } from "../api";
-import { use, useEffect, useState } from "react";
+import { getOtherUserProfileAPI, sendFriendRequest, type Friend, type UserProfile } from "../api";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BackNav from "../../../Shared/components/BackNav";
 import PageLoad from "../../../Shared/components/PageLoad";

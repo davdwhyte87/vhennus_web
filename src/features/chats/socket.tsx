@@ -1,17 +1,12 @@
 
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
+
 import { useAuthStore } from "../auth/useAuthStore";
 
 // Define types for the events you will use
-interface ServerToClientEvents {
-  receive_message: (data: { message: string; senderId: string }) => void;
-}
 
-interface ClientToServerEvents {
-  send_message: (data: { message: string }) => void;
-}
+
 
 export interface CreateChatReq {
   pair_id?: string;

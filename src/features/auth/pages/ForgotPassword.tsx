@@ -1,10 +1,10 @@
 import axios from "axios";
 import AppButton from "../../../Shared/components/Button"
 import InputFIeld from "../../../Shared/components/InputFIeld"
-import { isValidEmailStrict } from "../../../Shared/utils"
+
 import { useAuthStore } from "../useAuthStore"
 import {toast} from "react-toastify";
-import { changePasswordAPI, getCodeAPI, getResetPasswordCodeAPI, verifyEmailAPI } from "../api";
+import { changePasswordAPI,  getResetPasswordCodeAPI } from "../api";
 import { Eye, EyeOff } from "lucide-react";
 
 const tlogo = await  import("../../../assets/tlogo.png")

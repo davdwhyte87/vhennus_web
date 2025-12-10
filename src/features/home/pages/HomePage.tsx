@@ -1,7 +1,7 @@
 import { AppWindow, ChartBar, ChartLine, Globe, Users } from "lucide-react"
 import type React from "react"
 import { useEffect, useState } from "react"
-import AppButton from "../../../Shared/components/Button"
+
 import ResponsiveNavbar from "../components/nav"
 import Footer from "../components/footer"
 import CommunitySection from "../components/communitySection"
@@ -9,14 +9,11 @@ import CommunitySection from "../components/communitySection"
 const profileImage = (await import("../../../assets/bg.png")).default
 const innovImage = (await import("../../../assets/innov2.png")).default
 
-const tokenizationIcon = (await import("../../../assets/token.png")).default
-const dappsIcon = (await import("../../../assets/dapps.png")).default
-const daoIcon = (await import("../../../assets/dao.png")).default
-const citizenshipIcon = (await import("../../../assets/citizen.png")).default
+
 const jobsImage = (await import("../../../assets/jobs.png")).default
-const financingImage = (await import("../../../assets/financing.png")).default
+
 const financingImage2 = (await import("../../../assets/financing2.png")).default
-const logo =  (await import("../../../assets/vlogosm.png")).default
+
 const lovecult =  (await import("../../../assets/lovecult.png")).default
 const healthimage =  (await import("../../../assets/health.png")).default
 const researchImage =  (await import("../../../assets/research.png")).default
@@ -25,7 +22,7 @@ const infrastructureImage =  (await import("../../../assets/infra.png")).default
 
 const HomePageI:React.FC = ()=>{
 
-    const [isScrolled, setIsScrolled] = useState(false);
+    const [_isScrolled, setIsScrolled] = useState(false);
 
     useEffect(() => {
     const handleScroll = () => {

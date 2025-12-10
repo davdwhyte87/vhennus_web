@@ -1,11 +1,11 @@
 import type React from "react";
 import AppButton from "../../../Shared/components/Button";
-import { ListCheck, Plus, UserPlus } from "lucide-react";
+import { ListCheck, UserPlus } from "lucide-react";
 import Post from "../../Feed/Components/Post";
 import { getAllMyPosts, type PostFeed } from "../../Feed/api";
 import { toast } from "react-toastify";
 import { getUserProfileAPI, type Friend, type UserProfile } from "../api";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackNav from "../../../Shared/components/BackNav";
 import PageLoad from "../../../Shared/components/PageLoad";

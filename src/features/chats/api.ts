@@ -33,7 +33,7 @@ export interface CreateChatReq{
     receiver:string
 }
 
-export const createChatAPI = async (data:CreateChatReq): Promise<GenericResponse<ChatPair[]>> => {
+export const createChatAPI = async (): Promise<GenericResponse<ChatPair[]>> => {
     const response = await api.get(`/api/v1/auth/chat/get_my_chat_pairs`, { headers: customHeaders });
     console.log(response.data);
     return response.data;

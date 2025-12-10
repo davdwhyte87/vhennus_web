@@ -1,4 +1,4 @@
-import { Bitcoin, icons, LogOut, User, Wallet, X, type LucideProps } from "lucide-react";
+import { Bitcoin, User, Wallet, X, type LucideProps } from "lucide-react";
 import type React from "react";
 import { useNavigate } from "react-router-dom";
 

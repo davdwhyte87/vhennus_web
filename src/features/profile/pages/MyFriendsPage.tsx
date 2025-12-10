@@ -1,11 +1,11 @@
 import type React from "react"
 import BackNav from "../../../Shared/components/BackNav"
-import {  getUserProfileAPI, rejectFriendRequestsAPI, type Friend, type UserProfile } from "../api"
+import {  getUserProfileAPI, type Friend, type UserProfile } from "../api"
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 
 import { toast } from "react-toastify"
-import axios from "axios"
+
 import PageLoad from "../../../Shared/components/PageLoad"
 import AppButton from "../../../Shared/components/Button"
 import { MessageSquare } from "lucide-react"
@@ -13,7 +13,7 @@ const profileImage = (await import("../../../assets/profile2.png")).default
 
 
 const MyFriendsPage = ()=>{
-   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+   const [_userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [userFriends, setUserFriends] = useState<Friend[]>([]);
     const [getProfileLoading, setGetProfileLoading] = useState<boolean>(false)
 

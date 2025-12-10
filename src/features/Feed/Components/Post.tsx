@@ -4,11 +4,11 @@ import { likePost, type PostFeed } from "../api"
 import RelativeTime from "../../../Shared/components/RelativeTime"
 import AppButton from "../../../Shared/components/Button"
 import { useLikedPosts } from "./LikedPostContext"
-import { use, useEffect, useState } from "react"
+import {  useState } from "react"
 import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"
 
-const imageTest =await import("../../../assets/react.svg")
+
 const profileImage = (await import("../../../assets/profile2.png")).default
 
 

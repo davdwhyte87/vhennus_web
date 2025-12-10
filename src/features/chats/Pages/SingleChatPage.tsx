@@ -1,14 +1,12 @@
 import type React from "react"
-import BackNav from "../../../Shared/components/BackNav"
-import InputFIeld from "../../../Shared/components/InputFIeld"
+
 import { useEffect, useRef, useState } from "react"
 import { Send } from "lucide-react"
 import { useParams, useSearchParams } from "react-router-dom"
-import { type ChatPair, findChatPairAPI, getChatsAPI, type CreateChatReq, getChatsAPI2 } from "../api"
+import { type ChatPair, type CreateChatReq, getChatsAPI2 } from "../api"
 import { type Chat, useWs } from "../socket"
 import axios from "axios"
-import { toast } from "react-toastify"
-import { getUserLocalData } from "../../../Shared/AuthData"
+
 import ChatNav from "../../../Shared/components/ChatNav"
 import TextArea from "../../../Shared/components/TextArea"
 import AppButton from "../../../Shared/components/Button"
@@ -22,10 +20,10 @@ const SingleChatPage:React.FC = ()=>{
     const [message, setMessage] = useState<string>("")
     const {id} = useParams()
     // const [isConnected, setIsConnected] = useState(socket.connected);
-    const ws = useRef<WebSocket | null>(null);
+    
     const { messages, sendMessage } = useWs();
     const [chatMessages, setChatMessages] = useState<Chat[]>([])
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams, _setSearchParam] = useSearchParams();
     const pairId = searchParams.get("pair_id")
     const authStore = useAuthStore()
     const [chatPair, setChatPair] = useState<ChatPair |null>(null)
@@ -54,23 +52,7 @@ const SingleChatPage:React.FC = ()=>{
         }
     }
 
-    const findChatPair = async ()=>{
-        try{
-            const resp = await findChatPairAPI(id ||"")
-            setChatPair(resp.data)
-
-        }catch(err){
-            
-            if (axios.isAxiosError(err)) {
-                // silent error
-                console.error("Error getting chat pair", err.response?.data?.message);
-                //toast.error( err.response?.data?.message || "Error getting chat pair");
-            }else{
-                console.error("Error getting chat pair", err);
-                //toast.error("Error getting chat pair");
-            }
-        }
-    }
+    
 
     useEffect(()=>{
         getChats()
