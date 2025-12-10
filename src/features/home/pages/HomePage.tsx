@@ -5,6 +5,9 @@ import { useEffect, useState } from "react"
 import ResponsiveNavbar from "../components/nav"
 import Footer from "../components/footer"
 import CommunitySection from "../components/communitySection"
+import MinimalHeroSection from "../components/HomeHero"
+import SimpleMissionSection from "../components/MissionSection"
+import BlockchainSection from "../components/BlockchainFeatureSection"
 
 const profileImage = (await import("../../../assets/bg.png")).default
 const innovImage = (await import("../../../assets/innov2.png")).default
@@ -61,106 +64,17 @@ const HomePageI:React.FC = ()=>{
             </nav> */}
             <ResponsiveNavbar/>
             <main>
-                <section className="relative h-screen max-h-[700px] w-full">
+                <MinimalHeroSection profileImage={profileImage} />
+              <SimpleMissionSection 
+                    imageSrc={innovImage}
+                    imageAlt="Our vision for digital and physical civilization"
+                    missionTagline="Our Mission"
+                    missionTitle="To build a new civilization first digitally, and then physically. A place where our citizens are enabled to be creative, healthy and happy."
+                    missionDescription="We will provide our citizens with jobs, business financing, research financing, healthcare and other critical infrastructure."
+                    />
 
-                
-                <img
-                src={profileImage}
-                alt="Hero Background"
-                // Classes to make the image cover the container
-                className="absolute inset-0 h-full w-full object-cover"
-                />
 
-               
-                <div className="absolute inset-0 bg-black opacity-40"></div>
-                
-               
-                <div className="relative w-full z-10 flex h-full items-center  p-4">
-                <div className="text-center text-white max-w-3xl">
-                    
-                    
-                    <h1 className="  text-4xl text-start sm:text-6xl md:text-7xl font-extrabold leading-tight tracking-tight mb-4">
-                    Vhennus Digital Nation
-                    </h1>
-                
-                    <p className="  text-xl text-start sm:text-2xl mb-8 font-light">
-                    Bringing like minded people to create a new civilization
-                    </p>
-                    
-                   
-                    {/* <button className="px-8 py-3 bg-indigo-600 text-white text-lg font-semibold rounded-full 
-                                        hover:bg-indigo-700 transition duration-300 shadow-xl">
-                    Download
-                    </button> */}
-                </div>
-                </div>
-                </section>
-                <section>
-                    <div className="flex flex-col px-10 lg:px-60 md:px-30 items-start space-y-5
-                    lg:py-30 md:py-20 sm:py-10 py-10
-                    ">
-                        <text className="text-lg  ">Vhennus Mission</text>
-                        <text className="  lg:text-5xl md:text-3xl text-2xl lg:leading-15 font-bold text-primary text-start">To build a new civilization first digitally, and then physically.
-                            A place where our citizens are enabled to be creative, healthy and happy. 
-                        </text>
-                        <text className="  lg:text-2xl text-lg font-normal text-start">We will provide our citizens with jobs, business financing, research financing, healthcare and other critical infrastructure. </text>
-                    </div>
-                </section>
-                <section>
-                    <div className="w-full md:h-150 lg:h-200 lg:p-30 md:p-20 sm:p-10 p-10">
-                        <img src={innovImage} className="object-cover w-full h-full"/>
-                    </div>
-                </section>
-
-              
-                <section>
-                     <div className="flex flex-col items-center justify-center  space-y-10">
-                        <div className="p-5"><text className="  lg:text-5xl md:text-4xl text-3xl font-bold">The Vhennus Blockchain</text></div>
-                        <div className="w-full space-x-10 space-y-5 items-center grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-8 lg:px-60 md:px-20 sm:px-10 px-10
-                        ">
-                            <div className="flex flex-col items-start space-y-5 ">
-                                {/* <img src={tokenizationIcon} className="object-cover "/> */}
-                                <ChartLine className="w-20 h-20 text-primary"/>
-                                <text className="  text-2xl font-bold">Tokenization</text>
-                                <text className="  text-lg text-start font-normal ">Our blockchain helps people and organizations tokenize their real world assets and trade these assets on our decentralized exchange.</text>
-                            </div>
-                            <div className="flex flex-col items-start space-y-5">
-                                {/* <img src={citizenshipIcon} className="object-cover w-full h-full"/> */}
-                                <Users className="w-20 h-20 text-primary"/>
-                                <text className="  text-2xl font-bold">Citizenship</text>
-                                <text className="  text-lg text-start font-normal">
-                                    Any one from all over the world can become citizens of our ecosystem and enjoy the benefits of beign a loyal member of our new civilization
-                                </text>
-                            </div>
-                            <div className="flex flex-col items-start space-y-5">
-                                {/* <img src={daoIcon} className="object-cover w-full h-full"/> */}
-                                <Globe className="w-20 h-20 text-primary"/>
-                                <text className="  text-2xl font-bold">DAOs</text>
-                                <text className="  text-lg text-start font-normal">
-                                    We are giving teams and organizations to create decentralized autonomous organizations on
-                                    the vhennus blockchain
-                                </text>
-                            </div>
-                            <div className="flex flex-col items-start space-y-5">
-                                {/* <img src={dappsIcon} className="object-cover w-full h-full"/> */}
-                                <AppWindow className="w-20 h-20 text-primary"/>
-                                <text className="  text-2xl font-bold">dApps</text>
-                                <text className="  text-lg text-start font-normal">
-                                    Developers can build visual applications that runs in our software ecosystem
-                                </text>
-                            </div>
-                            <div className="flex flex-col items-start space-y-5">
-                                {/* <img src={capitalMarketsIcon} className="object-cover w-full h-full"/> */}
-                                <ChartBar className="w-20 h-20 text-primary" />
-                                <text className="  text-2xl font-bold">Capital Markets</text>
-                                <text className="  text-lg text-start font-normal">
-                                    Companies can sell tokenized shares on our exchange
-                                </text>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
+                <BlockchainSection/>
 
                 <section className="px-10 lg:px-30 md:px-20 items-start space-y-5
                     lg:py-30 md:py-20 sm:py-10 py-10">
