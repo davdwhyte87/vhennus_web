@@ -62,7 +62,7 @@ const Post:React.FC<PostProps> = ({
     }
 
     return(
-        <div className="flex flex-col   hover:bg-gray-50 w-full content-center border-b-2 border-gray-200 p-4">
+        <div className="flex flex-col  hover:bg-gray-50 w-full content-center border-b-2 border-gray-200 p-4">
             <div className="flex space-x-4">
                 <div onClick={()=>{openUserProfile()}}><img className="w-10 h-10 rounded-full object-cover" src={post?.profile_image || profileImage} /></div>
                 <div onClick={()=>{openUserProfile()}} className="flex-col space-y-1">
@@ -75,7 +75,7 @@ const Post:React.FC<PostProps> = ({
                 </div>
             </div>
             <div onClick={()=>isSingle? null: handlePostClick()}  className="flex cursor-pointer">
-                <text className="text-sm text-start w-full p-0.5 py-4">
+                <text className="text-sm lg:text-lg md:text-lg text-start w-full p-0.5 py-4 ">
                    {post?.text}
                 </text>
             </div>

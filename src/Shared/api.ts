@@ -9,6 +9,12 @@ export const api = axios.create({
     withCredentials: true,
 });
 
+export const blockChainAPI = axios.create({
+    baseURL: import.meta.env.VITE_BLOCKCHAIN_URL,
+    timeout: 50000,
+    withCredentials: true,
+});
+
 
 
 

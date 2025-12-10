@@ -51,7 +51,7 @@ const InputFIeld:React.FC<InputProps> = (
         : 'border-gray-300 focus:ring-primary';
     const [toggled, setToggled] = useState(false);
     const [fieldType, setFieldType] = useState<string>(type);
-
+   
     const handleIconClick = () => {
         const next = !toggled;
         setToggled(next);

@@ -11,7 +11,7 @@ const MenuPage:React.FC = () => {
             </nav>
             <main>
                 <div className="grid grid-cols-2 w-full p-5 space-x-4 space-y-4">
-                    <MenuItem text="Wallet" icon={Wallet} page=""/> 
+                    <MenuItem text="Wallet" icon={Wallet} page="/wallet"/> 
                     <MenuItem text="Profile" icon={User} page="/myprofile"/>
                     <MenuItem text="Earnings" icon={Bitcoin} page=""/> 
                     <MenuItem text="Logout" icon={X} page="/logout" />

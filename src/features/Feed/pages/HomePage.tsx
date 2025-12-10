@@ -40,7 +40,7 @@ const HomePage:React.FC = ()=>{
                 <div className="flex flex-col justify-center items-center min-h-screen w-full pb-safe">
                     <PageLoad loading={isPostsLoading}/>
                     <div className="flex flex-col md:w-200 items-center">
-                        <div>{isConnected?"online":"offline"}</div> 
+                       
                     {posts.map((post)=>(
                         <Post key={post.id} mpost={post} />
                     ))}

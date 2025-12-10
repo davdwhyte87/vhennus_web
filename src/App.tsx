@@ -23,6 +23,10 @@ import ConfirmEmailPage from './features/auth/pages/ConfirmEmailPage.tsx';
 import ForgotPasswordPage from './features/auth/pages/ForgotPassword.tsx';
 import ProtectedLayout from './features/auth/components/ProtectedRoutesLayout.tsx';
 import { LogoutPage } from './features/auth/pages/LogoutPage.tsx';
+import { AllWalletsPage } from './features/wallet/pages/AllWalletsPage.tsx';
+import { CreateWalletPage } from './features/wallet/pages/CreateWallet.tsx';
+import { AddWalletPage } from './features/wallet/pages/AddWallet.tsx';
+import { GroupsListPage } from './features/groups/pages/GroupsListPage.tsx';
 
 // import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
 // import router from "./routes/routes.ts"
@@ -51,6 +55,7 @@ const  App:React.FC = ()=> {
                         </Route>
                         <Route path='menu' element={<MenuPage/>}></Route>
                         <Route path="chats" element={<AllChatsPage/>}/>
+                        <Route path='groups' element={<GroupsListPage/>}></Route>
                     </Route>
                     <Route path="myprofile" element={<MyProfilePage/>}></Route>
                     <Route path='user_profile/:id' element={<UserProfilePage/>}></Route>
@@ -61,6 +66,16 @@ const  App:React.FC = ()=> {
 
                     <Route path='chat'>
                         <Route path='single_chat/:id' element={<SingleChatPage/>}></Route>
+                    </Route>
+
+                    <Route path='wallet'>
+                        <Route path='' element={<AllWalletsPage/>}></Route>
+                        <Route path='new' element={<CreateWalletPage/>}></Route>
+                        <Route path='add' element={<AddWalletPage/>}></Route>
+                    </Route>
+                    
+                    <Route path='groups'>
+                        <Route path='' element={<GroupsListPage/>}></Route>
                     </Route>
                 </Route>
                

@@ -29,10 +29,11 @@ interface AuthState{
     token:string;
     authUserName:string;
     setState:(state:Partial<AuthState>)=>void
+    isLoggedIn:()=>boolean
 }
 
 export const useAuthStore = create<AuthState>()(
-    persist((set)=>({
+    persist((set, get)=>({
         userName:'',
         email:'',
         password:'',
@@ -52,8 +53,14 @@ export const useAuthStore = create<AuthState>()(
         isChangePasswordLoading:false,
         token:'',
         authUserName:'',
-        setState:(newState)=>set((state)=>({...state, ...newState}))
-
+        setState:(newState)=>set((state)=>({...state, ...newState})),
+        isLoggedIn: ()=>{
+            if(get().token.length>10){
+                return true
+            }else{
+                return false
+            }
+        }
     }),
     {
         name:'auth-state',

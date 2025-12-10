@@ -12,7 +12,7 @@ interface ButtonProps {
 const SIZE_STYLES = {
     sm: 'px-2 py-2 text-sm',
     md: 'px-4 py-2 text-base',
-    lg: 'px-15 py-5 text-lg',
+    lg: 'px-15 py-3 text-lg',
 };
 const VARIANT_STYLES = {
     primary: 'bg-primary text-white hover:bg-purple-600 focus:bg-primary',
@@ -49,7 +49,7 @@ const AppButton:React.FC<ButtonProps> = (
             )}
 
             {loading?  <div></div> :children}
-        </button>
+            </button>
 
     )
 }
