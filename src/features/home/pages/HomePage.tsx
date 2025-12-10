@@ -69,7 +69,6 @@ const HomePageI:React.FC = ()=>{
                     imageSrc={innovImage}
                     imageAlt="Our vision for digital and physical civilization"
                     missionTagline="Our Mission"
-                    missionTitle="To build a new civilization first digitally, and then physically. A place where our citizens are enabled to be creative, healthy and happy."
                     missionDescription="We will provide our citizens with jobs, business financing, research financing, healthcare and other critical infrastructure."
                     />
 
