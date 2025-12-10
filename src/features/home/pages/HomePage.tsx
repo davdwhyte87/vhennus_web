@@ -3,6 +3,8 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import AppButton from "../../../Shared/components/Button"
 import ResponsiveNavbar from "../components/nav"
+import Footer from "../components/footer"
+import CommunitySection from "../components/communitySection"
 
 const profileImage = (await import("../../../assets/bg.png")).default
 const innovImage = (await import("../../../assets/innov2.png")).default
@@ -244,7 +246,7 @@ const HomePageI:React.FC = ()=>{
                     </div>
                 </section>
 
-                <section className="px-5 py-20">
+                {/* <section className="px-5 py-20">
                     <div className="flex flex-col justify-center items-center w-full lg:space-y-10">
                         <div className="lg:p-20 bg-gray-300"><img  className="lg:h-150 lg:w-250" src={lovecult} /></div>
                         <div className="p-10">
@@ -260,13 +262,14 @@ const HomePageI:React.FC = ()=>{
                         </div>
                       
                     </div>
+                </section> */}
+
+                <section>
+                    <CommunitySection imageSrc={lovecult} />
                 </section>
 
-                <section className="bg-primary px-5 py-20 text-white">
-                    <div className="flex flex-col justify-between space-y-4">
-                     <div className=""><text className="font-bold text-lg">Vhennus Nation</text></div> 
-                     <div><text className="font-bold">Contact Email: david@vhennus.com</text></div>  
-                    </div>
+                <section>
+                    <Footer  organizationName="Vhennus Nation" email="david@vhennus.com"/>
                 </section>
             </main>
         </div>
