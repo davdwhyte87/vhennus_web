@@ -5,7 +5,7 @@ interface SimpleMissionSectionProps {
   imageSrc: string;
   imageAlt?: string;
   missionTagline?: string;
-  missionTitle?: string;
+  _missionTitle?: string;
   missionDescription?: string;
 }
 
@@ -13,7 +13,6 @@ const SimpleMissionSection: React.FC<SimpleMissionSectionProps> = ({
   imageSrc,
   imageAlt = "Our vision for civilization",
   missionTagline = "Vhennus Mission",
-  missionTitle = "To build a new civilization first digitally, and then physically. A place where our citizens are enabled to be creative, healthy and happy.",
   missionDescription = "We will provide our citizens with jobs, business financing, research financing, healthcare and other critical infrastructure."
 }) => {
   const [isVisible, setIsVisible] = useState(false);
