@@ -117,7 +117,7 @@ const Post: React.FC<PostProps> = ({
                 onClick={() => !isSingle && handlePostClick()} 
                 className={`px-6 pb-4 ${!isSingle ? 'cursor-pointer' : ''}`}
             >
-                <p className="text-gray-800 leading-relaxed whitespace-pre-line mb-4">
+                <p className="text-start text-gray-800 leading-relaxed whitespace-pre-line mb-4">
                     {post?.text}
                 </p>
                 
