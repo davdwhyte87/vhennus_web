@@ -167,14 +167,7 @@ const BlockchainSection: React.FC = () => {
                     </div>
 
                     {/* Read More Link */}
-                    <div className="pt-4">
-                      <button className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-300 group/link">
-                        <span>Learn more</span>
-                        <svg className="w-4 h-4 transform transition-transform duration-300 group-hover/link:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                      </button>
-                    </div>
+                   
                   </div>
 
                   {/* Floating Badge */}

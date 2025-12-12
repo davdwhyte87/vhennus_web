@@ -8,6 +8,7 @@ import { api, type GenericResponse } from '../../Shared/api';
 
 export interface CreatePostData{
     text:string;
+    image?:string  | null;
 }
 
 export interface PostFeed{
