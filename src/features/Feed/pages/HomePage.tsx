@@ -6,6 +6,8 @@ import { useEffect, useState, useRef } from "react";
 import { getPostFeeds, type PostFeed } from "../api.ts";
 import HomeNav from "../../../Shared/components/HomeNav.tsx";
 import PageLoad from "../../../Shared/components/PageLoad.tsx";
+import { Virtuoso } from 'react-virtuoso';
+
 
 const HomePage: React.FC = () => {
     const navigate = useNavigate();
@@ -45,6 +47,23 @@ const HomePage: React.FC = () => {
         }
     };
 
+
+    const PostsVirtualizedList = () => {
+        return (
+            <div style={{ height: 'calc(100vh - 250px)', width:'100%' }}>
+            <Virtuoso
+                data={posts}
+                itemContent={(_, post) => (
+                <div style={{ padding: '10px 0' }}>
+                    <Post mpost={post} />
+                </div>
+                )}
+                // Automatically adjusts to content height
+                overscan={200} // pixels to render outside viewport
+            />
+            </div>
+        );
+    };
     return (
         <>
             {/* Add CSS animations */}
@@ -205,7 +224,7 @@ const HomePage: React.FC = () => {
                             </div>
                         ) : (
                             <div className="space-y-6">
-                                {posts.map((post, index) => (
+                                {/* {posts.map((post, index) => (
                                     <div 
                                         key={post.id} 
                                         className="animate-fade-in"
@@ -213,7 +232,8 @@ const HomePage: React.FC = () => {
                                     >
                                         <Post key={post.id} mpost={post} />
                                     </div>
-                                ))}
+                                ))} */}
+                                <PostsVirtualizedList/>
                             </div>
                         )}
                         
