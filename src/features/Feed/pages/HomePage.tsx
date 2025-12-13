@@ -200,10 +200,10 @@ const HomePage: React.FC = () => {
                         onScroll={handleScroll}
                         className="container mx-auto px-4 py-6 max-w-3xl custom-scrollbar"
                     >
-                        <div className="mb-6 text-center animate-fade-in">
+                        {/* <div className="mb-6 text-center animate-fade-in">
                             <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Vhennus</h1>
                             <p className="text-gray-600">Discover what's happening in your community</p>
-                        </div>
+                        </div> */}
 
                         <PageLoad loading={isPostsLoading} />
                         
@@ -223,7 +223,7 @@ const HomePage: React.FC = () => {
                                 </button>
                             </div>
                         ) : (
-                            <div className="space-y-6">
+                            <div className="space-y-6 w-full" >
                                 {/* {posts.map((post, index) => (
                                     <div 
                                         key={post.id} 

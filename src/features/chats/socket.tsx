@@ -201,7 +201,7 @@ class ChatClient {
             return;
         }
 
-        const wsUrl = `wss://testbend.vhennus.com/chat/ws?token=${token}`;
+        const wsUrl = `${import.meta.env.VITE_WS_CHAT}?token=${token}`;
         
         try {
             this.reconnecting = true;

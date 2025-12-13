@@ -24,7 +24,7 @@ export const blockChainAPI = axios.create({
       console.log('Request headers being sent:', config.headers);
       return config;
   });
-
+ 
 
  // Add response interceptor to see errors
   api.interceptors.response.use(
