@@ -27,6 +27,7 @@ import { AllWalletsPage } from './features/wallet/pages/AllWalletsPage.tsx';
 import { CreateWalletPage } from './features/wallet/pages/CreateWallet.tsx';
 import { AddWalletPage } from './features/wallet/pages/AddWallet.tsx';
 import { GroupsListPage } from './features/groups/pages/GroupsListPage.tsx';
+import { TransferPage } from './features/wallet/pages/TransferPage.tsx';
 
 // import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
 // import router from "./routes/routes.ts"
@@ -72,6 +73,7 @@ const  App:React.FC = ()=> {
                         <Route path='' element={<AllWalletsPage/>}></Route>
                         <Route path='new' element={<CreateWalletPage/>}></Route>
                         <Route path='add' element={<AddWalletPage/>}></Route>
+                        <Route path='transfer' element={<TransferPage/>}></Route>
                     </Route>
                     
                     <Route path='groups'>

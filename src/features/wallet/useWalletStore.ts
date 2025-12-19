@@ -18,7 +18,9 @@ interface WalletState{
 
     //transfer
     amount:string;
-
+    senderAddress:string;
+    receiverAddress:string;
+    isTransferLoading:boolean;
     setState:(state:Partial<WalletState>)=>void
 }
 
@@ -36,6 +38,9 @@ export const useWalletStore = create<WalletState>()(
         isAddWalletLoading:false,
 
         amount:'',
+        senderAddress:'',
+        receiverAddress:'',
+        isTransferLoading:false,
         setState:(newState)=>set((state)=>({...state,...newState}))
     }),
     {

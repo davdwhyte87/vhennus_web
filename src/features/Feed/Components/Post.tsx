@@ -6,6 +6,7 @@ import { useLikedPosts } from "./LikedPostContext";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const profileImage = (await import("../../../assets/profile2.png")).default;
 
@@ -123,11 +124,18 @@ const Post: React.FC<PostProps> = ({
                 
                 {post?.image && (
                     <div className="rounded-xl overflow-hidden mb-4 border border-gray-200 shadow-sm">
-                        <img 
+                        {/* <img 
                             className="w-full h-auto max-h-96 object-cover bg-gray-50 hover:scale-[1.01] transition-transform duration-500" 
                             src={post.image} 
                             alt="Post content"
                             loading="lazy"
+                        /> */}
+                        <LazyLoadImage
+                        src={post.image}
+                        effect="black-and-white"
+                        width="100%"
+                        height="auto"
+                        threshold={100}
                         />
                     </div>
                 )}
