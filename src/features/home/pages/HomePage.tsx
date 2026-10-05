@@ -48,7 +48,7 @@ const navLink = 'text-sm text-[#354052] transition-colors hover:text-[#CC5A2A]'
 const textLink = 'inline-flex items-center gap-2 border-b border-[#C9A86A] pb-1 text-[13px] text-[#0A1931]'
 
 // TODO: replace with the final whitepaper PDF link
-const WHITE_PAPER_URL = 'https://example.com/vhennus-whitepaper.pdf'
+const WHITE_PAPER_URL = '107.191.61.192:8000/download/vwhite_paper.pdf'
 
 export default function HomePage() {
   const navigate = useNavigate()
