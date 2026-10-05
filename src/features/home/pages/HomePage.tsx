@@ -48,7 +48,7 @@ const navLink = 'text-sm text-[#354052] transition-colors hover:text-[#CC5A2A]'
 const textLink = 'inline-flex items-center gap-2 border-b border-[#C9A86A] pb-1 text-[13px] text-[#0A1931]'
 
 // TODO: replace with the final whitepaper PDF link
-const WHITE_PAPER_URL = '107.191.61.192:8000/download/vwhite_paper.pdf'
+const WHITE_PAPER_URL = 'http://107.191.61.192:8000/download/vwhite_paper.pdf'
 
 export default function HomePage() {
   const navigate = useNavigate()
@@ -77,7 +77,7 @@ export default function HomePage() {
     <header className={`fixed left-0 top-0 z-30 flex h-[78px] w-full items-center justify-between px-[7.1%] transition-[background,box-shadow] ${scrolled ? 'bg-[#F5F5F0]/95 shadow-[0_1px_0_#0A193117] backdrop-blur-md' : ''}`}>
       <a className="flex items-center" href="#top" aria-label="Vhennus home"><img src={aquariusLogo} alt="Vhennus Aquarius logo" className="aquarius-logo h-9 w-auto max-w-[150px] object-contain object-left"/></a>
       <nav className="ml-11 hidden gap-[35px] md:flex">{links}</nav>
-      <div className="hidden items-center gap-[22px] md:flex"><a className={navLink} href={WHITE_PAPER_URL} target="107.191.61.192:8000/download/vwhite_paper.pdf" rel="noopener noreferrer">Download whitepaper</a><button className="group flex items-center gap-3.5 border border-[#0A1931] bg-transparent px-[17px] py-3.5 text-[13px] text-[#0A1931] transition-colors hover:border-[#0A1931] hover:bg-[#0A1931] hover:text-white" onClick={enter}>Join Vhennus <ArrowUpRight size={16}/></button></div>
+      <div className="hidden items-center gap-[22px] md:flex"><a className={navLink} href={WHITE_PAPER_URL} target="http://107.191.61.192:8000/download/vwhite_paper.pdf" rel="noopener noreferrer">Download whitepaper</a><button className="group flex items-center gap-3.5 border border-[#0A1931] bg-transparent px-[17px] py-3.5 text-[13px] text-[#0A1931] transition-colors hover:border-[#0A1931] hover:bg-[#0A1931] hover:text-white" onClick={enter}>Join Vhennus <ArrowUpRight size={16}/></button></div>
       <button className="grid place-items-center border-0 bg-transparent p-2 text-[#353830] md:hidden" aria-label="Toggle menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button>
       {menuOpen && <nav className="absolute left-0 top-[68px] flex w-full flex-col gap-5 border-t border-[#C9A86A] bg-[#F5F5F0] px-[7%] py-6 shadow-xl md:hidden">{links}<button className="flex justify-between border border-[#0A1931] px-3.5 py-3 text-left text-xs" onClick={enter}>Join Vhennus <ArrowUpRight size={15}/></button><button className="border-0 bg-transparent py-2 text-left text-xs" onClick={() => navigate('/login')}>Log in</button></nav>}
     </header>
