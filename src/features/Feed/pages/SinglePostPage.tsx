@@ -124,107 +124,7 @@ const SinglePostPage: React.FC = () => {
     }, []);
 
     return (
-        <>
-            {/* Add CSS animations */}
-            <style>{`
-                @keyframes fadeIn {
-                    from {
-                        opacity: 0;
-                        transform: translateY(20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-                
-                @keyframes slideIn {
-                    from {
-                        opacity: 0;
-                        transform: translateX(-10px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateX(0);
-                    }
-                }
-                
-                @keyframes pulse {
-                    0%, 100% {
-                        opacity: 1;
-                    }
-                    50% {
-                        opacity: 0.7;
-                    }
-                }
-                
-                @keyframes float {
-                    0%, 100% {
-                        transform: translateY(0);
-                    }
-                    50% {
-                        transform: translateY(-5px);
-                    }
-                }
-                
-                .animate-fade-in {
-                    animation: fadeIn 0.6s ease-out forwards;
-                }
-                
-                .animate-slide-in {
-                    animation: slideIn 0.3s ease-out forwards;
-                }
-                
-                .animate-pulse-slow {
-                    animation: pulse 2s ease-in-out infinite;
-                }
-                
-                .animate-float {
-                    animation: float 3s ease-in-out infinite;
-                }
-                
-                .comment-enter {
-                    animation: slideIn 0.4s ease-out;
-                }
-                
-                .glass-effect {
-                    background: rgba(255, 255, 255, 0.9);
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                }
-                
-                .gradient-border {
-                    position: relative;
-                }
-                
-                .gradient-border::after {
-                    content: '';
-                    position: absolute;
-                    top: -1px;
-                    left: -1px;
-                    right: -1px;
-                    bottom: -1px;
-                    background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
-                    border-radius: inherit;
-                    z-index: -1;
-                    animation: gradient 3s ease infinite;
-                    background-size: 400% 400%;
-                }
-                
-                @keyframes gradient {
-                    0% {
-                        background-position: 0% 50%;
-                    }
-                    50% {
-                        background-position: 100% 50%;
-                    }
-                    100% {
-                        background-position: 0% 50%;
-                    }
-                }
-            `}</style>
-
-            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+            <div className="min-h-screen">
                 <BackNav 
                     title="Post Details" 
                 
@@ -233,7 +133,7 @@ const SinglePostPage: React.FC = () => {
                 <main className="container mx-auto max-w-3xl px-4 py-6">
 
                     {/* Post Content */}
-                    <div className="mb-8 animate-fade-in">
+                    <div className="mb-8">
                         {post ? (
                             <div className="relative">
                                 <Post key={post.id} mpost={post} isSingle={true} />
@@ -241,14 +141,14 @@ const SinglePostPage: React.FC = () => {
                                     <div className="relative">
                                         <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping"></div>
                                         <div className="relative bg-white p-2 rounded-full shadow-lg">
-                                            <Heart className="w-6 h-6 text-primary" fill="#667eea" />
+                                            <Heart className="w-6 h-6 text-primary" fill="#CC5A2A" />
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         ) : (
-                            <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
-                                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center animate-pulse-slow">
+                            <div className="border border-[#C9A86A]/60 bg-white p-8 text-center">
+                                <div className="mx-auto mb-4 grid h-20 w-20 place-items-center rounded-full bg-[#0A1931]/5">
                                     <MessageCircle className="w-10 h-10 text-gray-400" />
                                 </div>
                                 <h3 className="text-xl font-semibold text-gray-700 mb-2">Loading post...</h3>
@@ -258,7 +158,7 @@ const SinglePostPage: React.FC = () => {
                     </div>
 
                     {/* Comment Input */}
-                    <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 animate-fade-in">
+                    <div className="mb-8 border border-[#C9A86A]/60 bg-white p-6">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-xl font-bold text-gray-900 flex items-center space-x-2">
                                 <MessageCircle className="w-6 h-6 text-primary" />
@@ -291,11 +191,10 @@ const SinglePostPage: React.FC = () => {
                                 </button>
                             </div>
                             
-                            <AppButton 
+                            <AppButton
                                 size="md"
-                                onClick={handleAddComment} 
+                                onClick={handleAddComment}
                                 loading={isCommentLoading}
-                                className="px-8 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                             >
                                 <Send className="w-5 h-5 mr-2" />
                                 Post Comment
@@ -304,7 +203,7 @@ const SinglePostPage: React.FC = () => {
                     </div>
 
                     {/* Comments Section */}
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden animate-fade-in">
+                    <div className="overflow-hidden border border-[#C9A86A]/60 bg-white">
                         <div className="p-6 border-b border-gray-100">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-xl font-bold text-gray-900 flex items-center space-x-3">
@@ -343,10 +242,8 @@ const SinglePostPage: React.FC = () => {
                             ) : (
                                 <div className="mt-6 space-y-6">
                                     {comments.map((comment, index) => (
-                                        <div 
-                                            key={comment.id} 
-                                            className={`comment-enter ${index === 0 ? 'gradient-border' : ''}`}
-                                            style={{ animationDelay: `${index * 0.1}s` }}
+                                        <div
+                                            key={comment.id}
                                         >
                                             <Comment key={comment.id} comment={comment} isLatest={index === 0} />
                                         </div>
@@ -358,10 +255,10 @@ const SinglePostPage: React.FC = () => {
                     </div>
 
                     {/* Floating Actions */}
-                    <div className="fixed bottom-24 right-6 flex flex-col space-y-3 z-30">
+                    <div className="fixed bottom-28 right-5 z-30 flex flex-col gap-3 sm:right-8 lg:bottom-8">
                         <button 
                             onClick={handleShare}
-                            className="p-4 bg-white rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 group animate-float"
+                            className="bg-white p-4 shadow-xl transition-all duration-300 hover:shadow-2xl group"
                         >
                             <Share2 className="w-6 h-6 text-gray-600 group-hover:text-primary transition-colors" />
                         </button>
@@ -370,7 +267,6 @@ const SinglePostPage: React.FC = () => {
                     </div>
                 </main>
             </div>
-        </>
     );
 };
 
@@ -384,11 +280,11 @@ const Comment: React.FC<CommentProps> = ({ comment, isLatest = false }) => {
     // const [likeCount, setLikeCount] = useState<number>(0);
 
     return (
-        <div className={`bg-gray-50 hover:bg-gray-100 rounded-xl p-5 transition-all duration-300 ${isLatest ? 'border-l-4 border-primary' : ''}`}>
+        <div className={`bg-[#F5F5F0] p-5 transition-colors hover:bg-[#C9A86A]/15 ${isLatest ? 'border-l-4 border-primary' : ''}`}>
             <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-3">
                     <div className="relative">
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                        <div className="w-10 h-10 bg-[#0A1931] flex items-center justify-center text-[#C9A86A] font-bold">
                             {comment.user_name.charAt(0).toUpperCase()}
                         </div>
                         {isLatest && (
@@ -421,7 +317,7 @@ const Comment: React.FC<CommentProps> = ({ comment, isLatest = false }) => {
                 </div>
             </div>
             
-            <div className="pl-13">
+            <div className="pl-12">
                 <p className="text-gray-800 leading-relaxed whitespace-pre-line">
                     {comment.text}
                 </p>

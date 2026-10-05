@@ -54,7 +54,7 @@ const MyFriendRequestsPage = () => {
                     backdrop-filter: blur(10px);
                 }
                 .request-card {
-                    border-left: 3px solid #667eea;
+                    border-left: 3px solid #C9A86A;
                     transition: all 0.3s ease;
                 }
                 .request-card:hover {
@@ -63,10 +63,9 @@ const MyFriendRequestsPage = () => {
                 }
             `}</style>
 
-            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-                <BackNav 
-                    title="Friend Requests" 
-                    className="glass-card border-b border-gray-200/50"
+            <div className="min-h-screen">
+                <BackNav
+                    title="Friend Requests"
                 />
 
                 <main className="pb-6">
@@ -75,8 +74,8 @@ const MyFriendRequestsPage = () => {
                     {/* Header Section */}
                     <div className="px-4 py-6 animate-fade-in">
                         <div className="flex items-center space-x-3 mb-2">
-                            <div className="p-2 bg-gradient-to-r from-primary to-purple-600 rounded-lg">
-                                <Mail className="w-5 h-5 text-white" />
+                            <div className="bg-[#0A1931] p-2">
+                                <Mail className="w-5 h-5 text-[#C9A86A]" />
                             </div>
                             <div>
                                 <h1 className="text-xl font-bold text-gray-900">Friend Requests</h1>
@@ -86,8 +85,8 @@ const MyFriendRequestsPage = () => {
 
                         {/* Stats Badge */}
                         <div className="flex items-center space-x-4 mt-4">
-                            <div className="flex items-center space-x-2 px-3 py-2 bg-blue-50 rounded-lg">
-                                <Users className="w-4 h-4 text-primary" />
+                            <div className="flex items-center space-x-2 px-3 py-2 bg-[#C9A86A]/15">
+                                <Users className="w-4 h-4 text-[#0A1931]" />
                                 <span className="text-sm font-medium text-gray-700">
                                     {friendRequests.length} request{friendRequests.length !== 1 ? 's' : ''}
                                 </span>
@@ -110,8 +109,8 @@ const MyFriendRequestsPage = () => {
                             </div>
                         ) : (
                             <div className="text-center py-12 animate-fade-in">
-                                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
-                                    <Mail className="w-10 h-10 text-gray-400" />
+                                <div className="mx-auto mb-4 grid h-20 w-20 place-items-center rounded-full bg-[#0A1931]/5">
+                                    <Mail className="w-10 h-10 text-[#C9A86A]" />
                                 </div>
                                 <h3 className="text-lg font-semibold text-gray-700 mb-2">No friend requests</h3>
                                 <p className="text-gray-500 mb-6">
@@ -120,7 +119,6 @@ const MyFriendRequestsPage = () => {
                                 <AppButton
                                     variant="outline"
                                     onClick={() => window.history.back()}
-                                    className="border-2 hover:border-primary"
                                 >
                                     Go Back
                                 </AppButton>
@@ -200,7 +198,7 @@ const FriendRequestComponent: React.FC<FriendRequestComponentProps> = ({ friendR
 
     return (
         <div 
-            className="bg-white rounded-xl p-4 shadow-sm border border-gray-200 request-card animate-fade-in"
+            className="border border-[#C9A86A]/60 bg-white p-4 request-card animate-fade-in"
             style={{ animationDelay: `${index * 0.1}s` }}
         >
             <div className="flex items-start">
@@ -216,7 +214,7 @@ const FriendRequestComponent: React.FC<FriendRequestComponentProps> = ({ friendR
                                 src={friendRequest.image || profileImage}
                                 alt={friendRequest.name}
                             />
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
                         </div>
                         
                         <div className="flex-1">
@@ -241,7 +239,7 @@ const FriendRequestComponent: React.FC<FriendRequestComponentProps> = ({ friendR
                             onClick={handleAcceptFriendRequest}
                             loading={isAcceptFriendRequestLoading}
                             size="sm"
-                            className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg"
+                            className="flex-1 bg-green-700"
                         >
                             <Check className="w-4 h-4 mr-2" />
                             Accept

@@ -201,9 +201,9 @@ const SingleChatPage: React.FC = () => {
                                     >
                                         <div className={`max-w-[85%] ${isSender ? 'ml-4' : 'mr-4'}`}>
                                             <div
-                                                className={`rounded-2xl px-4 py-3 ${isSender
-                                                        ? 'bg-blue-600 text-white rounded-br-md'
-                                                        : 'bg-white text-gray-900 rounded-bl-md border border-gray-200'
+                                                className={`px-4 py-3 ${isSender
+                                                        ? 'bg-[#0A1931] text-white'
+                                                        : 'bg-white text-gray-900 border border-[#C9A86A]/60'
                                                     }`}
                                             >
                                                 <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
@@ -217,7 +217,7 @@ const SingleChatPage: React.FC = () => {
                                                 }`}>
                                                     <span>{formatISOTime(chat.updated_at)}</span>
                                                     {isSender && (
-                                                        <CheckCheck className="w-3 h-3 ml-1 text-blue-500" />
+                                                        <CheckCheck className="w-3 h-3 ml-1 text-[#C9A86A]" />
                                                     )}
                                                 </div>
                                             )}
@@ -244,7 +244,7 @@ const SingleChatPage: React.FC = () => {
                     </button>
 
                     {/* Message Input */}
-                    <div className="flex-1 bg-gray-100 rounded-xl border border-gray-300 focus-within:border-blue-500 transition-all duration-200">
+                    <div className="flex-1 bg-[#F5F5F0] border border-[#C9A86A]/60 focus-within:border-[#CC5A2A] transition-colors">
                         <TextArea
                             name="message"
                             value={message}
@@ -259,14 +259,9 @@ const SingleChatPage: React.FC = () => {
                     {/* Send Button */}
                     <AppButton
                         onClick={handleSend}
-                        variant="primary"
                         size="sm"
                         disabled={!message.trim()}
-                        className={`rounded-full w-11 h-11 flex items-center justify-center ${
-                            message.trim()
-                                ? 'bg-blue-600 hover:bg-blue-700'
-                                : 'bg-gray-300 cursor-not-allowed'
-                        } transition-colors`}
+                        className="w-11 h-11"
                     >
                         <Send className="w-5 h-5 text-white" />
                     </AppButton>

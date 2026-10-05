@@ -1,33 +1,37 @@
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { useNavigate } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 
 interface BackNavProp {
-    title?: string;
-    className?: string;
+  title?: string
+  className?: string
 }
 
-const BackNav: React.FC<BackNavProp> = ({ title, className = "" }) => {
-    const navigate = useNavigate();
-    
-    return (
-        <nav className={`sticky top-0 z-50 flex items-center w-full h-14 px-4 bg-white border-b border-gray-100 ${className}`}>
-            {/* Back Button */}
-            <button
-                onClick={() => navigate(-1)}
-                className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-50 transition-colors"
-                aria-label="Go back"
-            >
-                <ArrowLeft className="w-5 h-5 text-gray-600" />
-            </button>
-            
-            {/* Title */}
-            {title && (
-                <div className="ml-3">
-                    <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
-                </div>
-            )}
-        </nav>
-    );
-};
+const BackNav: React.FC<BackNavProp> = ({ title, className = '' }) => {
+  const navigate = useNavigate()
 
-export default BackNav;
+  return (
+    <nav
+      className={[
+        'sticky top-0 z-40 flex h-14 w-full items-center px-4 sm:px-6',
+        'border-b border-[#C9A86A]/60 bg-[#F5F5F0]/95 backdrop-blur-md',
+        className,
+      ].join(' ')}
+    >
+      <button
+        onClick={() => navigate(-1)}
+        className="grid h-10 w-10 place-items-center rounded-full transition-colors hover:bg-[#0A1931]/5"
+        aria-label="Go back"
+      >
+        <ArrowLeft className="h-5 w-5 text-[#0A1931]" />
+      </button>
+
+      {title && (
+        <h1 className="ml-3 truncate font-serif text-lg text-[#0A1931]">
+          {title}
+        </h1>
+      )}
+    </nav>
+  )
+}
+
+export default BackNav

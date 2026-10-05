@@ -115,7 +115,7 @@ const UserProfilePage: React.FC = () => {
                 .animate-fade-in { animation: fadeIn 0.6s ease-out forwards; }
                 .animate-slide-in { animation: slideIn 0.3s ease-out forwards; }
                 .profile-gradient {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    background: linear-gradient(135deg, #0A1931 0%, #CC5A2A 100%);
                 }
                 .glass-card {
                     background: rgba(255, 255, 255, 0.95);
@@ -127,8 +127,8 @@ const UserProfilePage: React.FC = () => {
                 }
             `}</style>
 
-            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-                <BackNav title="Profile" className="glass-card border-b border-gray-200/50" />
+            <div className="min-h-screen">
+                <BackNav title="Profile" />
 
                 <main className="pb-20">
                     <PageLoad loading={getProfileLoading} />
@@ -136,7 +136,7 @@ const UserProfilePage: React.FC = () => {
                     {/* Enhanced Profile Header */}
                     <div className="relative animate-fade-in">
                         {/* Cover Image Section */}
-                        <div className="h-40 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 relative overflow-hidden">
+                        <div className="relative h-40 w-full overflow-hidden bg-[#0A1931]">
                             {userProfile?.image ? (
                                 <img
                                     className="w-full h-full object-cover opacity-80"
@@ -144,7 +144,7 @@ const UserProfilePage: React.FC = () => {
                                     alt="Cover"
                                 />
                             ) : (
-                                <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-purple-600/90"></div>
+                                <div className="absolute inset-0 bg-[#0A1931]/90"></div>
                             )}
                             {/* Gradient Overlay */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
@@ -218,10 +218,7 @@ const UserProfilePage: React.FC = () => {
                             <AppButton
                                 loading={isSendFriendReuqestLoading}
                                 disabled={isFriends || (userProfile?.user_name === myUserName)}
-                                variant="primary"
-                                size="lg"
                                 onClick={handleSendFriendRequest}
-                                className="w-full bg-gradient-to-r from-primary to-purple-600 hover:shadow-lg transition-all duration-300"
                             >
                                 {isFriends ? (
                                     <span className="flex items-center justify-center">
@@ -240,12 +237,6 @@ const UserProfilePage: React.FC = () => {
                             <AppButton
                                 variant="outline"
                                 disabled={!isFriends}
-                                size="lg"
-                                className={`w-full border-2 transition-all duration-300 ${
-                                    isFriends 
-                                        ? "hover:border-primary hover:bg-blue-50 cursor-pointer" 
-                                        : "opacity-50 cursor-not-allowed border-gray-300"
-                                }`}
                                 onClick={() => {
                                     if (isFriends && userProfile?.user_name) {
                                         navigate(`/chat/single_chat/${userProfile.user_name}`)
@@ -268,7 +259,7 @@ const UserProfilePage: React.FC = () => {
                                     {userPosts.length} posts
                                 </div>
                             </div>
-                            <div className="h-1 w-full bg-gradient-to-r from-primary to-purple-500 rounded-full mt-2"></div>
+                            <div className="h-1 w-full bg-gradient-to-r from-primary to-accent mt-2"></div>
                         </div>
 
                         {/* Posts List */}

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import BackNav from "../../../Shared/components/BackNav";
 
-import { Search, UserPlus, Users, Clock, Check, X, UserCheck, Mail, MoreVertical } from "lucide-react";
+import { Search, UserPlus, Users, Clock, Check, X, UserCheck, Mail, MoreVertical, Loader2 } from "lucide-react";
 import AppButton from "../../../Shared/components/Button";
+import AppInput from "../../../Shared/components/AppInput";
 import { type FriendRequestResp, getMyFriendRequestsAPI, SearchUserProfileAPI, sendFriendRequest, type Friend } from "../api";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import InputField from "../../../Shared/components/InputFIeld";
 
 const profileImage = (await import("../../../assets/profile2.png")).default
 
@@ -99,38 +99,45 @@ const FindFriendsPage = () => {
                     border: 1px solid #e2e8f0;
                 }
                 .request-card {
-                    border-left: 4px solid #667eea;
+                    border-left: 4px solid #C9A86A;
                 }
                 .search-highlight {
-                    background: linear-gradient(120deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+                    background: rgba(201, 168, 106, 0.12);
                 }
             `}</style>
 
-            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-                <BackNav title="Find Friends" className="glass-card border-b border-gray-200/50" />
+            <div className="min-h-screen">
+                <BackNav title="Find Friends" />
 
                 <main className="h-screen flex flex-col">
                     {/* Search Section */}
                     <div className="p-4 flex-shrink-0 animate-fade-in">
                         <div className="relative mb-2">
                             <div className="flex items-center space-x-2 mb-3">
-                                <div className="p-2 bg-gradient-to-r from-primary to-purple-600 rounded-lg">
-                                    <Search className="w-5 h-5 text-white" />
+                                <div className="bg-[#0A1931] p-2">
+                                    <Search className="w-5 h-5 text-[#C9A86A]" />
                                 </div>
                                 <h2 className="text-lg font-semibold text-gray-900">Search Friends</h2>
                             </div>
                             
                             <div className="relative">
-                                <InputField
+                                <AppInput
                                     name={"Search"}
                                     value={searchData}
                                     onChange={handleChangeSearchData}
-                                    showIcon={true}
-                                    icon={<Search className="w-5 h-5" />}
-                                    iconClick={() => getFriend()}
-                                    loading={isLoadingsearch}
                                     placeholder="Enter name or username..."
                                     className="w-full"
+                                    rightElement={
+                                        <button
+                                            type="button"
+                                            onClick={() => getFriend()}
+                                            disabled={isLoadingsearch}
+                                            className="flex h-full items-center bg-primary p-3 text-white transition-colors hover:bg-primary/90 active:bg-primary/80 disabled:opacity-70"
+                                            aria-label="Search"
+                                        >
+                                            {isLoadingsearch ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
+                                        </button>
+                                    }
                                 />
                                 {searchData && (
                                     <button
@@ -163,8 +170,8 @@ const FindFriendsPage = () => {
                         <div className="px-4 pb-4 animate-slide-in">
                             <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center space-x-2">
-                                    <div className="p-2 bg-blue-100 rounded-lg">
-                                        <Mail className="w-5 h-5 text-blue-600" />
+                                    <div className="bg-[#C9A86A]/20 p-2">
+                                        <Mail className="w-5 h-5 text-[#0A1931]" />
                                     </div>
                                     <h3 className="font-semibold text-gray-900">Friend Requests</h3>
                                 </div>
@@ -210,7 +217,7 @@ const FindFriendsPage = () => {
                                             <div className="flex space-x-2 mt-3">
                                                 <AppButton 
                                                     size="sm" 
-                                                    className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg"
+                                                    className="flex-1 bg-green-700"
                                                 >
                                                     <Check className="w-4 h-4 mr-2" />
                                                     Accept
@@ -263,20 +270,21 @@ const FindFriendsPage = () => {
                                         </div>
                                         <h3 className="text-lg font-semibold text-gray-700 mb-2">No users found</h3>
                                         <p className="text-gray-500 mb-6">No results for "{searchData}"</p>
-                                        <button
+                                        <AppButton
+                                            variant="secondary"
+                                            size="sm"
                                             onClick={clearSearch}
-                                            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
                                         >
                                             Try a different search
-                                        </button>
+                                        </AppButton>
                                     </div>
                                 )}
                             </>
                         ) : !searchData && friendSearchResults.length === 0 && !hasSearched ? (
                             <div className="text-center py-12 animate-fade-in">
-                                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
-                                    <UserPlus className="w-12 h-12 text-primary" />
-                                </div>
+                                    <div className="mx-auto mb-6 grid h-24 w-24 place-items-center rounded-full bg-[#C9A86A]/20">
+                                        <UserPlus className="w-12 h-12 text-[#0A1931]" />
+                                    </div>
                                 <h3 className="text-xl font-bold text-gray-900 mb-3">Find Your Friends</h3>
                                 <p className="text-gray-600 max-w-md mx-auto mb-8 px-4">
                                     Enter a name or username above to search for friends
@@ -284,16 +292,16 @@ const FindFriendsPage = () => {
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8 px-4">
                                     <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3 mx-auto">
-                                            <Search className="w-5 h-5 text-blue-600" />
+                                        <div className="mx-auto mb-3 grid h-10 w-10 place-items-center bg-[#0A1931]/5">
+                                            <Search className="w-5 h-5 text-[#0A1931]" />
                                         </div>
                                         <h4 className="font-semibold text-gray-900 mb-1 text-center">1. Search</h4>
                                         <p className="text-sm text-gray-500 text-center">Enter name or username</p>
                                     </div>
                                     
                                     <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                                        <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3 mx-auto">
-                                            <UserCheck className="w-5 h-5 text-purple-600" />
+                                        <div className="mx-auto mb-3 grid h-10 w-10 place-items-center bg-[#0A1931]/5">
+                                            <UserCheck className="w-5 h-5 text-[#CC5A2A]" />
                                         </div>
                                         <h4 className="font-semibold text-gray-900 mb-1 text-center">2. Connect</h4>
                                         <p className="text-sm text-gray-500 text-center">Send friend requests</p>
@@ -388,7 +396,6 @@ const FriendSearchResult: React.FC<FriendSearchProps> = ({ friend, friendRequest
                             onClick={() => { handleSendFriendRequest() }}
                             loading={isSendFriendReuqestLoading}
                             size="sm"
-                            className="bg-gradient-to-r from-primary to-purple-600 hover:shadow-lg transition-all duration-300 group-hover:scale-105"
                         >
                             <UserPlus className="w-4 h-4 mr-2" />
                             Add Friend

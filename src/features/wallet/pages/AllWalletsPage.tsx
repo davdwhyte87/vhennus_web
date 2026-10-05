@@ -46,7 +46,7 @@ export const AllWalletsPage = ()=>{
                     <text  className="text-lg">Total Assets</text>
                     <text className="text-2xl font-bold">12,000,000,000</text>
                 </div>
-                <div className="flex flex-row px-15 justify-between">
+                <div className="flex flex-row justify-between px-5">
                     <AppButton size="md" onClick={()=>navigate('add')}>
                         <div className="flex flex-col px-2">
                             <Plus/>

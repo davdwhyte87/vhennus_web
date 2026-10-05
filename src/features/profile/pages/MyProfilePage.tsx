@@ -64,7 +64,7 @@ const MyProfilePage: React.FC = () => {
                 .animate-fade-in { animation: fadeIn 0.6s ease-out forwards; }
                 .animate-slide-in { animation: slideIn 0.3s ease-out forwards; }
                 .profile-gradient {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    background: linear-gradient(135deg, #0A1931 0%, #CC5A2A 100%);
                 }
                 .glass-card {
                     background: rgba(255, 255, 255, 0.95);
@@ -75,10 +75,9 @@ const MyProfilePage: React.FC = () => {
                 }
             `}</style>
 
-            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-                <BackNav 
-                    title="My Profile" 
-                    className="glass-card border-b border-gray-200/50"
+            <div className="min-h-screen">
+                <BackNav
+                    title="My Profile"
                 />
 
                 <main className="pb-24">
@@ -118,7 +117,6 @@ const MyProfilePage: React.FC = () => {
                                 variant="outline"
                                 size="md"
                                 onClick={() => { navigate("/editprofile") }}
-                                className="border-2 hover:border-primary hover:bg-blue-50 transition-all duration-300 px-6"
                             >
                                 <Edit3 className="w-5 h-5 mr-2" />
                                 Edit Profile
@@ -161,14 +159,14 @@ const MyProfilePage: React.FC = () => {
                             </div>
 
                             {/* Quick Actions */}
-                            <div className="grid grid-cols-1 gap-3 mb-8">
-                                <div 
+                                <div className="grid grid-cols-1 gap-3 mb-8">
+                                <div
                                     onClick={() => navigate("/find_friends")}
-                                    className="bg-white border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-lg hover:border-primary transition-all duration-300 group"
+                                    className="border border-[#C9A86A]/60 bg-white p-4 cursor-pointer hover:border-[#CC5A2A] transition-colors group"
                                 >
                                     <div className="flex items-center space-x-3">
-                                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <UserPlus className="w-6 h-6 text-white" />
+                                        <div className="grid h-12 w-12 place-items-center bg-[#0A1931]">
+                                            <UserPlus className="w-6 h-6 text-[#C9A86A]" />
                                         </div>
                                         <div>
                                             <div className="font-semibold text-gray-900">Find Friends</div>
@@ -177,13 +175,13 @@ const MyProfilePage: React.FC = () => {
                                     </div>
                                 </div>
 
-                                <div 
+                                <div
                                     onClick={() => navigate("/my_friend_requests")}
-                                    className="bg-white border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-lg hover:border-primary transition-all duration-300 group"
+                                    className="border border-[#C9A86A]/60 bg-white p-4 cursor-pointer hover:border-[#CC5A2A] transition-colors group"
                                 >
                                     <div className="flex items-center space-x-3">
-                                        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <ListCheck className="w-6 h-6 text-white" />
+                                        <div className="grid h-12 w-12 place-items-center bg-[#0A1931]">
+                                            <ListCheck className="w-6 h-6 text-[#C9A86A]" />
                                         </div>
                                         <div>
                                             <div className="font-semibold text-gray-900">Friend Requests</div>
@@ -202,7 +200,7 @@ const MyProfilePage: React.FC = () => {
                                     {userPosts.length} posts
                                 </div>
                             </div>
-                            <div className="h-1 w-full bg-gradient-to-r from-primary to-purple-500 rounded-full mt-2"></div>
+                            <div className="h-1 w-full bg-gradient-to-r from-primary to-accent mt-2"></div>
                         </div>
 
                         {/* Posts List */}
@@ -215,16 +213,14 @@ const MyProfilePage: React.FC = () => {
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center py-12 bg-gradient-to-b from-gray-50 to-white rounded-2xl border-2 border-dashed border-gray-300">
-                                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
-                                    <Heart className="w-10 h-10 text-gray-400" />
+                            <div className="border-2 border-dashed border-[#C9A86A] bg-white px-6 py-12 text-center">
+                                <div className="mx-auto mb-4 grid h-20 w-20 place-items-center rounded-full bg-[#0A1931]/5">
+                                    <Heart className="w-10 h-10 text-[#C9A86A]" />
                                 </div>
                                 <h3 className="text-xl font-semibold text-gray-700 mb-2">No posts yet</h3>
                                 <p className="text-gray-500 mb-6">Share your first post with the community!</p>
                                 <AppButton
-                                    variant="primary"
                                     onClick={() => navigate("/home/feeds/create-post")}
-                                    className="bg-gradient-to-r from-primary to-purple-600 hover:shadow-lg px-6"
                                 >
                                     Create First Post
                                 </AppButton>
@@ -234,8 +230,10 @@ const MyProfilePage: React.FC = () => {
 
                     {/* Floating Action Button for Creating Post */}
                     <button
+                        type="button"
                         onClick={() => navigate("/home/feeds/create-post")}
-                        className="fixed bottom-24 right-6 w-14 h-14 bg-gradient-to-r from-primary to-purple-600 rounded-full flex items-center justify-center shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 animate-fade-in"
+                        aria-label="Create post"
+                        className="fixed bottom-28 right-5 z-30 grid h-14 w-14 place-items-center rounded-full bg-[#0A1931] text-white shadow-2xl transition-colors hover:bg-[#CC5A2A] sm:right-8 lg:bottom-8"
                     >
                         <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

@@ -1,7 +1,7 @@
 
 import { Info } from "lucide-react"
 import BackNav from "../../../Shared/components/BackNav"
-import InputFIeld from "../../../Shared/components/InputFIeld"
+import AppInput from "../../../Shared/components/AppInput"
 import { useWalletStore } from "../useWalletStore"
 import AppButton from "../../../Shared/components/Button"
 import { toast } from "react-toastify"
@@ -85,14 +85,16 @@ export const TransferPage = ()=>{
                         created during the wallet creation.
                     </text>
                 </div>
-                <InputFIeld
+                <AppInput
+                label="Wallet Address"
                 name="Wallet Address"
                 onChange={handleAddressChange}
                 placeholder="Wallet Address"
                 className="w-full"
                 value={walletStore.walletAddress}/>
                
-                <InputFIeld
+                <AppInput
+                label="Amount"
                 name="Amount"
                 onChange={handleAmountChange}
                 placeholder="Amount"
@@ -100,7 +102,8 @@ export const TransferPage = ()=>{
                 type="number"
                 value={walletStore.amount}/>
 
-                <InputFIeld
+                <AppInput
+                label="Seed Phrase"
                 name="Seed Phrase"
                 onChange={handleSeedPhraseChange}
                 placeholder="Seed phrase"

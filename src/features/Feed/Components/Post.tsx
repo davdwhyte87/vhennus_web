@@ -70,7 +70,7 @@ const Post: React.FC<PostProps> = ({
     };
 
     return (
-        <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden mb-6 animate-fade-in">
+        <div className="mb-6 overflow-hidden border border-[#C9A86A]/60 bg-white transition-shadow duration-300 hover:shadow-xl">
             {/* Header */}
             <div className="p-6 pb-4">
                 <div className="flex items-center justify-between">
@@ -91,7 +91,7 @@ const Post: React.FC<PostProps> = ({
                                 <h3 className="font-bold text-gray-900 group-hover:text-primary transition-colors">
                                     {post?.name}
                                 </h3>
-                                <span className="text-xs px-2 py-0.5 bg-gradient-to-r from-blue-100 to-purple-100 text-primary rounded-full font-medium">
+                                <span className="rounded-full bg-[#C9A86A]/20 px-2 py-0.5 text-xs font-medium text-[#0A1931]">
                                     @{post?.user_name}
                                 </span>
                             </div>
@@ -168,7 +168,7 @@ const Post: React.FC<PostProps> = ({
                             <AppButton 
                                 variant="ghost" 
                                 size="sm"
-                                className="hover:bg-blue-50"
+                                className="hover:bg-[#F5F5F0]"
                                 onClick={() => !isSingle && handlePostClick()}
                             >
                                 <MessageSquare className="w-5 h-5" />

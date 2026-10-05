@@ -52,11 +52,11 @@ const ChatListItem: React.FC<ChatPairItemProps> = ({ pair }) => {
     return (
         <div
             onClick={handleOpenChat}
-            className={`flex items-center gap-4 p-4 rounded-2xl transition-all duration-200 group cursor-pointer ${
-                hasUnread 
-                    ? 'bg-gradient-to-r from-blue-50/80 to-blue-100/30 border border-blue-100 hover:from-blue-100 hover:to-blue-50' 
-                    : 'bg-white hover:bg-gray-50 border border-gray-100 hover:border-gray-200'
-            } shadow-sm hover:shadow-md`}
+            className={`flex cursor-pointer items-center gap-4 border p-4 shadow-sm transition-colors group ${
+                hasUnread
+                    ? 'border-[#C9A86A] bg-[#C9A86A]/10 hover:border-[#CC5A2A]'
+                    : 'border-[#C9A86A]/40 bg-white hover:border-[#C9A86A] hover:shadow-md'
+            }`}
         >
             {/* Avatar with Status Indicator */}
             <div className="relative flex-shrink-0">
@@ -81,9 +81,9 @@ const ChatListItem: React.FC<ChatPairItemProps> = ({ pair }) => {
                     <h3 className={`font-semibold truncate ${hasUnread ? 'text-gray-900' : 'text-gray-800'}`}>
                         {otherUserName}
                     </h3>
-                    <span className={`text-xs font-medium ${
-                        hasUnread ? 'text-blue-600' : 'text-gray-400'
-                    } whitespace-nowrap ml-2`}>
+                    <span className={`ml-2 whitespace-nowrap text-xs font-medium ${
+                        hasUnread ? 'text-[#CC5A2A]' : 'text-gray-400'
+                    }`}>
                         {formatDisplayTime(pair.updated_at)}
                     </span>
                 </div>
@@ -97,7 +97,7 @@ const ChatListItem: React.FC<ChatPairItemProps> = ({ pair }) => {
                     
                     {/* Read Status Indicator */}
                     {!hasUnread && (
-                        <CheckCheck className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
+                        <CheckCheck className="w-3.5 h-3.5 text-[#C9A86A] flex-shrink-0" />
                     )}
                 </div>
             </div>
@@ -105,7 +105,7 @@ const ChatListItem: React.FC<ChatPairItemProps> = ({ pair }) => {
             {/* Unread Indicator */}
             {hasUnread && (
                 <div className="flex-shrink-0">
-                    <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse"></div>
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#CC5A2A] animate-pulse"></div>
                 </div>
             )}
 

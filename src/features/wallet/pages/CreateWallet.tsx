@@ -1,6 +1,6 @@
 import { Info } from "lucide-react"
 import BackNav from "../../../Shared/components/BackNav"
-import InputFIeld from "../../../Shared/components/InputFIeld"
+import AppInput from "../../../Shared/components/AppInput"
 import { useWalletStore } from "../useWalletStore"
 import AppButton from "../../../Shared/components/Button"
 import { toast } from "react-toastify"
@@ -83,27 +83,31 @@ export const CreateWalletPage = ()=>{
         <div>
             <BackNav title="Create Wallet"/>
             <div className="flex flex-col space-y-5 p-10">
-                <InputFIeld
+                <AppInput
+                label="Wallet Address"
                 name="Wallet Address"
                 onChange={handleAddressChange}
                 placeholder="Wallet Address"
                 className="w-full"
                 value={walletStore.walletAddress}/>
-                <InputFIeld
+                <AppInput
+                label="Wallet Name"
                 name="Wallet Name"
                 onChange={handleWalletNameChange}
                 placeholder="Wallet Name"
                 className="w-full"
                 value={walletStore.walletName}/>
 
-                <InputFIeld
+                <AppInput
+                label="Seed Phrase"
                 name="Seed Phrase"
                 onChange={handleSeedPhraseChange}
                 placeholder="Seed phrase"
                 className="w-full"
                 value={walletStore.seedPhrase}/>
 
-                <InputFIeld
+                <AppInput
+                label="Confirm seed phrase"
                 name="Confirm seed phrase"
                 onChange={handleConfirmSeedPhraseChange}
                 placeholder="Confirm seed phrase"

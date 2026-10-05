@@ -7,7 +7,7 @@ export const WalletListItem =()=>{
     return(
         <div className="flex flex-row justify-between">
             
-            <AppButton size="sm" className="rounded-full!">
+            <AppButton size="sm">
                 <div className="p-1">
                     <Wallet className=""/>
                 </div>

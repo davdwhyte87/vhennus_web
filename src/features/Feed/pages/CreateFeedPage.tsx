@@ -1,293 +1,253 @@
-import React, { useState, useRef } from 'react';
-import AppButton from "../../../Shared/components/Button";
-import TextArea from "../../../Shared/components/TextArea";
-import {  X, Camera, Sparkles, Loader2 } from 'lucide-react';
-import { type CreatePostData, createPost } from '../api';
-import {toast} from "react-toastify";
-import { useNavigate } from 'react-router-dom';
-import { uploadImageDirect } from '../../../Shared/api';
+import React, { useState, useRef } from 'react'
+import AppButton from '../../../Shared/components/Button'
+import TextArea from '../../../Shared/components/TextArea'
+import { X, Camera, Sparkles } from 'lucide-react'
+import { type CreatePostData, createPost } from '../api'
+import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
+import { uploadImageDirect } from '../../../Shared/api'
 
 const CreateFeedPage = () => {
-  const [postTextValue, setTextValue] = useState('');
-  const [_selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
-  const [_isUploading, setIsUploading] = useState(false);
-  const [iscreatePostLoading, setIsCreatePostLoading] = useState(false);
-  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
+  const [postTextValue, setTextValue] = useState('')
+  const [_selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null)
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null)
+  const [_isUploading, setIsUploading] = useState(false)
+  const [iscreatePostLoading, setIsCreatePostLoading] = useState(false)
+  const [uploadStatus, setUploadStatus] = useState<
+    'idle' | 'uploading' | 'success' | 'error'
+  >('idle')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const navigate = useNavigate()
 
   const validatePost = (): boolean => {
-    if (postTextValue == ''){
-      toast.error("Post text cannot be empty");
-      return false;
+    if (postTextValue == '') {
+      toast.error('Post text cannot be empty')
+      return false
     }
-    return true;
+    return true
   }
-  
+
   const handleCreatePost = async () => {
-    setIsCreatePostLoading(true);
-
-    if (!validatePost()){
-      setIsCreatePostLoading(false);
-      return;
+    setIsCreatePostLoading(true)
+    if (!validatePost()) {
+      setIsCreatePostLoading(false)
+      return
     }
-    
-    try{
-      const postData:CreatePostData ={
-        text:postTextValue,
-        image:uploadedUrl
+    try {
+      const postData: CreatePostData = {
+        text: postTextValue,
+        image: uploadedUrl,
       }
-
-      const result = await createPost(postData);
-      console.log('Post created:', result);
-      toast.success("Post created successfully");
-    }catch(err){
-      setIsCreatePostLoading(false);
-      console.error('Error creating post:', err);
-      toast.error("Error creating post");
+      await createPost(postData)
+      toast.success('Post created successfully')
+    } catch (err) {
+      console.error('Error creating post:', err)
+      toast.error('Error creating post')
     }
-
-    setIsCreatePostLoading(false);
+    setIsCreatePostLoading(false)
   }
-  
-  const handleTextChange = (e:React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTextValue(e.target.value);
-  };
- 
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTextValue(e.target.value)
+  }
+
   const handleImageClick = () => {
-    fileInputRef.current?.click();
-  };
- 
+    fileInputRef.current?.click()
+  }
+
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setSelectedImage(file);
-      setPreviewUrl(URL.createObjectURL(file));
-      setUploadProgress(0);
-      setUploadStatus('uploading');
-
+      const file = e.target.files[0]
+      setSelectedImage(file)
+      setPreviewUrl(URL.createObjectURL(file))
+      setUploadProgress(0)
+      setUploadStatus('uploading')
       try {
-        const url = await uploadImageDirect(file, "posts", (percent) => {
-          setUploadProgress(percent);
-        });
-        setUploadedUrl(url);
-        setUploadStatus('success');
+        const url = await uploadImageDirect(file, 'posts', (percent) => {
+          setUploadProgress(percent)
+        })
+        setUploadedUrl(url)
+        setUploadStatus('success')
       } catch (err) {
-        console.error('Upload error', err);
-        setUploadStatus('error');
-        toast.error("Error uploading image");
+        console.error('Upload error', err)
+        setUploadStatus('error')
+        toast.error('Error uploading image')
       } finally {
-        setIsUploading(false);
+        setIsUploading(false)
       }
     }
-  };
- 
+  }
+
   const handleClearImage = async () => {
     try {
-
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = ''
       }
-    
-      setSelectedImage(null);
-      setPreviewUrl(null);
-      setUploadProgress(null);
-      setUploadedUrl(null);
-      setUploadStatus('idle');
-      setIsUploading(false);
+      setSelectedImage(null)
+      setPreviewUrl(null)
+      setUploadProgress(null)
+      setUploadedUrl(null)
+      setUploadStatus('idle')
+      setIsUploading(false)
     } catch (err) {
-      console.error('Error deleting image:', err);
-      toast.error('Failed to delete image');
+      console.error('Error deleting image:', err)
+      toast.error('Failed to delete image')
     }
-  };
- 
-  return(
-  <>
-    <style>{`
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      @keyframes slideIn {
-        from { opacity: 0; transform: translateX(-10px); }
-        to { opacity: 1; transform: translateX(0); }
-      }
-      .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-      .animate-slide-in { animation: slideIn 0.3s ease-out forwards; }
-      .glass-card { 
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-      }
-      .gradient-border {
-        position: relative;
-        border: 2px solid transparent;
-        background: linear-gradient(white, white) padding-box,
-                    linear-gradient(45deg, #667eea, #764ba2) border-box;
-      }
-    `}</style>
+  }
 
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Enhanced Header */}
-      <nav className="sticky top-0 z-50 glass-card border-b border-gray-200/50">
-        <div className="flex items-center justify-between h-16 px-4">
+  return (
+    <div className="min-h-screen">
+      <nav className="sticky top-0 z-40 border-b border-[#C9A86A]/60 bg-[#F5F5F0]/95 backdrop-blur-md">
+        <div className="flex h-16 items-center justify-between px-4 sm:px-6">
           <button
+            type="button"
             onClick={() => navigate(-1)}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors group"
+            className="flex items-center gap-2 text-[#4d5666] transition-colors hover:text-[#0A1931]"
           >
-            <X className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            <span className="font-medium hidden sm:inline">Cancel</span>
+            <X className="h-5 w-5" />
+            <span className="hidden font-medium sm:inline">Cancel</span>
           </button>
-          
+
           <div className="text-center">
-            <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+            <h1 className="font-serif text-lg text-[#0A1931]">
               Create Post
             </h1>
-            <p className="text-xs text-gray-500">Share your thoughts</p>
+            <p className="text-xs text-[#4d5666]">Share your thoughts</p>
           </div>
-          
+
           <AppButton
             loading={iscreatePostLoading}
-            variant="primary"
             size="sm"
             onClick={handleCreatePost}
-            className="px-4 sm:px-6 bg-gradient-to-r from-primary to-purple-600 hover:shadow-lg transition-all duration-300"
           >
-            {iscreatePostLoading ? (
-              <span className="flex items-center">
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                <span className="hidden sm:inline">Publishing...</span>
-              </span>
-            ) : (
-              <span className="flex items-center">
-                <Sparkles className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Publish</span>
-              </span>
-            )}
+            <Sparkles className="h-4 w-4" />
+            <span className="hidden sm:inline">Publish</span>
           </AppButton>
         </div>
       </nav>
 
-      <main className="max-w-2xl mx-auto px-4 py-6">
-        {/* User Info */}
-        <div className="flex items-center space-x-3 mb-8 animate-slide-in">
-          <div className="relative">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-              You
-            </div>
+      <main className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
+        <div className="mb-8 flex items-center gap-3">
+          <div className="grid h-10 w-10 place-items-center bg-[#0A1931] font-bold text-[#C9A86A]">
+            You
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">You</h3>
-            <div className="flex items-center space-x-2 text-sm text-gray-500">
+            <h3 className="font-semibold text-[#0A1931]">You</h3>
+            <div className="flex items-center gap-2 text-sm text-[#4d5666]">
               <span>Posting to</span>
-              <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+              <span className="bg-[#C9A86A]/20 px-2 py-0.5 text-xs font-medium text-[#0A1931]">
                 Everyone
               </span>
             </div>
           </div>
         </div>
 
-        {/* Text Input Area */}
-        <div className="mb-6 animate-fade-in">
+        <div className="mb-6">
           <TextArea
             value={postTextValue}
             onChange={handleTextChange}
             placeholder="What's on your mind?"
-            className="w-full min-h-[120px] text-lg border-0 focus:ring-0 p-0 placeholder-gray-400 resize-none"
+            className="min-h-[120px] w-full resize-none border-0 p-0 text-lg placeholder-gray-400 focus:ring-0"
             rows={4}
           />
-          
-          {/* Character Counter */}
-          <div className="flex justify-end mt-2">
-            <span className={`text-sm ${postTextValue.length > 250 ? 'text-red-500' : 'text-gray-500'}`}>
+          <div className="mt-2 flex justify-end">
+            <span
+              className={[
+                'text-sm',
+                postTextValue.length > 250
+                  ? 'text-red-500'
+                  : 'text-[#4d5666]',
+              ].join(' ')}
+            >
               {postTextValue.length}/500
             </span>
           </div>
         </div>
 
-        {/* Image Upload Area */}
         <div className="mb-8">
-          <input 
+          <input
             type="file"
             accept="image/*"
             className="hidden"
             ref={fileInputRef}
             onChange={handleImageChange}
           />
-          
+
           {!previewUrl ? (
-            <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-primary transition-colors cursor-pointer">
+            <div className="border-2 border-dashed border-[#C9A86A] p-8 text-center transition-colors hover:border-[#CC5A2A]">
               <div onClick={handleImageClick} className="space-y-4">
-                <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl flex items-center justify-center">
-                  <Camera className="w-8 h-8 text-primary" />
+                <div className="mx-auto grid h-16 w-16 place-items-center bg-[#0A1931]/5">
+                  <Camera className="h-8 w-8 text-[#CC5A2A]" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Add media</h3>
-                  <p className="text-gray-500 mb-4">Click to upload an image</p>
-                  <button
-                    type="button"
+                  <h3 className="mb-2 font-serif text-lg text-[#0A1931]">
+                    Add media
+                  </h3>
+                  <p className="mb-4 text-[#4d5666]">
+                    Click to upload an image
+                  </p>
+                  <AppButton
+                    variant="secondary"
+                    size="sm"
                     onClick={handleImageClick}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
                   >
                     Upload Image
-                  </button>
+                  </AppButton>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="relative rounded-xl overflow-hidden shadow-lg border border-gray-200 animate-fade-in">
+            <div className="relative overflow-hidden border border-[#C9A86A]/60">
               <img
                 src={previewUrl || ''}
                 alt="Preview"
-                className="w-full h-64 object-cover"
+                className="h-64 w-full object-cover"
               />
-              
-              {/* Upload Progress */}
+
               {uploadStatus === 'uploading' && (
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-white font-medium">Uploading image...</span>
-                    <span className="text-white font-semibold">{uploadProgress}%</span>
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="font-medium text-white">
+                      Uploading image...
+                    </span>
+                    <span className="font-semibold text-white">
+                      {uploadProgress}%
+                    </span>
                   </div>
-                  <div className="w-full bg-gray-700/50 rounded-full h-2">
+                  <div className="h-2 w-full rounded-full bg-gray-700/50">
                     <div
-                      className="h-2 rounded-full bg-gradient-to-r from-green-400 to-blue-500 transition-all duration-300"
+                      className="h-2 rounded-full bg-[#C9A86A] transition-all duration-300"
                       style={{ width: `${uploadProgress || 0}%` }}
-                    ></div>
+                    />
                   </div>
                 </div>
               )}
-              
-              {/* Success Badge */}
+
               {uploadStatus === 'success' && (
-                <div className="absolute top-4 right-4">
-                  <div className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1.5 rounded-full text-sm font-medium shadow-lg">
-                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                    <span>Uploaded</span>
+                <div className="absolute right-4 top-4">
+                  <div className="flex items-center gap-2 bg-[#0A1931] px-3 py-1.5 text-sm font-medium text-white">
+                    <span className="h-2 w-2 animate-pulse rounded-full bg-[#C9A86A]" />
+                    Uploaded
                   </div>
                 </div>
               )}
-              
-              {/* Remove Button */}
+
               <button
+                type="button"
                 onClick={handleClearImage}
-                className="absolute top-4 left-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white hover:scale-110 transition-all duration-300 shadow-lg"
+                aria-label="Remove image"
+                className="absolute left-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white/90 shadow-lg transition-all hover:scale-110 hover:bg-white"
               >
-                <X className="w-5 h-5 text-gray-700" />
+                <X className="h-5 w-5 text-gray-700" />
               </button>
             </div>
           )}
         </div>
-
-      
-
-      
       </main>
     </div>
-  </>
-  );
-};
- 
-export default CreateFeedPage;
+  )
+}
+
+export default CreateFeedPage

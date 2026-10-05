@@ -59,8 +59,8 @@ const TextArea: React.FC<PostTextAreaProps> = ({
         rows={rows}
         className={`
           mt-1 block w-full px-3 py-2
-          bg-white border border-gray-300 rounded-md shadow-sm
-          focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
+          bg-white border border-gray-300 shadow-sm
+          focus:outline-none focus:ring-[#CC5A2A] focus:border-[#CC5A2A]
           sm:text-sm
           resize-none
           overflow-y min-h-[2.5rem] max-h-[5rem]

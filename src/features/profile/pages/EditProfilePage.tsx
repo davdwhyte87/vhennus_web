@@ -1,6 +1,6 @@
 import { Camera, User, Edit2, Upload, CheckCircle } from "lucide-react"
 import AppButton from "../../../Shared/components/Button"
-import InputFIeld from "../../../Shared/components/InputFIeld"
+import AppInput from "../../../Shared/components/AppInput"
 import TextArea from "../../../Shared/components/TextArea"
 import { useEffect, useRef, useState } from "react"
 import { uploadImageDirect } from "../../../Shared/api"
@@ -61,8 +61,8 @@ const EditProfilePage: React.FC = () => {
             const resp = await getUserProfileAPI();
             console.log("User profile fetched successfully", resp);
             setUserProfile(resp.data.profile);
-            setName(resp.data.profile.name);
-            setBio(resp.data.profile.bio);
+            setName(resp.data.profile.name ?? "");
+            setBio(resp.data.profile.bio ?? "");
             setGetProfileLoading(false);
         } catch (err) {
             console.error("Error fetching user profile", err);
@@ -103,12 +103,12 @@ const EditProfilePage: React.FC = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+        <div className="min-h-screen">
             <style>{`
                 @keyframes pulse-glow {
-                    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
-                    70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-                    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+                    0% { box-shadow: 0 0 0 0 rgba(204, 90, 42, 0.4); }
+                    70% { box-shadow: 0 0 0 10px rgba(204, 90, 42, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(204, 90, 42, 0); }
                 }
                 .animate-pulse-glow { animation: pulse-glow 2s infinite; }
             `}</style>
@@ -119,7 +119,7 @@ const EditProfilePage: React.FC = () => {
                 <PageLoad loading={getProfileLoading} />
 
                 {/* Profile Image Upload Section */}
-                <div className="relative bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-8">
+                <div className="relative bg-[#0A1931] py-8">
                     <div className="flex flex-col items-center justify-center px-4">
                         <div className="relative group">
                             <div className="w-40 h-40 rounded-full border-4 border-white shadow-2xl overflow-hidden">
@@ -143,7 +143,7 @@ const EditProfilePage: React.FC = () => {
                             {/* Upload Status Indicator */}
                             <div className="absolute -bottom-2 -right-2">
                                 {uploadStatus === 'uploading' ? (
-                                    <div className="bg-blue-600 text-white p-2 rounded-full animate-pulse-glow">
+                                    <div className="bg-[#CC5A2A] text-white p-2 rounded-full animate-pulse-glow">
                                         <Upload className="w-5 h-5" />
                                     </div>
                                 ) : uploadStatus === 'success' ? (
@@ -194,11 +194,11 @@ const EditProfilePage: React.FC = () => {
 
                 {/* Edit Form Section */}
                 <div className="px-4 -mt-4">
-                    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+                    <div className="border border-[#C9A86A]/60 bg-white p-6">
                         {/* Form Header */}
                         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-                            <div className="bg-blue-50 p-2 rounded-lg">
-                                <Edit2 className="w-5 h-5 text-blue-600" />
+                            <div className="bg-[#C9A86A]/20 p-2">
+                                <Edit2 className="w-5 h-5 text-[#0A1931]" />
                             </div>
                             <div>
                                 <h2 className="text-xl font-bold text-gray-900">Profile Information</h2>
@@ -209,16 +209,13 @@ const EditProfilePage: React.FC = () => {
                         {/* Form Fields */}
                         <div className="space-y-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Full Name
-                                </label>
-                                <InputFIeld
-                                    label=""
+                                <AppInput
+                                    label="Full Name"
                                     placeholder="Enter your full name"
                                     value={name}
                                     onChange={handleNameChange}
                                     name="name"
-                                    className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+                                    className="w-full"
                                 />
                                 <p className="text-xs text-gray-500 mt-2">This name will be displayed on your profile</p>
                             </div>
@@ -235,10 +232,10 @@ const EditProfilePage: React.FC = () => {
                                         onChange={handleBioChange}
                                         name="bio"
                                         rows={4}
-                                        className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 resize-none transition-all"
+                                        className="w-full p-3 border-2 border-gray-200 focus:border-[#CC5A2A] focus:ring-2 focus:ring-[#C9A86A]/30 resize-none transition-all"
                                     />
                                     <div className="text-xs text-gray-500 mt-2 text-right">
-                                        {bio.length}/150
+                                        {(bio ?? "").length}/150
                                     </div>
                                 </div>
                             </div>
@@ -264,57 +261,45 @@ const EditProfilePage: React.FC = () => {
                         {/* Save Button */}
                         <div className="mt-8 pt-6 border-t border-gray-100">
                             <AppButton
-                                variant="primary"
-                                size="lg"
+                                fullWidth
                                 loading={isSaving}
                                 onClick={handleSaveChanges}
-                                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
                             >
-                                {isSaving ? (
-                                    <span className="flex items-center justify-center">
-                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        Saving...
-                                    </span>
-                                ) : (
-                                    <span className="flex items-center justify-center">
-                                        <CheckCircle className="w-5 h-5 mr-2" />
-                                        Save Changes
-                                    </span>
-                                )}
+                                <CheckCircle className="w-5 h-5 mr-2" />
+                                {isSaving ? 'Saving...' : 'Save Changes'}
                             </AppButton>
 
                             {/* Cancel Button */}
-                            <button
+                            <AppButton
+                                fullWidth
+                                variant="secondary"
+                                className="mt-3"
                                 onClick={() => window.history.back()}
-                                className="w-full mt-3 py-3 text-gray-600 hover:text-gray-800 font-medium rounded-xl border border-gray-300 hover:border-gray-400 transition-colors"
                             >
                                 Cancel
-                            </button>
+                            </AppButton>
                         </div>
                     </div>
 
                     {/* Tips Section */}
-                    <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-100">
-                        <h3 className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                    <div className="mt-6 border border-[#C9A86A]/60 bg-[#C9A86A]/10 p-5">
+                        <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#0A1931]">
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                             </svg>
                             Tips for a great profile
                         </h3>
-                        <ul className="text-sm text-blue-700 space-y-1">
+                        <ul className="space-y-1 text-sm text-[#4d5666]">
                             <li className="flex items-start gap-2">
-                                <span className="text-blue-500">•</span>
+                                <span className="text-[#CC5A2A]">•</span>
                                 <span>Use a clear, friendly profile picture</span>
                             </li>
                             <li className="flex items-start gap-2">
-                                <span className="text-blue-500">•</span>
+                                <span className="text-[#CC5A2A]">•</span>
                                 <span>Write a bio that reflects your personality</span>
                             </li>
                             <li className="flex items-start gap-2">
-                                <span className="text-blue-500">•</span>
+                                <span className="text-[#CC5A2A]">•</span>
                                 <span>Keep your name recognizable to friends</span>
                             </li>
                         </ul>

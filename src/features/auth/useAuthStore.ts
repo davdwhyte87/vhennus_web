@@ -1,75 +1,76 @@
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { create } from 'zustand'
+import { createJSONStorage, persist } from 'zustand/middleware'
 
+interface AuthState {
+  userName: string
+  email: string
+  password: string
+  confirmPassword: string
+  referralCode: string
+  signupError: string | null
+  signupLoading: boolean
 
-interface AuthState{
-    userName:string;
-    email:string;
-    password:string;
-    confirmPassword:string;
-    referralCode:string;
-    signupError:string | null;
-    signupLoading:boolean;
+  // login
+  isLoginLoading: boolean
+  // verify email
+  isVerifyEmail: boolean
+  emailToBeVerified: string
 
-    //login
-    isLoginLoading:boolean;
-    //verify email
-    isVerifyEmail:boolean;
-    emailToBeVerified:string
+  // confirmation email
+  isConfirmEmailLoading: boolean
+  confirmationCode: string
 
-    // confirmation email
-    isConfirmEmailLoading:boolean;
-    confirmationCode:string;
+  // forgot password
+  isGetChangePasswordCodeLoading: boolean
+  isChangePasswordLoading: boolean
 
-    // forgot password
-    isGetChangePasswordCodeLoading:boolean
-    isChangePasswordLoading:boolean
-
-    // auth stuff
-    token:string;
-    authUserName:string;
-    setState:(state:Partial<AuthState>)=>void
-    isLoggedIn:()=>boolean
+  // auth stuff
+  token: string
+  authUserName: string
+  setState: (state: Partial<AuthState>) => void
+  isLoggedIn: () => boolean
 }
 
 export const useAuthStore = create<AuthState>()(
-    persist((set, get)=>({
-        userName:'',
-        email:'',
-        password:'',
-        confirmPassword:'',
-        referralCode:'',
-        signupError:null,
-        signupLoading:false,
+  persist(
+    (set, get) => ({
+      userName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      referralCode: '',
+      signupError: null,
+      signupLoading: false,
 
-        isLoginLoading:false,
-        
-        isVerifyEmail:false,
-        confirmationCode:'',
-        isConfirmEmailLoading:false,
-        emailToBeVerified:'',
+      isLoginLoading: false,
 
-        isGetChangePasswordCodeLoading:false,
-        isChangePasswordLoading:false,
-        token:'',
-        authUserName:'',
-        setState:(newState)=>set((state)=>({...state, ...newState})),
-        isLoggedIn: ()=>{
-            if(get().token.length>10){
-                return true
-            }else{
-                return false
-            }
+      isVerifyEmail: false,
+      confirmationCode: '',
+      isConfirmEmailLoading: false,
+      emailToBeVerified: '',
+
+      isGetChangePasswordCodeLoading: false,
+      isChangePasswordLoading: false,
+      token: '',
+      authUserName: '',
+      setState: (newState) =>
+        set((state) => ({ ...state, ...newState })),
+      isLoggedIn: () => {
+        if (get().token.length > 10) {
+          return true
+        } else {
+          return false
         }
+      },
     }),
     {
-        name:'auth-state',
-        storage: createJSONStorage(()=>localStorage),
-        partialize:(state)=>({
-            token:state.token,
-            emailToBeVerified:state.emailToBeVerified,
-            authUserName:state.authUserName
-        })
+      name: 'auth-state',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        token: state.token,
+        emailToBeVerified: state.emailToBeVerified,
+        authUserName: state.authUserName,
+      }),
     }
-)
+  )
 )

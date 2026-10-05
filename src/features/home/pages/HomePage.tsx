@@ -5,7 +5,6 @@ import { useAuthStore } from '../../auth/useAuthStore'
 import aquariusLogo from '../../../assets/vlogosm.png'
 import heroImge from '../../../assets/hero1.png'
 import cloudToLandImage from '../../../assets/cloudtoland.png'
-import researchImage from '../../../assets/research.png'
 import concertImage from '../../../assets/concert.png'
 import labImage from '../../../assets/labteam.png'
 import teamBuildImage from '../../../assets/teambuilding.png'
@@ -48,6 +47,9 @@ const display = "font-medium leading-[1.03] tracking-[-.055em]"
 const navLink = 'text-sm text-[#354052] transition-colors hover:text-[#CC5A2A]'
 const textLink = 'inline-flex items-center gap-2 border-b border-[#C9A86A] pb-1 text-[13px] text-[#0A1931]'
 
+// TODO: replace with the final whitepaper PDF link
+const WHITE_PAPER_URL = 'https://example.com/vhennus-whitepaper.pdf'
+
 export default function HomePage() {
   const navigate = useNavigate()
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn())
@@ -75,7 +77,7 @@ export default function HomePage() {
     <header className={`fixed left-0 top-0 z-30 flex h-[78px] w-full items-center justify-between px-[7.1%] transition-[background,box-shadow] ${scrolled ? 'bg-[#F5F5F0]/95 shadow-[0_1px_0_#0A193117] backdrop-blur-md' : ''}`}>
       <a className="flex items-center" href="#top" aria-label="Vhennus home"><img src={aquariusLogo} alt="Vhennus Aquarius logo" className="aquarius-logo h-9 w-auto max-w-[150px] object-contain object-left"/></a>
       <nav className="ml-11 hidden gap-[35px] md:flex">{links}</nav>
-      <div className="hidden items-center gap-[22px] md:flex"><button className={`${navLink} border-0 bg-transparent`} onClick={() => navigate(isLoggedIn ? '/home/feeds' : '/login')}>{isLoggedIn ? 'Open the community' : 'Log in'}</button><button className="group flex items-center gap-3.5 border border-[#0A1931] bg-transparent px-[17px] py-3.5 text-[13px] text-[#0A1931] transition-colors hover:border-[#0A1931] hover:bg-[#0A1931] hover:text-white" onClick={enter}>Join Vhennus <ArrowUpRight size={16}/></button></div>
+      <div className="hidden items-center gap-[22px] md:flex"><a className={navLink} href={WHITE_PAPER_URL} target="_blank" rel="noopener noreferrer">Download whitepaper</a><button className="group flex items-center gap-3.5 border border-[#0A1931] bg-transparent px-[17px] py-3.5 text-[13px] text-[#0A1931] transition-colors hover:border-[#0A1931] hover:bg-[#0A1931] hover:text-white" onClick={enter}>Join Vhennus <ArrowUpRight size={16}/></button></div>
       <button className="grid place-items-center border-0 bg-transparent p-2 text-[#353830] md:hidden" aria-label="Toggle menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button>
       {menuOpen && <nav className="absolute left-0 top-[68px] flex w-full flex-col gap-5 border-t border-[#C9A86A] bg-[#F5F5F0] px-[7%] py-6 shadow-xl md:hidden">{links}<button className="flex justify-between border border-[#0A1931] px-3.5 py-3 text-left text-xs" onClick={enter}>Join Vhennus <ArrowUpRight size={15}/></button><button className="border-0 bg-transparent py-2 text-left text-xs" onClick={() => navigate('/login')}>Log in</button></nav>}
     </header>
