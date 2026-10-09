@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
-import { ArrowDown, ArrowRight, ArrowUpRight, BadgeDollarSign, Fingerprint, Globe2, Layers3, Menu, Network, ShieldCheck, X, Zap } from 'lucide-react'
+import { ArrowDown, ArrowRight, ArrowUpRight, BadgeDollarSign, Coins, Fingerprint, Globe2, Layers3, Menu, Network, ShieldCheck, Store, X, Zap } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../auth/useAuthStore'
 import aquariusLogo from '../../../assets/vlogosm.png'
 import heroImge from '../../../assets/hero1.png'
 import cloudToLandImage from '../../../assets/cloudtoland.png'
-import concertImage from '../../../assets/concert.png'
-import labImage from '../../../assets/labteam.png'
-import teamBuildImage from '../../../assets/teambuilding.png'
+import vhenncoin from '../../../assets/vhenncoin.svg'
+import { WHITE_PAPER_URL } from '../../membership/membershipUtils'
 
 
 const pillars = [
@@ -16,21 +15,10 @@ const pillars = [
   { number: '03', title: 'Community', text: 'Choose we over me. Bring your skills, capital, knowledge and ideas—and use them to build something bigger than yourself.', tag: 'TOGETHER' },
 ]
 
-const initiatives = [
-  { n: '01', name: 'Build companies', type: 'SHARED ECONOMY', tone: 'from-[#e4d8c7] to-[#9daabd]', shape: 'building' },
-  { n: '02', name: 'Fund research', type: 'CURIOSITY & DISCOVERY', tone: 'from-[#eadfca] to-[#C9A86A]', shape: 'sphere' },
-  { n: '03', name: 'Express Art', type: 'OWNERSHIP & IDENTITY', tone: 'from-[#d7dee7] to-[#72849c]', shape: 'orbit' },
+const coinPillars = [
+  { icon: Store, n: '01', name: 'Token Market', type: 'BUY & SELL COMPANIES', text: 'Buy and sell Vhennus companies from anywhere. Own a stake in the businesses being built inside the civilization — no matter where you live.' },
+  { icon: Coins, n: '02', name: 'Vhenncoin', type: 'BACKED BY THE NETWORK', text: 'Hold Vhenncoins backed by a global network of companies. One currency for the whole civilization — rooted in real builders and real value.' },
 ]
-
-const placeholderImages = {
-  hero: 'https://placehold.co/1600x1100/e1e2e4/69717d?text=Hero+image',
-  civilization: 'https://placehold.co/1400x1000/dfe1e3/69717d?text=Civilization+image',
-  economy: [
-    teamBuildImage,
-    labImage,
-    concertImage,
-  ],
-}
 
 const blockchainFeatures = [
   { title: 'Built for speed', text: 'Fast transaction processing and rapid finality, designed for an economy where thousands or millions of people can transact and build simultaneously.', icon: Zap },
@@ -46,9 +34,6 @@ const eyebrow = 'font-mono text-[11px] uppercase tracking-[.14em] text-[#5d6470]
 const display = "font-medium leading-[1.03] tracking-[-.055em]"
 const navLink = 'text-sm text-[#354052] transition-colors hover:text-[#CC5A2A]'
 const textLink = 'inline-flex items-center gap-2 border-b border-[#C9A86A] pb-1 text-[13px] text-[#0A1931]'
-
-// TODO: replace with the final whitepaper PDF link
-const WHITE_PAPER_URL = 'http://107.191.61.192:8000/download/vwhite_paper.pdf'
 
 export default function HomePage() {
   const navigate = useNavigate()
@@ -70,14 +55,14 @@ export default function HomePage() {
   const links = <>
     <a className={navLink} href="#vision" onClick={() => setMenuOpen(false)}>Our vision</a>
     <a className={navLink} href="#principles" onClick={() => setMenuOpen(false)}>Principles</a>
-    <a className={navLink} href="#projects" onClick={() => setMenuOpen(false)}>Build with us</a>
+    <a className={navLink} href="#coin" onClick={() => setMenuOpen(false)}>Vhenncoin</a>
   </>
 
   return <div className="min-h-screen overflow-x-hidden bg-[#F5F5F0] text-[#0A1931]">
     <header className={`fixed left-0 top-0 z-30 flex h-[78px] w-full items-center justify-between px-[7.1%] transition-[background,box-shadow] ${scrolled ? 'bg-[#F5F5F0]/95 shadow-[0_1px_0_#0A193117] backdrop-blur-md' : ''}`}>
       <a className="flex items-center" href="#top" aria-label="Vhennus home"><img src={aquariusLogo} alt="Vhennus Aquarius logo" className="aquarius-logo h-9 w-auto max-w-[150px] object-contain object-left"/></a>
       <nav className="ml-11 hidden gap-[35px] md:flex">{links}</nav>
-      <div className="hidden items-center gap-[22px] md:flex"><a className={navLink} href={WHITE_PAPER_URL} target="http://107.191.61.192:8000/download/vwhite_paper.pdf" rel="noopener noreferrer">Download whitepaper</a><button className="group flex items-center gap-3.5 border border-[#0A1931] bg-transparent px-[17px] py-3.5 text-[13px] text-[#0A1931] transition-colors hover:border-[#0A1931] hover:bg-[#0A1931] hover:text-white" onClick={enter}>Join Vhennus <ArrowUpRight size={16}/></button></div>
+      <div className="hidden items-center gap-[22px] md:flex"><a className={navLink} href={WHITE_PAPER_URL} target="_blank" rel="noopener noreferrer">Download whitepaper</a><button className="group flex items-center gap-3.5 border border-[#0A1931] bg-transparent px-[17px] py-3.5 text-[13px] text-[#0A1931] transition-colors hover:border-[#0A1931] hover:bg-[#0A1931] hover:text-white" onClick={enter}>Join Vhennus <ArrowUpRight size={16}/></button></div>
       <button className="grid place-items-center border-0 bg-transparent p-2 text-[#353830] md:hidden" aria-label="Toggle menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button>
       {menuOpen && <nav className="absolute left-0 top-[68px] flex w-full flex-col gap-5 border-t border-[#C9A86A] bg-[#F5F5F0] px-[7%] py-6 shadow-xl md:hidden">{links}<button className="flex justify-between border border-[#0A1931] px-3.5 py-3 text-left text-xs" onClick={enter}>Join Vhennus <ArrowUpRight size={15}/></button><button className="border-0 bg-transparent py-2 text-left text-xs" onClick={() => navigate('/login')}>Log in</button></nav>}
     </header>
@@ -86,13 +71,13 @@ export default function HomePage() {
       <section className="relative grid min-h-[735px] grid-cols-1 items-center gap-9 px-[6%] pb-[61px] pt-[123px] md:h-[min(850px,100vh)] md:min-h-[735px] md:grid-cols-[.91fr_1.09fr] md:gap-[4.1%] md:px-[7.1%] md:pb-10 md:pt-[177px]">
         <div className="relative z-[2] md:-mt-2">
           <p className={`${eyebrow} mb-[23px] flex items-center gap-2.5 md:mb-[30px]`}><span className="size-[7px] rounded-full bg-[#CC5A2A] shadow-[0_0_0_4px_#CC5A2A22]"/>A global community</p>
-          <h1 className={`${display} whitespace-nowrap text-[clamp(53px,12vw,76px)] md:text-[clamp(51px,6.3vw,88px)]`}>A new civilization<br/><span className="font-serif font-medium text-[#CC5A2A]">on Earth.</span></h1>
+          <h1 className={`${display} text-balance text-[clamp(48px,12vw,76px)] md:text-[clamp(51px,6.3vw,88px)]`}>A new civilization<br/><span className="font-serif font-medium text-[#CC5A2A]">on Earth.</span></h1>
           <p className="mb-[21px] mt-5 max-w-[490px] text-[18px] leading-[1.7] text-[#4d5666] md:mb-7 md:mt-[26px] md:text-[20px]">Bringing like minded people together globally to build a new civilization.</p>
           <div className="flex items-center gap-[18px] md:gap-[25px]"><button className="inline-flex items-center gap-[19px] bg-[#0A1931] px-5 py-4 text-[13px] text-white transition-colors hover:bg-[#CC5A2A]" onClick={enter}>Join Vhennus <ArrowRight size={18}/></button><a className={textLink} href="#vision">Discover Vhennus <ArrowDown size={15}/></a></div>
           <div className="mt-7 flex items-center gap-2 text-xs text-[#6b7180] md:mt-[67px]"><Globe2 size={16}/><span>Connected everywhere.</span></div>
         </div>
         <div className="relative h-[360px] w-full overflow-hidden bg-[#e1e2e4] md:h-[480px]">
-          <img src={heroImge} alt="Placeholder for Vhennus hero" className="size-full object-cover"/>
+          <img src={heroImge} alt="Vhennus community gathering" className="size-full object-cover" fetchPriority="high" decoding="async"/>
           <div className="absolute inset-0 bg-[#0A1931]/15"/>
           <div className="absolute bottom-5 left-[23px] right-[23px] z-[2] flex justify-between font-mono text-[8px] uppercase tracking-[1.1px] text-[#f7f6ed]"><span>FIG. 01</span><span>A place we make together</span></div><div className="absolute right-5 top-[19px] font-mono text-[8px] tracking-[1px] text-[#657561]">06° 31′ N&nbsp; / &nbsp;03° 22′ E</div>
         </div>
@@ -121,18 +106,25 @@ export default function HomePage() {
       </section>
 
       <section className="grid grid-cols-1 items-center gap-9 px-[6%] py-[76px] md:grid-cols-[1.04fr_.96fr] md:gap-[9%] md:px-[7.1%] md:py-[125px]">
-        <div className="relative min-h-[330px] overflow-hidden bg-[#dfe1e3] md:min-h-[440px]"><img src={cloudToLandImage} alt="Placeholder for Vhennus civilization" className="absolute inset-0 size-full object-cover"/><div className="absolute inset-0 bg-[#0A1931]/20"/><span className="absolute bottom-5 left-[22px] z-[2] font-mono text-[10px] tracking-[1.2px] text-[#F5F5F0]">A SHARED HORIZON &nbsp; / &nbsp; NO FIXED BORDERS</span><span className="absolute right-[17px] top-5 z-[2] [writing-mode:vertical-rl] font-mono text-[10px] tracking-[1.2px] text-[#F5F5F0]">THE FUTURE IS A VERB</span></div>
-        <div className={reveal}><p className={`${eyebrow} mb-[21px]`}>Build a civilization</p><h2 className={`${display} mb-[22px] max-w-[500px] text-[56px] md:text-[clamp(49px,4.5vw,70px)]`}>From the cloud to <em className="font-serif font-medium text-[#CC5A2A]">cities.</em></h2><p className="mb-6 max-w-[480px] text-[19px] leading-[1.75] text-[#4d5666]">Vhennus starts as a digital community. Members can build companies, fund research, collaborate, learn, create, invest and participate in a shared economy.</p><p className="mb-6 max-w-[480px] text-[19px] leading-[1.75] text-[#4d5666]">Blockchain provides the infrastructure for ownership, identity and transparent coordination. But technology is only the beginning.</p><a href="#projects" className={textLink}>See what we’re building <ArrowRight size={16}/></a></div>
+        <div className="relative min-h-[330px] overflow-hidden bg-[#dfe1e3] md:min-h-[440px]"><img src={cloudToLandImage} alt="From digital community to physical cities" className="absolute inset-0 size-full object-cover" loading="lazy" decoding="async"/><div className="absolute inset-0 bg-[#0A1931]/20"/><span className="absolute bottom-5 left-[22px] z-[2] font-mono text-[10px] tracking-[1.2px] text-[#F5F5F0]">A SHARED HORIZON &nbsp; / &nbsp; NO FIXED BORDERS</span><span className="absolute right-[17px] top-5 z-[2] [writing-mode:vertical-rl] font-mono text-[10px] tracking-[1.2px] text-[#F5F5F0]">THE FUTURE IS A VERB</span></div>
+        <div className={reveal}><p className={`${eyebrow} mb-[21px]`}>Build a civilization</p><h2 className={`${display} mb-[22px] max-w-[500px] text-[56px] md:text-[clamp(49px,4.5vw,70px)]`}>From the cloud to <em className="font-serif font-medium text-[#CC5A2A]">cities.</em></h2><p className="mb-6 max-w-[480px] text-[19px] leading-[1.75] text-[#4d5666]">Vhennus starts as a digital community. Members can build companies, fund research, collaborate, learn, create, invest and participate in a shared economy.</p><p className="mb-6 max-w-[480px] text-[19px] leading-[1.75] text-[#4d5666]">Blockchain provides the infrastructure for ownership, identity and transparent coordination. But technology is only the beginning.</p><a href="#coin" className={textLink}>See what we’re building <ArrowRight size={16}/></a></div>
       </section>
 
-      <section id="projects" className="bg-[#e9ebed] px-[7%] py-[78px] md:px-[12.5%] md:py-[106px] md:pb-[125px]">
-        <div className={`${reveal} mb-[31px] md:mb-[47px] md:flex md:items-end md:justify-between`}><div><p className={`${eyebrow} mb-5`}>04 &nbsp; THE SHARED ECONOMY</p><h2 className={`${display} text-[clamp(52px,11vw,74px)] md:text-[clamp(50px,5vw,78px)]`}>Everyone brings<br/><em className="font-serif font-medium text-[#CC5A2A]">something.</em></h2></div><p className="mt-[18px] max-w-[360px] text-[19px] leading-[1.75] text-[#4d5666] md:mb-[7px] md:ml-[25px] md:mt-0">Our long-term vision is physical communities where people can live, work, create businesses, conduct research and build new industries.</p></div>
-        <div className="grid grid-cols-1 gap-[29px] md:grid-cols-3 md:gap-[19px]">{initiatives.map((item, index) => <article className={`${reveal} group`} key={item.n}><div className="relative h-[285px] overflow-hidden bg-[#e1e2e4] md:h-[275px]"><img src={placeholderImages.economy[index]} alt={`Placeholder for ${item.name}`} className="size-full object-cover"/><div className="absolute inset-0 bg-[#0A1931]/15"/><span className="absolute left-[13px] top-[13px] z-[2] font-mono text-[9px] tracking-[1px] text-[#F5F5F0]">FIELD NOTES / {item.n}</span><span className="absolute bottom-[13px] left-[13px] z-[3] font-mono text-[10px] text-white">{item.n}</span><ArrowUpRight className="absolute bottom-3 right-3 z-[3] text-white transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" size={21}/></div><p className="mb-2 mt-5 font-mono text-[11px] tracking-[1.1px] text-[#5d6470]">{item.type}</p><h3 className="font-serif text-[28px] font-medium">{item.name}</h3></article>)}</div>
+      <section id="coin" className="bg-[#e9ebed] px-[7%] py-[78px] md:px-[12.5%] md:py-[106px] md:pb-[125px]">
+        <div className={`${reveal} mb-[31px] md:mb-[47px] md:flex md:items-end md:justify-between`}><div><p className={`${eyebrow} mb-5`}>04 &nbsp; THE CIVILIZATION ECONOMY</p><h2 className={`${display} max-w-[800px] text-[clamp(42px,8vw,74px)] md:text-[clamp(50px,5vw,78px)]`}>Vhenncoin + Token Market = <em className="font-serif font-medium text-[#CC5A2A]">Civilization Economy.</em></h2></div><p className="mt-[18px] max-w-[360px] text-[19px] leading-[1.75] text-[#4d5666] md:mb-[7px] md:ml-[25px] md:mt-0">One economy for a global civilization — where companies, people and currency move together.</p></div>
+        <div className={`${reveal} mb-[19px] grid items-center gap-10 md:grid-cols-[.85fr_1.15fr] md:gap-14`}>
+          <div className="relative mx-auto w-full max-w-[320px] md:max-w-[380px]">
+            <div className="coin-glow absolute inset-[-12%]"/>
+            <div className="relative z-[1]"><img src={vhenncoin} alt="Vhenncoin metallic navy coin tilted 18 degrees showing ridged left edge with white Aquarius symbol" className="coin-float w-full drop-shadow-[0_28px_45px_rgba(10,25,49,0.28)]"/></div>
+          </div>
+          <div className="grid gap-[19px]">{coinPillars.map((item) => { const Icon = item.icon; return <article className={`group bg-[#F5F5F0] p-8 md:p-10`} key={item.n}><div className="mb-8 flex items-center justify-between"><span className="font-mono text-[11px] tracking-[.14em] text-[#CC5A2A]">{item.n}</span><Icon className="text-[#0A1931] transition-colors group-hover:text-[#CC5A2A]" size={26}/></div><p className="mb-2 font-mono text-[11px] tracking-[1.1px] text-[#5d6470]">{item.type}</p><h3 className="mb-4 font-serif text-[34px] font-medium leading-none text-[#0A1931]">{item.name}</h3><p className="max-w-[440px] text-[18px] leading-[1.7] text-[#4d5666]">{item.text}</p></article>})}</div>
+        </div>
+        <div className={`${reveal} mt-[19px] flex flex-col gap-4 border border-[#C9A86A] bg-[#0A1931] px-8 py-7 text-[#F5F5F0] md:flex-row md:items-center md:justify-between md:px-10`}><p className="font-serif text-[22px] italic leading-[1.4] md:text-[24px]">Buy and sell Vhennus companies from anywhere. Hold Vhenncoins backed by a global network of companies.</p><span className="shrink-0 font-mono text-[10px] tracking-[1.4px] text-[#C9A86A]">ONE PEOPLE · ONE ECONOMY</span></div>
       </section>
 
       <section className="closing-landscape relative flex min-h-[430px] items-center justify-center overflow-hidden bg-[#0A1931] px-5 py-[75px] text-center text-[#F5F5F0] md:min-h-[480px]"><div className="closing-orbit absolute h-[220px] w-[420px] -rotate-[23deg] rounded-[50%] border border-[#C9A86A2b] md:h-[280px] md:w-[610px]"/><div className={`${reveal} relative z-[1]`}><p className="font-mono text-[11px] uppercase tracking-[.14em] text-[#C9A86A]">Be a builder</p><h2 className={`${display} my-5 text-[clamp(53px,11vw,76px)] md:text-[clamp(56px,6vw,88px)]`}>Build the future<br/><em className="font-serif font-medium text-[#C9A86A]">together.</em></h2><p className="mx-auto mb-7 max-w-[550px] text-[19px] leading-[1.75] text-[#d7dce4]">Vhennus is for entrepreneurs, scientists, engineers, creators, investors and builders. The question isn’t only what Vhennus can give you. It’s what you can build with Vhennus.</p><button className="inline-flex items-center gap-[19px] bg-[#F5F5F0] px-5 py-4 text-[13px] text-[#0A1931] transition-colors hover:bg-[#C9A86A]" onClick={enter}>Join Vhennus <ArrowUpRight size={18}/></button></div><div className="absolute bottom-[25px] right-[6%] z-[2] text-right font-mono text-[9px] leading-[1.8] tracking-[1.1px] text-[#C9A86A] md:right-[7.1%] md:text-[10px]">AN OPEN INVITATION<br/>TO BUILD WHAT’S NEXT</div></section>
     </main>
 
-    <footer className="grid grid-cols-1 items-center gap-[11px] px-[7%] py-8 md:grid-cols-[1fr_1fr_2fr] md:gap-5 md:px-[7.1%] md:pb-[25px] md:pt-[39px]"><a className="flex items-center justify-self-start" href="#top"><img src={aquariusLogo} alt="Vhennus Aquarius logo" className="aquarius-logo h-9 w-auto max-w-[150px] object-contain object-left"/></a><p className="my-1 text-[13px] italic text-[#5d6470] md:justify-self-center">A new world is a shared work.</p><div className="mb-3 flex flex-wrap items-center gap-x-5 gap-y-3 text-[9px] text-[#4d5666] md:mb-0 md:justify-end"><a href="#vision">The idea</a><a href="#principles">Our principles</a><a href="#projects">The work</a><button className="flex items-center gap-1 border-0 bg-transparent text-[9px] text-[#CC5A2A]" onClick={() => navigate('/login')}>Member sign in <ArrowUpRight size={13}/></button></div><span className="border-t border-[#C9A86A] pt-[18px] font-mono text-[6px] tracking-[1px] text-[#6b7180] md:col-span-full md:text-[7px]">© {new Date().getFullYear()} VHENNUS &nbsp;·&nbsp; BUILT TOGETHER, EVERYWHERE</span></footer>
+    <footer className="grid grid-cols-1 items-center gap-[11px] px-[7%] py-8 md:grid-cols-[1fr_1fr_2fr] md:gap-5 md:px-[7.1%] md:pb-[25px] md:pt-[39px]"><a className="flex items-center justify-self-start" href="#top"><img src={aquariusLogo} alt="Vhennus Aquarius logo" className="aquarius-logo h-9 w-auto max-w-[150px] object-contain object-left"/></a><p className="my-1 text-[13px] italic text-[#5d6470] md:justify-self-center">A new world is a shared work.</p><div className="mb-3 flex flex-wrap items-center gap-x-5 gap-y-3 text-[9px] text-[#4d5666] md:mb-0 md:justify-end"><a href="#vision">The idea</a><a href="#principles">Our principles</a><a href="#coin">Vhenncoin</a><button className="flex items-center gap-1 border-0 bg-transparent text-[9px] text-[#CC5A2A]" onClick={() => navigate('/login')}>Member sign in <ArrowUpRight size={13}/></button></div><span className="border-t border-[#C9A86A] pt-[18px] font-mono text-[6px] tracking-[1px] text-[#6b7180] md:col-span-full md:text-[7px]">© {new Date().getFullYear()} VHENNUS &nbsp;·&nbsp; BUILT TOGETHER, EVERYWHERE</span></footer>
   </div>
 }

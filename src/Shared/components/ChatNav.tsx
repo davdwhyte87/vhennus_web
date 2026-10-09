@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import AppButton from "./Button";
 import { ArrowLeft } from "lucide-react";
-
-const profileImage = (await import("../../assets/profile2.png")).default
+import profileImage from "../../assets/profile2.png";
 
 interface ChatNavProp{
     userName?:string;

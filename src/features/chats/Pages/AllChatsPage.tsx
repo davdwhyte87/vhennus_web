@@ -3,6 +3,7 @@ import axios from 'axios'
 import ChatListItem from '../Components/ChatListItem.tsx'
 import { toast } from 'react-toastify'
 import { type ChatPair, getAllMyChatPairsAPI } from '../api.ts'
+import { useChatStore } from '../useChatStore.ts'
 import { useEffect, useState } from 'react'
 import { Search, MessageSquarePlus, Filter } from 'lucide-react'
 import AppButton from '../../../Shared/components/Button'
@@ -12,12 +13,17 @@ const AllChatsPage: React.FC = () => {
   const [chatPairs, setChatPairs] = useState<ChatPair[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const unreadTotal = useChatStore((s) => s.unreadTotal)
+  const unreadByPair = useChatStore((s) => s.unreadByPair)
+  const setPairs = useChatStore((s) => s.setPairs)
+  const refreshUnread = useChatStore((s) => s.refreshUnread)
 
   const getAllChatPairs = async () => {
     setIsLoading(true)
     try {
       const resp = await getAllMyChatPairsAPI()
       setChatPairs(resp.data)
+      setPairs(resp.data)
     } catch (err) {
       if (axios.isAxiosError(err)) {
         toast.error(err.response?.data?.message || 'Error getting chat pairs')
@@ -31,6 +37,7 @@ const AllChatsPage: React.FC = () => {
 
   useEffect(() => {
     getAllChatPairs()
+    refreshUnread()
   }, [])
 
   return (
@@ -89,41 +96,43 @@ const AllChatsPage: React.FC = () => {
               </div>
             ) : (
               <div className="px-4 sm:px-6">
-                <div className="mb-3">
-                  <div className="mb-3 flex items-center justify-between px-2">
-                    <h2 className="text-sm font-semibold text-[#0A1931]">
-                      Recent
-                    </h2>
-                    <span className="text-xs text-[#4d5666]">
-                      {chatPairs.filter((pair) => !pair.all_read).length}{' '}
-                      unread
-                    </span>
+                  <div className="mb-3">
+                    <div className="mb-3 flex items-center justify-between px-2">
+                      <h2 className="text-sm font-semibold text-[#0A1931]">
+                        Recent
+                      </h2>
+                      <span className="text-xs text-[#4d5666]">
+                        {unreadTotal} unread chat{unreadTotal === 1 ? '' : 's'}
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      {chatPairs
+                        .filter((pair) => (unreadByPair[pair.id] ?? 0) > 0)
+                        .map((pair) => (
+                          <div key={pair.id}>
+                            <ChatListItem
+                              pair={pair}
+                              unreadCount={unreadByPair[pair.id] ?? 0}
+                            />
+                          </div>
+                        ))}
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    {chatPairs
-                      .filter((pair) => !pair.all_read)
-                      .map((pair) => (
-                        <div key={pair.id}>
-                          <ChatListItem pair={pair} />
-                        </div>
-                      ))}
-                  </div>
-                </div>
 
-                <div className="mt-6">
-                  <h2 className="mb-3 px-2 text-sm font-semibold text-[#0A1931]">
-                    All Conversations
-                  </h2>
-                  <div className="space-y-2">
-                    {chatPairs
-                      .filter((pair) => pair.all_read)
-                      .map((pair) => (
-                        <div key={pair.id}>
-                          <ChatListItem pair={pair} />
-                        </div>
-                      ))}
+                  <div className="mt-6">
+                    <h2 className="mb-3 px-2 text-sm font-semibold text-[#0A1931]">
+                      All Conversations
+                    </h2>
+                    <div className="space-y-2">
+                      {chatPairs
+                        .filter((pair) => (unreadByPair[pair.id] ?? 0) === 0)
+                        .map((pair) => (
+                          <div key={pair.id}>
+                            <ChatListItem pair={pair} unreadCount={0} />
+                          </div>
+                        ))}
+                    </div>
                   </div>
-                </div>
 
                 {searchTerm &&
                   chatPairs.length > 0 &&

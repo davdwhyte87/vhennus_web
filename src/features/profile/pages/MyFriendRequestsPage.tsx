@@ -98,12 +98,11 @@ const MyFriendRequestsPage = () => {
                     <div className="px-4">
                         {friendRequests.length > 0 ? (
                             <div className="space-y-4">
-                                {friendRequests.map((req, index) => (
-                                    <FriendRequestComponent 
-                                        key={req.id} 
-                                        friendRequest={req} 
+                                {friendRequests.map((req) => (
+                                    <FriendRequestComponent
+                                        key={req.id}
+                                        friendRequest={req}
                                         onReset={getFriendRequests}
-                                        index={index}
                                     />
                                 ))}
                             </div>
@@ -134,10 +133,9 @@ const MyFriendRequestsPage = () => {
 interface FriendRequestComponentProps {
     friendRequest: FriendRequestResp,
     onReset: () => void,
-    index: number
 }
 
-const FriendRequestComponent: React.FC<FriendRequestComponentProps> = ({ friendRequest, onReset, index }) => {
+const FriendRequestComponent: React.FC<FriendRequestComponentProps> = ({ friendRequest, onReset }) => {
     const navigate = useNavigate()
     const [isAcceptFriendRequestLoading, setIsAcceptFriendRequestLoading] = useState<boolean>(false)
     const [isRejectFriendRequestLoading, setIsRejectFriendRequestLoading] = useState<boolean>(false)
@@ -197,66 +195,50 @@ const FriendRequestComponent: React.FC<FriendRequestComponentProps> = ({ friendR
     }
 
     return (
-        <div 
-            className="border border-[#C9A86A]/60 bg-white p-4 request-card animate-fade-in"
-            style={{ animationDelay: `${index * 0.1}s` }}
-        >
-            <div className="flex items-start">
-                {/* User Info */}
-                <div className="flex-1">
-                    <div className="flex items-start space-x-3 mb-3">
-                        <div 
-                            className="relative cursor-pointer"
-                            onClick={() => { navigate(`/user_profile/${friendRequest.user_name}`) }}
-                        >
-                            <img 
-                                className="w-12 h-12 rounded-full border-2 border-white shadow object-cover"
-                                src={friendRequest.image || profileImage}
-                                alt={friendRequest.name}
-                            />
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-                        </div>
-                        
-                        <div className="flex-1">
-                            <div 
-                                className="cursor-pointer mb-1"
-                                onClick={() => { navigate(`/user_profile/${friendRequest.user_name}`) }}
-                            >
-                                <h3 className="font-semibold text-gray-900">{friendRequest.name}</h3>
-                                <p className="text-gray-500 text-sm">@{friendRequest.user_name}</p>
-                            </div>
-                            
-                            <div className="flex items-center text-xs text-gray-500 mt-1">
-                                <Calendar className="w-3 h-3 mr-1" />
-                                {formatRequestDate(friendRequest.created_at)}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex items-center space-x-2 mt-4">
-                        <AppButton
-                            onClick={handleAcceptFriendRequest}
-                            loading={isAcceptFriendRequestLoading}
-                            size="sm"
-                            className="flex-1 bg-green-700"
-                        >
-                            <Check className="w-4 h-4 mr-2" />
-                            Accept
-                        </AppButton>
-                        
-                        <AppButton
-                            variant="outline"
-                            onClick={handleCancelFriendRequest}
-                            loading={isRejectFriendRequestLoading}
-                            size="sm"
-                            className="flex-1 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
-                        >
-                            <X className="w-4 h-4 mr-2" />
-                            Decline
-                        </AppButton>
-                    </div>
+        <div className="border border-[#C9A86A]/60 bg-white p-4 transition-colors hover:border-[#CC5A2A]">
+            <div
+                className="flex cursor-pointer items-center gap-4 text-left"
+                onClick={() => { navigate(`/user_profile/${friendRequest.requester}`) }}
+            >
+                <div className="relative shrink-0">
+                    <img
+                        className="h-14 w-14 rounded-full border-2 border-white object-cover shadow-sm"
+                        src={friendRequest.image || profileImage}
+                        alt={friendRequest.name}
+                    />
+                    <div className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500" />
                 </div>
+                <div className="min-w-0 flex-1">
+                    <h3 className="truncate text-base font-semibold text-[#0A1931]">{friendRequest.name}</h3>
+                    <p className="truncate text-sm text-[#4d5666]">@{friendRequest.requester}</p>
+                    <p className="mt-0.5 flex items-center text-xs text-[#4d5666]">
+                        <Calendar className="mr-1 h-3 w-3" />
+                        {formatRequestDate(friendRequest.created_at)}
+                    </p>
+                </div>
+            </div>
+
+            <div className="mt-3 flex gap-2">
+                <AppButton
+                    onClick={handleAcceptFriendRequest}
+                    loading={isAcceptFriendRequestLoading}
+                    size="sm"
+                    fullWidth
+                >
+                    <Check className="h-4 w-4" />
+                    Accept
+                </AppButton>
+                <AppButton
+                    variant="outline"
+                    onClick={handleCancelFriendRequest}
+                    loading={isRejectFriendRequestLoading}
+                    size="sm"
+                    fullWidth
+                    className="border-red-200 text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-600"
+                >
+                    <X className="h-4 w-4" />
+                    Decline
+                </AppButton>
             </div>
         </div>
     )

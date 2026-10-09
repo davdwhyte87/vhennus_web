@@ -221,7 +221,7 @@ const EditProfilePage: React.FC = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-left text-sm font-medium text-gray-700 mb-2">
                                     Bio
                                 </label>
                                 <div className="relative">

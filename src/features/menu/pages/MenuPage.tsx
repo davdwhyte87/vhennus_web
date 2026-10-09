@@ -7,6 +7,7 @@ import {
   HelpCircle,
   Lock,
   LogOut,
+  Medal,
   Settings,
   Shield,
   User,
@@ -29,15 +30,9 @@ const MenuPage: React.FC = () => {
   return (
     <div className="min-h-screen">
       <div className="bg-[#0A1931] px-5 pb-8 pt-8 text-[#F5F5F0] sm:px-8">
-        <p className="font-mono text-[11px] uppercase tracking-[.15em] text-[#C9A86A]">
-          Settings
-        </p>
         <h1 className="mt-2 font-serif text-[clamp(30px,5vw,44px)] tracking-tight">
           Menu
         </h1>
-        <p className="mt-2 text-[15px] text-[#d7dce4]">
-          All your settings in one place.
-        </p>
       </div>
 
       <main className="px-5 py-6 sm:px-8">
@@ -53,6 +48,12 @@ const MenuPage: React.FC = () => {
             icon={User}
             page="/myprofile"
             description="Edit your profile"
+          />
+          <MenuItem
+            text="Membership"
+            icon={Medal}
+            page="/home/membership"
+            description="Become a member"
           />
           <MenuItem
             text="Earnings"

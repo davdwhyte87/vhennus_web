@@ -1,5 +1,4 @@
 import { Check, ChevronDown, Eye, EyeOff, Plus } from "lucide-react"
-import BackHomeNav from "../../../Shared/components/BackHomeNav"
 import AppButton from "../../../Shared/components/Button"
 import { useWalletStore } from "../useWalletStore"
 import { WalletListItem } from "../components/WalletListItem"
@@ -20,7 +19,6 @@ export const AllWalletsPage = ()=>{
     }
     return(
         <div>
-            <BackHomeNav title="Wallets"/>
             <div className="flex flex-col space-y-10">
                 <div className="flex flex-col w-full p-5 space-y-7 text-white bg-primary">
                     <div className="flex flex-row justify-between">

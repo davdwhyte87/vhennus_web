@@ -1,13 +1,12 @@
-import { MessageSquare, Heart, Share2, Bookmark, MoreVertical } from "lucide-react";
+import { MessageSquare, Heart, Share2 } from "lucide-react";
 import { likePost, type PostFeed } from "../api";
 import RelativeTime from "../../../Shared/components/RelativeTime";
 import AppButton from "../../../Shared/components/Button";
 import { useLikedPosts } from "./LikedPostContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-
-const profileImage = (await import("../../../assets/profile2.png")).default;
+import profileImage from "../../../assets/profile2.png";
 
 export interface PostProps {
     mpost: PostFeed;
@@ -21,26 +20,29 @@ const Post: React.FC<PostProps> = ({
     const post = mpost;
     const { isLiked, toggleLike } = useLikedPosts();
     const [likeCount, setLikeCount] = useState<number>(post.like_count);
-    const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
     const [isAnimating, setIsAnimating] = useState<boolean>(false);
     const navigate = useNavigate();
 
-    const incrLikes = () => {
-        if (isLiked(post.id)) {
-            if (likeCount <= 0) return;
-            setLikeCount(likeCount - 1);
-        } else {
-            setLikeCount(likeCount + 1);
+    // Stay in sync when the feed data refreshes underneath us.
+    useEffect(() => {
+        setLikeCount(post.like_count);
+    }, [post.like_count]);
+
+    const handleLikeClick = async () => {
+        if (!post) return;
+        const wasLiked = isLiked(post.id);
+        // Optimistic update with rollback on failure.
+        toggleLike(post.id);
+        setLikeCount((count) => (wasLiked ? Math.max(0, count - 1) : count + 1));
+        if (!wasLiked) {
             setIsAnimating(true);
             setTimeout(() => setIsAnimating(false), 600);
         }
-    };
-
-    const handleLikePost = async (id: string) => {
         try {
-            const resp = await likePost(id);
-            console.log("Like post response:", resp);
+            await likePost(post.id);
         } catch (error) {
+            toggleLike(post.id);
+            setLikeCount(post.like_count);
             console.error("Error liking post:", error);
             toast.error("Failed to like the post. Please try again.");
         }
@@ -56,16 +58,25 @@ const Post: React.FC<PostProps> = ({
         navigate(`/user_profile/${post.user_name}`);
     };
 
-    const handleShare = () => {
+    const handleShare = async () => {
+        const postUrl = `${window.location.origin}/home/post/${post.id}`;
         if (navigator.share) {
-            navigator.share({
-                title: post.name,
-                text: post.text,
-                url: window.location.href,
-            });
+            try {
+                await navigator.share({
+                    title: post.name,
+                    text: post.text,
+                    url: postUrl,
+                });
+            } catch {
+                // User dismissed the share sheet; nothing to do.
+            }
         } else {
-            navigator.clipboard.writeText(window.location.href);
-            toast.success("Link copied to clipboard!");
+            try {
+                await navigator.clipboard.writeText(postUrl);
+                toast.success("Link copied to clipboard!");
+            } catch {
+                toast.error("Unable to copy the link.");
+            }
         }
     };
 
@@ -84,7 +95,6 @@ const Post: React.FC<PostProps> = ({
                                 src={post?.profile_image || profileImage} 
                                 alt={post?.name}
                             />
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
                         </div>
                         <div className="flex-1">
                             <div className="flex items-center space-x-2">
@@ -106,9 +116,6 @@ const Post: React.FC<PostProps> = ({
                             </div>
                         </div>
                     </div>
-                    <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                        <MoreVertical className="w-5 h-5 text-gray-400" />
-                    </button>
                 </div>
             </div>
 
@@ -128,6 +135,9 @@ const Post: React.FC<PostProps> = ({
                             src={post.image} 
                             alt="Post content"
                             loading="lazy"
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                            }}
                         />
                     </div>
                 )}
@@ -145,12 +155,7 @@ const Post: React.FC<PostProps> = ({
                                     variant="ghost" 
                                     size="sm"
                                     className="relative z-10 hover:bg-red-50"
-                                    onClick={() => {
-                                        if (!post) return;
-                                        toggleLike(post.id);
-                                        incrLikes();
-                                        handleLikePost(post.id);
-                                    }}
+                                    onClick={handleLikeClick}
                                 >
                                     {isLiked(post.id) ? (
                                         <Heart fill="#EE4B2B" className={`w-5 h-5 ${isAnimating ? 'scale-125' : ''} transition-transform duration-300`} />
@@ -185,18 +190,9 @@ const Post: React.FC<PostProps> = ({
                             onClick={handleShare}
                             className="p-2 hover:bg-gray-100 rounded-full transition-colors group"
                             title="Share"
+                            aria-label="Share post"
                         >
                             <Share2 className="w-5 h-5 text-gray-500 group-hover:text-primary transition-colors" />
-                        </button>
-                        
-                        <button 
-                            onClick={() => setIsBookmarked(!isBookmarked)}
-                            className="p-2 hover:bg-gray-100 rounded-full transition-colors group"
-                            title="Bookmark"
-                        >
-                            <Bookmark 
-                                className={`w-5 h-5 ${isBookmarked ? 'fill-yellow-500 text-yellow-500' : 'text-gray-500 group-hover:text-yellow-500'}`}
-                            />
                         </button>
                     </div>
                 </div>

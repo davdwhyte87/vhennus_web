@@ -254,12 +254,11 @@ const FindFriendsPage = () => {
                                 
                                 {(friendSearchResults.length > 0) ? (
                                     <div className="space-y-3">
-                                        {friendSearchResults.map((data, index) => (
-                                            <FriendSearchResult 
-                                                key={data.user_name} 
-                                                friend={data} 
+                                        {friendSearchResults.map((data) => (
+                                            <FriendSearchResult
+                                                key={data.user_name}
+                                                friend={data}
                                                 friendRequests={friendRequests}
-                                                index={index}
                                             />
                                         ))}
                                     </div>
@@ -327,10 +326,9 @@ const FindFriendsPage = () => {
 interface FriendSearchProps {
     friend: Friend,
     friendRequests: FriendRequestResp[],
-    index: number
 }
 
-const FriendSearchResult: React.FC<FriendSearchProps> = ({ friend, friendRequests, index }) => {
+const FriendSearchResult: React.FC<FriendSearchProps> = ({ friend, friendRequests }) => {
     const [isSendFriendReuqestLoading, setIsSendFriendRequestLoading] = useState<boolean>(false)
     const navigate = useNavigate()
     const hasPendingRequest = friendRequests.some((fr) => fr.user_name == friend.user_name || fr.requester == friend.user_name)
@@ -353,52 +351,51 @@ const FriendSearchResult: React.FC<FriendSearchProps> = ({ friend, friendRequest
     }
 
     return (
-        <div 
-            className="bg-white rounded-xl p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-primary transition-all duration-300 animate-fade-in group"
-            style={{ animationDelay: `${index * 0.1}s` }}
-        >
-            <div className="flex items-center justify-between">
+        <div className="border border-[#C9A86A]/60 bg-white p-4 transition-colors hover:border-[#CC5A2A]">
+            <div className="flex items-center justify-between gap-3">
                 {/* User Info */}
-                <div 
-                    className="flex items-center space-x-4 cursor-pointer flex-1"
+                <div
+                    className="flex min-w-0 flex-1 cursor-pointer items-center gap-4 text-left"
                     onClick={() => { navigate(`/user_profile/${friend.user_name}`) }}
                 >
-                    <div className="relative">
-                        <img 
-                            className="w-14 h-14 rounded-full border-2 border-white shadow-md group-hover:border-primary transition-colors object-cover"
+                    <div className="relative shrink-0">
+                        <img
+                            className="h-14 w-14 rounded-full border-2 border-white object-cover shadow-sm"
                             src={friend.image || profileImage}
                             alt={friend.name}
                         />
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                        <div className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500" />
                     </div>
-                    <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">{friend.name}</h3>
-                        <p className="text-sm text-gray-500">@{friend.user_name}</p>
+                    <div className="min-w-0 flex-1">
+                        <h3 className="truncate text-base font-semibold text-[#0A1931]">{friend.name}</h3>
+                        <p className="truncate text-sm text-[#4d5666]">@{friend.user_name}</p>
+                        {friend.bio && (
+                            <p className="mt-0.5 truncate text-left text-sm text-[#4d5666]">{friend.bio}</p>
+                        )}
                         {hasPendingRequest && (
-                            <div className="flex items-center space-x-1 mt-1">
-                                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-                                <span className="text-xs text-yellow-600 font-medium">Request Pending</span>
-                            </div>
+                            <p className="mt-1 text-xs font-medium text-[#CC5A2A]">
+                                Request pending
+                            </p>
                         )}
                     </div>
                 </div>
 
                 {/* Action Button */}
-                <div className="flex-shrink-0 ml-4">
+                <div className="ml-3 shrink-0">
                     {hasPendingRequest ? (
-                        <div className="px-4 py-2 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-lg text-sm font-medium flex items-center">
-                            <Clock className="w-4 h-4 mr-2" />
+                        <span className="bg-[#C9A86A]/20 px-3 py-2 text-sm font-medium text-[#0A1931]">
                             Requested
-                        </div>
+                        </span>
                     ) : (
                         <AppButton
-                            disabled={hasPendingRequest}
                             onClick={() => { handleSendFriendRequest() }}
                             loading={isSendFriendReuqestLoading}
                             size="sm"
                         >
-                            <UserPlus className="w-4 h-4 mr-2" />
-                            Add Friend
+                            <UserPlus className="h-4 w-4" />
+                            <span className="ml-2 hidden text-sm font-medium sm:inline">
+                                Add Friend
+                            </span>
                         </AppButton>
                     )}
                 </div>

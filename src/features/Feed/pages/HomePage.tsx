@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { useEffect, useRef, useState } from 'react'
-import { Plus, Sparkles, TrendingUp, Users } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Plus, RotateCw, Sparkles, TrendingUp } from 'lucide-react'
 import { toast } from 'react-toastify'
-import { Virtuoso } from 'react-virtuoso'
 import Post from '../Components/Post.tsx'
 import { getPostFeeds, type PostFeed } from '../api.ts'
 import HomeNav from '../../../Shared/components/HomeNav.tsx'
@@ -14,7 +13,6 @@ const HomePage: React.FC = () => {
   const [posts, setPosts] = useState<PostFeed[]>([])
   const [isPostsLoading, setIsPostLoading] = useState<boolean>(false)
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false)
-  const containerRef = useRef<HTMLDivElement>(null)
   const refreshButtonClassName = [
     'flex items-center gap-2 border border-[#0A1931]/20 px-4 py-2',
     'text-sm font-medium text-[#0A1931] transition-colors',
@@ -62,11 +60,13 @@ const HomePage: React.FC = () => {
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
             <span className="grid h-9 w-9 place-items-center bg-[#0A1931] text-[#C9A86A]">
-              <Users className="h-4 w-4" />
+              <TrendingUp className="h-4 w-4" />
             </span>
             <div>
-              <p className="text-xs text-[#4d5666]">Online</p>
-              <p className="text-sm font-semibold text-[#0A1931]">1.2k+</p>
+              <p className="text-xs text-[#4d5666]">Community feed</p>
+              <p className="text-sm font-semibold text-[#0A1931]">
+                {posts.length} post{posts.length === 1 ? '' : 's'}
+              </p>
             </div>
           </div>
 
@@ -76,7 +76,7 @@ const HomePage: React.FC = () => {
             disabled={isRefreshing}
             className={refreshButtonClassName}
           >
-            <TrendingUp
+            <RotateCw
               className={['h-4 w-4', isRefreshing ? 'animate-spin' : ''].join(' ')}
             />
             Refresh
@@ -84,7 +84,7 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      <div ref={containerRef} className="py-6">
+      <div className="py-6">
         <PageLoad loading={isPostsLoading} />
 
         {posts.length === 0 && !isPostsLoading ? (
@@ -107,36 +107,10 @@ const HomePage: React.FC = () => {
             </AppButton>
           </div>
         ) : (
-          <div className="w-full">
-            <Virtuoso
-              style={{ height: 'calc(100vh - 280px)', width: '100%' }}
-              data={posts}
-              overscan={200}
-              itemContent={(_, post) => (
-                <div className="py-2">
-                  <Post mpost={post} />
-                </div>
-              )}
-            />
-          </div>
-        )}
-
-        {isPostsLoading && posts.length > 0 && (
-          <div className="py-8 text-center">
-            <div className="inline-flex gap-2">
-              <span className="h-3 w-3 animate-bounce rounded-full bg-[#CC5A2A]" />
-              <span
-                className="h-3 w-3 animate-bounce rounded-full bg-[#CC5A2A]"
-                style={{ animationDelay: '0.1s' }}
-              />
-              <span
-                className="h-3 w-3 animate-bounce rounded-full bg-[#CC5A2A]"
-                style={{ animationDelay: '0.2s' }}
-              />
-            </div>
-            <p className="mt-4 text-sm text-[#4d5666]">
-              Loading more posts...
-            </p>
+          <div className="w-full space-y-4">
+            {posts.map((post) => (
+              <Post key={post.id} mpost={post} />
+            ))}
           </div>
         )}
       </div>
@@ -153,9 +127,7 @@ const HomePage: React.FC = () => {
       {posts.length > 5 && (
         <button
           type="button"
-          onClick={() =>
-            containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-          }
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           aria-label="Back to top"
           className={toTopClassName}
         >

@@ -192,7 +192,7 @@ const UserProfilePage: React.FC = () => {
 
                             {/* Bio Section */}
                             <div className="mt-4">
-                                <p className="text-gray-600 leading-relaxed">
+                                <p className="text-left text-gray-600 leading-relaxed">
                                     {userProfile?.bio || "This user hasn't added a bio yet."}
                                 </p>
                             </div>
@@ -265,8 +265,8 @@ const UserProfilePage: React.FC = () => {
                         {/* Posts List */}
                         {userPosts.length > 0 ? (
                             <div className="space-y-6">
-                                {userPosts.map((val, index) => (
-                                    <div key={index} className="animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                                {userPosts.map((val) => (
+                                    <div key={val.id} className="animate-fade-in">
                                         <Post mpost={val} />
                                     </div>
                                 ))}

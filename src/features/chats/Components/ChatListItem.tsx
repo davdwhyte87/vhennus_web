@@ -9,9 +9,10 @@ const profileImage = (await import("../../../assets/profile2.png")).default
 
 export interface ChatPairItemProps {
     pair: ChatPair
+    unreadCount?: number
 }
 
-const ChatListItem: React.FC<ChatPairItemProps> = ({ pair }) => {
+const ChatListItem: React.FC<ChatPairItemProps> = ({ pair, unreadCount = 0 }) => {
     const navigate = useNavigate()
     const authStore = useAuthStore()
 
@@ -20,9 +21,8 @@ const ChatListItem: React.FC<ChatPairItemProps> = ({ pair }) => {
     const otherUserName = isUser1 ? pair.user2 : pair.user1
     const otherUserImage = isUser1 ? pair.user2_image || profileImage : pair.user1_image || profileImage
 
-    // Determine if last message was from current user (based on all_read)
-    // Since we don't have last_message_sender, we'll assume it's from the other user
-    const hasUnread = !pair.all_read
+    // Real unread count from read receipts (all_read is legacy).
+    const hasUnread = unreadCount > 0
 
     // Format time display
     const formatDisplayTime = (dateString: string) => {
@@ -105,7 +105,9 @@ const ChatListItem: React.FC<ChatPairItemProps> = ({ pair }) => {
             {/* Unread Indicator */}
             {hasUnread && (
                 <div className="flex-shrink-0">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#CC5A2A] animate-pulse"></div>
+                    <div className="grid h-6 min-w-6 place-items-center rounded-full bg-[#CC5A2A] px-1.5 text-xs font-bold text-white">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                    </div>
                 </div>
             )}
 

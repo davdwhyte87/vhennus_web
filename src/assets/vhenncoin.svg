@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-label="Metallic navy blue Vhenncoin tilted 18 degrees with ridged left edge and white Aquarius symbol">
+  <defs>
+    <radialGradient id="metalFace" cx="36%" cy="27%" r="86%">
+      <stop offset="0%" stop-color="#9DC0E6"/>
+      <stop offset="18%" stop-color="#4A739F"/>
+      <stop offset="42%" stop-color="#1B3358"/>
+      <stop offset="70%" stop-color="#0A1931"/>
+      <stop offset="100%" stop-color="#040B1A"/>
+    </radialGradient>
+    <linearGradient id="metalRim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#D6E6F5"/>
+      <stop offset="30%" stop-color="#5B87B8"/>
+      <stop offset="55%" stop-color="#10234A"/>
+      <stop offset="100%" stop-color="#020917"/>
+    </linearGradient>
+    <pattern id="reeds" width="13" height="24" patternUnits="userSpaceOnUse">
+      <rect width="13" height="24" fill="#071224"/>
+      <rect x="0" width="4.5" height="24" fill="#2C4E80"/>
+      <rect x="4.5" width="2.4" height="24" fill="#8FB4DD" opacity="0.6"/>
+      <rect x="9.5" width="3.5" height="24" fill="#01040C"/>
+    </pattern>
+    <clipPath id="backClip">
+      <ellipse cx="312" cy="298" rx="228" ry="235"/>
+    </clipPath>
+    <clipPath id="faceClip">
+      <ellipse cx="322" cy="290" rx="224" ry="231"/>
+    </clipPath>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#01040C" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- floor shadow stays unrotated -->
+  <ellipse cx="320" cy="582" rx="205" ry="26" fill="#000" opacity="0.4"/>
+
+  <!-- whole coin leans 18deg clockwise: top tips right, bottom tips left -->
+  <g transform="rotate(18 320 310)">
+    <!-- extruded body: extra slim, tiny offset leaves a thin edge on the LEFT -->
+    <g>
+      <ellipse cx="317" cy="294" rx="228" ry="235" fill="#01040C"/>
+      <ellipse cx="320" cy="292" rx="228" ry="235" fill="#0A1931"/>
+    </g>
+
+    <!-- ridged left edge: reeds show only as a thin sliver on the left -->
+    <g clip-path="url(#backClip)">
+      <rect x="82" y="60" width="22" height="520" fill="url(#reeds)"/>
+      <rect x="82" y="60" width="22" height="520" fill="#0A1931" opacity="0.25"/>
+      <!-- edge light where reeds meet the face -->
+      <rect x="100" y="60" width="3" height="520" fill="#8FB4DD" opacity="0.65"/>
+      <rect x="82" y="60" width="4" height="520" fill="#000" opacity="0.45"/>
+    </g>
+
+    <!-- front face -->
+    <ellipse cx="322" cy="290" rx="224" ry="231" fill="url(#metalFace)"/>
+    <ellipse cx="322" cy="290" rx="224" ry="231" fill="none" stroke="url(#metalRim)" stroke-width="5"/>
+    <ellipse cx="322" cy="290" rx="224" ry="231" fill="none" stroke="#01040C" stroke-width="1.2" opacity="0.8"/>
+
+    <!-- metallic roundness: light top, shade bottom -->
+    <path d="M 168 200 A 224 231 0 0 1 452 176" fill="none" stroke="#DCEAF8" stroke-width="7" opacity="0.5" stroke-linecap="round"/>
+    <path d="M 190 420 A 224 231 0 0 0 456 400" fill="none" stroke="#01040C" stroke-width="13" opacity="0.55" stroke-linecap="round"/>
+
+    <!-- inner dish -->
+    <ellipse cx="322" cy="290" rx="186" ry="192" fill="#081428" opacity="0.5"/>
+    <ellipse cx="322" cy="290" rx="186" ry="192" fill="none" stroke="#01040C" stroke-width="4" opacity="0.7"/>
+    <ellipse cx="322" cy="290" rx="175" ry="181" fill="none" stroke="#8FB4DD" stroke-width="1.5" opacity="0.4"/>
+
+    <!-- Aquarius squeezed slightly for perspective (coin turned, left edge out) -->
+    <g transform="translate(322 290) scale(0.88 1) translate(-322 -290)">
+      <g fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#softShadow)">
+        <g stroke="#FFFFFF" stroke-width="24">
+          <path d="M 196 262 C 218 202, 246 202, 268 262 S 318 322, 340 262 S 390 202, 412 262 S 442 310, 458 256"/>
+          <path d="M 196 352 C 218 292, 246 292, 268 352 S 318 412, 340 352 S 390 292, 412 352 S 442 400, 458 346"/>
+        </g>
+      </g>
+      <g fill="none" stroke="#FFFFFF" stroke-width="5" opacity="0.7" stroke-linecap="round">
+        <path d="M 202 252 C 220 208, 244 208, 264 250"/>
+        <path d="M 202 342 C 220 298, 244 298, 264 340"/>
+      </g>
+    </g>
+
+    <!-- glass reflection clipped to face -->
+    <g clip-path="url(#faceClip)">
+      <ellipse cx="240" cy="150" rx="110" ry="44" fill="#FFFFFF" opacity="0.26" transform="rotate(-18 240 150)"/>
+      <ellipse cx="500" cy="430" rx="90" ry="40" fill="#4A739F" opacity="0.2"/>
+    </g>
+  </g>
+</svg>

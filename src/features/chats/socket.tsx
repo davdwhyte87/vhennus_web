@@ -1,8 +1,10 @@
 
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 import { useAuthStore } from "../auth/useAuthStore";
+import { useChatStore } from "./useChatStore";
 
 // Define types for the events you will use
 
@@ -91,8 +93,6 @@ export interface Chat {
 
 interface WsContextType {
     isConnected: boolean;
-    messages:Chat[]
-    sendMessage: (data: CreateChatReq) => void;
 }
 
 export const WsContext = createContext<WsContextType | undefined>(undefined);
@@ -103,58 +103,83 @@ export const useWs = () => {
         throw new Error('useWs must be used within a WsProvider');
     }
     return context;
-};  
-   
+};
+
+// Frames the server may push over the chat socket.
+export type ServerFrame =
+    | { type: 'sent'; temp_id?: string | null; chat: Chat }
+    | { type: 'new'; chat: Chat }
+    | { type: 'unread'; total: number; pairs: { pair_id: string; unread: number }[] }
+    | { type: 'error'; temp_id?: string | null; message: string };
 
 export const WSChatProvider:React.FC<{ children: React.ReactNode }> = ({children})=>{
     const [isConnected, setIsConnected] = useState(false);
-    const [messages, setMessages] = useState<Chat[]>([]);
-    const [client, setClient] = useState<ChatClient | null>(null);
-
+    const token = useAuthStore((s) => s.token);
 
     useEffect(()=>{
-        const handleMessage = (msg: Chat) => {
+        const store = useChatStore.getState();
+        if (!token) {
+            setIsConnected(false);
+            store.setSender(null);
+            store.setConnected(false);
+            return;
+        }
 
-            setMessages(prev => [...prev, msg]);
+        const handleFrame = (frame: ServerFrame) => {
+            const st = useChatStore.getState();
+            switch (frame.type) {
+                case 'sent':
+                    if (frame.temp_id && frame.chat) st.confirmSent(frame.temp_id, frame.chat);
+                    break;
+                case 'new':
+                    if (frame.chat) st.ingestNew(frame.chat);
+                    break;
+                case 'unread':
+                    if (typeof frame.total === 'number') {
+                        const map: Record<string, number> = {};
+                        for (const p of frame.pairs ?? []) map[p.pair_id] = p.unread;
+                        st.setUnread(frame.total, map);
+                    }
+                    break;
+                case 'error':
+                    if (frame.temp_id) st.failSend(frame.temp_id);
+                    toast.error(frame.message || 'Message failed to send');
+                    break;
+                default:
+                    break;
+            }
         };
 
         const handleStatusChange = (status: boolean) => {
             setIsConnected(status);
+            useChatStore.getState().setConnected(status);
         };
 
-        const newClient = new ChatClient(handleMessage, handleStatusChange);
-        setClient(newClient);
+        const newClient = new ChatClient(handleFrame, handleStatusChange);
+        useChatStore.getState().setSender((frame: object) => newClient.sendDataToServer(frame));
+        // Cold-start snapshot; the socket pushes updates after this.
+        store.refreshUnread();
+        const poll = setInterval(() => useChatStore.getState().refreshUnread(), 30000);
 
         return () => {
+            clearInterval(poll);
             newClient.disconnect();
         };
-
-        
-    },[])
-
-    const sendMessage = useCallback((data: CreateChatReq) => {
-        client?.sendDataToServer(data);
-    }, [client]);
-
-    const contextValue: WsContextType = {
-        isConnected,
-        messages,
-        sendMessage,
-    };
+    },[token])
 
     return (
-        <WsContext.Provider value={contextValue}>
+        <WsContext.Provider value={{ isConnected }}>
             {children}
-        </WsContext.Provider>  
+        </WsContext.Provider>
     )
- 
+
 }
 
 
 
 
 // Define the callbacks that the React component will pass to the client
-type MessageHandler = (message: Chat) => void;
+type MessageHandler = (frame: ServerFrame) => void;
 type StatusHandler = (isConnected: boolean) => void;
 
 class ChatClient {
@@ -225,9 +250,10 @@ class ChatClient {
         
         this.socket.onmessage = (event: MessageEvent) => {
             try {
-                const message: Chat = JSON.parse(event.data);
-                console.log('new message', message)
-                this.messageHandler(message); // Pass message to React context handler
+                const frame = JSON.parse(event.data);
+                if (frame && typeof frame.type === 'string') {
+                    this.messageHandler(frame as ServerFrame);
+                }
             } catch (error) {
                 console.error("Failed to parse incoming message:", error);
             }
@@ -277,7 +303,7 @@ class ChatClient {
     /**
      * Public method to send data to the server.
      */
-    public sendDataToServer(data: CreateChatReq): void {
+    public sendDataToServer(data: object): void {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             this.socket.send(JSON.stringify(data));
         } else {

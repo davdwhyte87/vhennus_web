@@ -2,9 +2,11 @@ import type React from "react"
 import { useEffect, useRef, useState, useCallback } from "react"
 import { Send, Image as ImageIcon, Paperclip, MoreVertical, ArrowLeft, CheckCheck } from "lucide-react"
 import { useParams, useSearchParams, useNavigate } from "react-router-dom"
-import { type ChatPair, type CreateChatReq, getChatsAPI2 } from "../api"
-import { type Chat, useWs } from "../socket"
+import { type ChatPair, getChatsAPI2 } from "../api"
+import { type Chat } from "../socket"
+import { useChatStore } from "../useChatStore"
 import axios from "axios"
+import { toast } from "react-toastify"
 import TextArea from "../../../Shared/components/TextArea"
 import AppButton from "../../../Shared/components/Button"
 import formatISOTime from "../../../Shared/formatISOString"
@@ -15,14 +17,20 @@ const profileImage = (await import("../../../assets/profile2.png")).default
 const SingleChatPage: React.FC = () => {
     const [message, setMessage] = useState<string>("")
     const { id } = useParams()
-    const { messages, sendMessage } = useWs();
-    const [chatMessages, setChatMessages] = useState<Chat[]>([])
     const [searchParams, _setSearchParam] = useSearchParams();
-    const pairId = searchParams.get("pair_id")
+    const pairIdParam = searchParams.get("pair_id")
     const authStore = useAuthStore()
     const [chatPair, setChatPair] = useState<ChatPair | null>(null)
     const scrollableContainerRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate()
+    const messagesByPair = useChatStore((s) => s.messagesByPair)
+    const sendChat = useChatStore((s) => s.sendChat)
+    const markRead = useChatStore((s) => s.markRead)
+    const setMessages = useChatStore((s) => s.setMessages)
+    const upsertPair = useChatStore((s) => s.upsertPair)
+
+    const resolvedPairId = pairIdParam || chatPair?.id || ""
+    const chatMessages = messagesByPair[resolvedPairId] ?? []
 
     const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setMessage(e.target.value)
@@ -31,8 +39,9 @@ const SingleChatPage: React.FC = () => {
     const getChats = async () => {
         try {
             const resp = await getChatsAPI2(id || "")
-            setChatMessages(resp.data.chats)
+            setMessages(resp.data.chat_pair.id, resp.data.chats)
             setChatPair(resp.data.chat_pair)
+            upsertPair(resp.data.chat_pair)
         } catch (err) {
             if (axios.isAxiosError(err)) {
                 console.error("Error getting chats", err.response?.data?.message);
@@ -46,28 +55,38 @@ const SingleChatPage: React.FC = () => {
         getChats()
     }, [])
 
+    // Mark this conversation read when opened and as new messages arrive.
+    // The server pushes fresh unread counts to every tab in return.
+    useEffect(() => {
+        if (!resolvedPairId) return
+        markRead(resolvedPairId)
+    }, [resolvedPairId, chatMessages.length, markRead])
+
+    // Re-mark when returning to this tab.
+    useEffect(() => {
+        const onVisible = () => {
+            if (document.visibilityState !== 'visible' || !resolvedPairId) return
+            markRead(resolvedPairId)
+        }
+        document.addEventListener('visibilitychange', onVisible)
+        return () => document.removeEventListener('visibilitychange', onVisible)
+    }, [resolvedPairId, markRead])
+
     const handleSend = () => {
         if (id == null) {
             return
         }
         if (message.trim() !== '') {
-            const createChat: CreateChatReq = {
+            const tempId = sendChat(
+                id,
                 message,
-                receiver: id
+                authStore.authUserName ? authStore.authUserName : "",
+                resolvedPairId
+            )
+            if (tempId === null) {
+                toast.error("Connecting… please try again in a moment.")
+                return
             }
-            sendMessage(createChat)
-            const date = new Date();
-
-            let chat: Chat = {
-                id: "",
-                pair_id: pairId ? pairId : "",
-                sender: authStore.authUserName ? authStore.authUserName : "",
-                receiver: id ? id : "",
-                message: message,
-                created_at: date.toISOString(),
-                updated_at: date.toISOString()
-            }
-            setChatMessages([...chatMessages, chat])
             setMessage("")
         }
     };
@@ -80,7 +99,7 @@ const SingleChatPage: React.FC = () => {
 
     useEffect(() => {
         scrollToBottom(false);
-    }, [chatMessages, messages, scrollToBottom]);
+    }, [chatMessages, scrollToBottom]);
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {

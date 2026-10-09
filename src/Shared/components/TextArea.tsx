@@ -45,7 +45,7 @@ const TextArea: React.FC<PostTextAreaProps> = ({
   return (
     <div className="mb-4 w-full">
       {label && (
-        <label htmlFor={generatedId} className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor={generatedId} className="block text-left text-sm font-medium text-gray-700 mb-1">
           {label}
         </label>
       )}

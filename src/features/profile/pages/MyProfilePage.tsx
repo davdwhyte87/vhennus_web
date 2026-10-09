@@ -4,7 +4,7 @@ import { ListCheck, UserPlus, Edit3, Users, Grid3x3, Heart } from "lucide-react"
 import Post from "../../Feed/Components/Post";
 import { getAllMyPosts, type PostFeed } from "../../Feed/api";
 import { toast } from "react-toastify";
-import { getUserProfileAPI, type Friend, type UserProfile } from "../api";
+import { getUserProfileAPI, getMyFriendRequestsAPI, type Friend, type UserProfile } from "../api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackNav from "../../../Shared/components/BackNav";
@@ -18,6 +18,7 @@ const MyProfilePage: React.FC = () => {
     const [userPosts, setUserPosts] = useState<PostFeed[]>([]);
     const navigate = useNavigate();
     const [getProfileLoading, setGetProfileLoading] = useState<boolean>(false);
+    const [pendingRequests, setPendingRequests] = useState<number>(0);
 
     const getUserProfile = async () => {
         setGetProfileLoading(true)
@@ -48,6 +49,9 @@ const MyProfilePage: React.FC = () => {
     useEffect(() => {
         getUserProfile();
         getMyPosts();
+        getMyFriendRequestsAPI()
+            .then((resp) => setPendingRequests(resp.data?.length ?? 0))
+            .catch(() => setPendingRequests(0));
     }, []);
 
     return (
@@ -132,7 +136,7 @@ const MyProfilePage: React.FC = () => {
 
                             {/* Bio */}
                             <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200">
-                                <p className="text-gray-700 leading-relaxed">
+                                <p className="text-left text-gray-700 leading-relaxed">
                                     {userProfile?.bio || "You haven't added a bio yet. Tell people about yourself!"}
                                 </p>
                             </div>
@@ -180,12 +184,21 @@ const MyProfilePage: React.FC = () => {
                                     className="border border-[#C9A86A]/60 bg-white p-4 cursor-pointer hover:border-[#CC5A2A] transition-colors group"
                                 >
                                     <div className="flex items-center space-x-3">
-                                        <div className="grid h-12 w-12 place-items-center bg-[#0A1931]">
+                                        <div className="relative grid h-12 w-12 place-items-center bg-[#0A1931]">
                                             <ListCheck className="w-6 h-6 text-[#C9A86A]" />
+                                            {pendingRequests > 0 && (
+                                                <span className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-[#CC5A2A] text-xs font-bold text-white">
+                                                    {pendingRequests}
+                                                </span>
+                                            )}
                                         </div>
                                         <div>
                                             <div className="font-semibold text-gray-900">Friend Requests</div>
-                                            <div className="text-sm text-gray-600">View pending requests</div>
+                                            <div className="text-sm text-gray-600">
+                                                {pendingRequests > 0
+                                                    ? `${pendingRequests} pending request${pendingRequests === 1 ? '' : 's'}`
+                                                    : 'No pending requests'}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -206,8 +219,8 @@ const MyProfilePage: React.FC = () => {
                         {/* Posts List */}
                         {userPosts.length > 0 ? (
                             <div className="space-y-6">
-                                {userPosts.map((val, index) => (
-                                    <div key={index} className="animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                                {userPosts.map((val) => (
+                                    <div key={val.id} className="animate-fade-in">
                                         <Post mpost={val} />
                                     </div>
                                 ))}
