@@ -8,6 +8,8 @@ import { useChatStore } from "../useChatStore"
 import axios from "axios"
 import { toast } from "react-toastify"
 import TextArea from "../../../Shared/components/TextArea"
+import LinkifiedText from "../../../Shared/components/LinkifiedText"
+import LinkPreview from "../../../Shared/components/LinkPreview"
 import AppButton from "../../../Shared/components/Button"
 import formatISOTime from "../../../Shared/formatISOString"
 import { useAuthStore } from "../../auth/useAuthStore"
@@ -226,8 +228,12 @@ const SingleChatPage: React.FC = () => {
                                                     }`}
                                             >
                                                 <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                                                    {chat.message}
+                                                    <LinkifiedText
+                                                        text={chat.message}
+                                                        linkClassName={isSender ? "text-[#C9A86A] underline decoration-[#C9A86A]/50 underline-offset-2 break-all hover:text-white" : undefined}
+                                                    />
                                                 </p>
+                                                <LinkPreview text={chat.message} variant="chat" />
                                             </div>
 
                                             {showTime && (

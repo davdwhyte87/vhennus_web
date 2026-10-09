@@ -37,6 +37,7 @@ const MembershipPage: React.FC = () => {
   const [isMember, setIsMember] = useState<boolean | null>(null)
   const [application, setApplication] =
     useState<MembershipApplication | null>(null)
+  const [paused, setPaused] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [whitePaperOpen, setWhitePaperOpen] = useState(false)
 
@@ -56,6 +57,7 @@ const MembershipPage: React.FC = () => {
           result.data.application?.status === 'approved'
         setIsMember(member)
         setApplication(result.data.application)
+        setPaused(result.data.applications_paused ?? false)
       } catch {
         if (cancelled) return
         if (fromToken === null) {
@@ -104,15 +106,24 @@ const MembershipPage: React.FC = () => {
             <h2 className="mt-3 font-serif text-2xl text-[#0A1931]">
               You are not a member yet
             </h2>
-            <p className="mt-2 text-[15px] text-[#4d5666]">
-              Join the Vhennus community and build together.
-            </p>
-            <AppButton
-              className="mt-5"
-              onClick={() => setWhitePaperOpen(true)}
-            >
-              Become a member
-            </AppButton>
+            {paused ? (
+              <p className="mt-2 text-[15px] text-[#4d5666]">
+                Membership applications are currently paused. Please check
+                back later.
+              </p>
+            ) : (
+              <>
+                <p className="mt-2 text-[15px] text-[#4d5666]">
+                  Join the Vhennus community and build together.
+                </p>
+                <AppButton
+                  className="mt-5"
+                  onClick={() => setWhitePaperOpen(true)}
+                >
+                  Become a member
+                </AppButton>
+              </>
+            )}
           </AppCard>
         )}
       </main>

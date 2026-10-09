@@ -7,6 +7,7 @@ import AppButton from '../../../Shared/components/Button.tsx'
 import {
   createMembershipApplicationAPI,
   getMembershipQuestionsAPI,
+  getMembershipStatusAPI,
   getMyMembershipApplicationAPI,
   submitMembershipAnswersAPI,
   type MembershipQuestion,
@@ -46,6 +47,8 @@ const MembershipQuestionsPage: React.FC = () => {
   const [contactOpen, setContactOpen] = useState(false)
   const [contactInitial, setContactInitial] = useState<Partial<ContactInfo>>({})
   const [contactSaving, setContactSaving] = useState(false)
+  const [paused, setPaused] = useState(false)
+  const [hasPending, setHasPending] = useState(false)
 
   // Create the application when the user finally submits (with contact
   // details when freshly collected). Returns the application id, if any.
@@ -102,10 +105,11 @@ const MembershipQuestionsPage: React.FC = () => {
     let cancelled = false
     const load = async () => {
       try {
-        const [questionsRes, myAppRes, profileRes] = await Promise.all([
+        const [questionsRes, myAppRes, profileRes, statusRes] = await Promise.all([
           getMembershipQuestionsAPI(),
           getMyMembershipApplicationAPI().catch(() => null),
           getUserProfileAPI().catch(() => null),
+          getMembershipStatusAPI().catch(() => null),
         ])
         if (cancelled) return
         const sorted = [...(questionsRes.data ?? [])].sort(
@@ -117,18 +121,28 @@ const MembershipQuestionsPage: React.FC = () => {
         // Reuse a pending application if one exists. A new one is only
         // created when the user finally submits their answers.
         const existing = myAppRes?.data
-        if (existing && ['submitted', 'under_review'].includes(existing.status)) {
+        const pending =
+          !!existing &&
+          ['submitted', 'under_review'].includes(existing.status)
+        if (pending) {
           setApplicationId(existing.id)
+          setHasPending(true)
         }
 
-        // Collect missing contact details before applying.
+        // While paused, only users with a pending application may continue.
+        const isPaused = statusRes?.data?.applications_paused ?? false
+        setPaused(isPaused)
+
+        // Collect missing contact details before applying
+        // (skipped while paused with no pending application).
         const profile = profileRes?.data?.profile
         const missing =
-          !profile?.phone_number ||
-          !profile?.country_of_origin ||
-          !profile?.state_of_origin ||
-          !profile?.date_of_birth ||
-          !profile?.current_country
+          (!profile?.phone_number ||
+            !profile?.country_of_origin ||
+            !profile?.state_of_origin ||
+            !profile?.date_of_birth ||
+            !profile?.current_country) &&
+          !(isPaused && !pending)
         if (missing) {
           if (!cancelled) {
             setContactInitial({
@@ -207,6 +221,24 @@ const MembershipQuestionsPage: React.FC = () => {
           <Loader2 className="h-5 w-5 animate-spin" />
           Loading questions…
         </div>
+      </div>
+    )
+  }
+
+  if (paused && !hasPending) {
+    return (
+      <div className="min-h-screen">
+        <main className="px-5 py-6 sm:px-8">
+          <AppCard className="p-6 text-center">
+            <h2 className="font-serif text-2xl text-[#0A1931]">
+              Applications paused
+            </h2>
+            <p className="mt-2 text-[15px] text-[#4d5666]">
+              Membership applications are currently paused. Please check back
+              later.
+            </p>
+          </AppCard>
+        </main>
       </div>
     )
   }

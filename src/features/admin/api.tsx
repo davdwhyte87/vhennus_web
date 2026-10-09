@@ -120,6 +120,24 @@ export const rejectApplicationAPI = async (
   return response.data
 }
 
+export interface MembershipSettings {
+  applications_paused: boolean
+}
+
+export const getMembershipSettingsAPI = async (): Promise<
+  GenericResponse<MembershipSettings>
+> => {
+  const response = await api.get(`${BASE}/settings`)
+  return response.data
+}
+
+export const updateMembershipSettingsAPI = async (
+  applications_paused: boolean
+): Promise<GenericResponse<MembershipSettings>> => {
+  const response = await api.put(`${BASE}/settings`, { applications_paused })
+  return response.data
+}
+
 export const getAdminQuestionsAPI = async (): Promise<
   GenericResponse<AdminQuestionView[]>
 > => {

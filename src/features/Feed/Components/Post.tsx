@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import profileImage from "../../../assets/profile2.png";
+import LinkifiedText from "../../../Shared/components/LinkifiedText";
+import LinkPreview from "../../../Shared/components/LinkPreview";
 
 export interface PostProps {
     mpost: PostFeed;
@@ -124,12 +126,13 @@ const Post: React.FC<PostProps> = ({
                 onClick={() => !isSingle && handlePostClick()} 
                 className={`px-6 pb-4 ${!isSingle ? 'cursor-pointer' : ''}`}
             >
-                <p className="text-start text-gray-800 leading-relaxed whitespace-pre-line mb-4">
-                    {post?.text}
+                <p className="text-start text-gray-800 leading-relaxed whitespace-pre-line mb-2">
+                    <LinkifiedText text={post?.text} />
                 </p>
+                <LinkPreview text={post?.text} variant="post" />
                 
                 {post?.image && (
-                    <div className="rounded-xl overflow-hidden mb-4 border border-gray-200 shadow-sm">
+                    <div className="rounded-xl overflow-hidden mt-3 mb-4 border border-gray-200 shadow-sm">
                         <img 
                             className="w-full h-auto max-h-96 object-cover bg-gray-50 hover:scale-[1.01] transition-transform duration-500" 
                             src={post.image} 

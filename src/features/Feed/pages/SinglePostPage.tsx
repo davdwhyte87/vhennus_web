@@ -7,6 +7,8 @@ import RelativeTime from "../../../Shared/components/RelativeTime.tsx";
 import AppButton from "../../../Shared/components/Button.tsx";
 import TextArea from "../../../Shared/components/TextArea.tsx";
 import BackNav from "../../../Shared/components/BackNav.tsx";
+import LinkifiedText from "../../../Shared/components/LinkifiedText.tsx";
+import LinkPreview from "../../../Shared/components/LinkPreview.tsx";
 import { 
   Send, 
   MessageCircle, 
@@ -319,8 +321,9 @@ const Comment: React.FC<CommentProps> = ({ comment, isLatest = false }) => {
             
             <div className="pl-12">
                 <p className="text-gray-800 leading-relaxed whitespace-pre-line">
-                    {comment.text}
+                    <LinkifiedText text={comment.text} />
                 </p>
+                <LinkPreview text={comment.text} variant="comment" />
                 
                 <div className="flex items-center space-x-4 mt-4 pt-4 border-t border-gray-200">
             

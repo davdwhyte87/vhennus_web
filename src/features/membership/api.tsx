@@ -29,6 +29,7 @@ export interface MembershipApplication {
 
 export interface MembershipStatus {
   is_member: boolean
+  applications_paused: boolean
   application: MembershipApplication | null
 }
 
