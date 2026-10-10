@@ -17,6 +17,12 @@ export interface CreateChatReq {
   image?: string;
 }
 
+export interface ChatReplyPreview {
+  id: string;
+  sender: string;
+  message: string;
+}
+
 export interface Chat {
   id: string;
   pair_id: string;
@@ -24,6 +30,8 @@ export interface Chat {
   receiver: string;
   message: string;
   image?: string;
+  reply_to_id?: string | null;
+  reply_to?: ChatReplyPreview | null;
   created_at: string;
   updated_at: string;
 }

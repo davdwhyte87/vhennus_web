@@ -9,6 +9,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../auth/useAuthStore.ts'
 import { isAdminToken } from '../../membership/membershipUtils.ts'
 import { useChatStore } from '../../chats/useChatStore.ts'
+import { useGroupStore } from '../../groups/useGroupStore.ts'
 
 const NAV_ITEMS: {
   route: string
@@ -27,6 +28,7 @@ function HomeBottomNav() {
   const navigate = useNavigate()
   const token = useAuthStore((state) => state.token)
   const unreadTotal = useChatStore((s) => s.unreadTotal)
+  const groupUnread = useGroupStore((s) => s.unreadTotal)
   const items = isAdminToken(token)
     ? [
         ...NAV_ITEMS,
@@ -46,7 +48,10 @@ function HomeBottomNav() {
             const isActive =
               location.pathname === route ||
               location.pathname.startsWith(`${route}/`)
-            const showBadge = route === '/home/chats' && unreadTotal > 0
+            const showBadge =
+              (route === '/home/chats' && unreadTotal > 0) ||
+              (route === '/home/groups' && groupUnread > 0)
+            const badgeCount = route === '/home/chats' ? unreadTotal : groupUnread
             return (
               <li key={label}>
                 <button
@@ -74,7 +79,7 @@ function HomeBottomNav() {
                     <Icon className="h-5 w-5" />
                     {showBadge && (
                       <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#CC5A2A] px-1 text-[11px] font-bold text-white">
-                        {unreadTotal > 99 ? '99+' : unreadTotal}
+                        {badgeCount > 99 ? '99+' : badgeCount}
                       </span>
                     )}
                   </span>

@@ -1,9 +1,9 @@
 import type React from "react"
 import { useEffect, useRef, useState, useCallback } from "react"
-import { Send, Image as ImageIcon, Paperclip, MoreVertical, ArrowLeft, CheckCheck } from "lucide-react"
+import { Send, Image as ImageIcon, Paperclip, MoreVertical, ArrowLeft, CheckCheck, Reply, X } from "lucide-react"
 import { useParams, useSearchParams, useNavigate } from "react-router-dom"
 import { type ChatPair, getChatsAPI2 } from "../api"
-import { type Chat } from "../socket"
+import { type Chat, type ChatReplyPreview } from "../socket"
 import { useChatStore } from "../useChatStore"
 import axios from "axios"
 import { toast } from "react-toastify"
@@ -23,6 +23,8 @@ const SingleChatPage: React.FC = () => {
     const pairIdParam = searchParams.get("pair_id")
     const authStore = useAuthStore()
     const [chatPair, setChatPair] = useState<ChatPair | null>(null)
+    const [replyTarget, setReplyTarget] = useState<Chat | null>(null)
+    const [flashId, setFlashId] = useState<string | null>(null)
     const scrollableContainerRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate()
     const messagesByPair = useChatStore((s) => s.messagesByPair)
@@ -79,17 +81,24 @@ const SingleChatPage: React.FC = () => {
             return
         }
         if (message.trim() !== '') {
+            // A still-sending (tmp-id) target has no server id yet — send plain
+            // instead of failing validation; ids swap in on confirm.
+            const reply: ChatReplyPreview | null = replyTarget && !replyTarget.id.startsWith('tmp-')
+                ? { id: replyTarget.id, sender: replyTarget.sender, message: replyTarget.message }
+                : null
             const tempId = sendChat(
                 id,
                 message,
                 authStore.authUserName ? authStore.authUserName : "",
-                resolvedPairId
+                resolvedPairId,
+                reply
             )
             if (tempId === null) {
                 toast.error("Connecting… please try again in a moment.")
                 return
             }
             setMessage("")
+            setReplyTarget(null)
         }
     };
 
@@ -98,6 +107,17 @@ const SingleChatPage: React.FC = () => {
         if (!container) return;
         container.scrollTo({ top: container.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
     }, []);
+
+    const scrollToChat = (targetId: string) => {
+        const el = document.getElementById(`chat-msg-${targetId}`);
+        if (!el) {
+            toast.info('Original message is not loaded in this view');
+            return;
+        }
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setFlashId(targetId);
+        setTimeout(() => setFlashId((cur) => (cur === targetId ? null : cur)), 1600);
+    };
 
     useEffect(() => {
         scrollToBottom(false);
@@ -218,15 +238,31 @@ const SingleChatPage: React.FC = () => {
                                 return (
                                     <div
                                         key={chat.id}
-                                        className={`flex mb-3 ${isSender ? 'justify-end' : 'justify-start'}`}
+                                        id={`chat-msg-${chat.id}`}
+                                        className={`flex mb-3 scroll-mt-24 ${isSender ? 'justify-end' : 'justify-start'}`}
                                     >
                                         <div className={`max-w-[85%] ${isSender ? 'ml-4' : 'mr-4'}`}>
                                             <div
-                                                className={`px-4 py-3 ${isSender
+                                                className={`px-4 py-3 transition-shadow ${isSender
                                                         ? 'bg-[#0A1931] text-white'
                                                         : 'bg-white text-gray-900 border border-[#C9A86A]/60'
-                                                    }`}
+                                                    } ${flashId === chat.id ? 'ring-2 ring-[#C9A86A]' : ''}`}
                                             >
+                                                {chat.reply_to && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => scrollToChat(chat.reply_to!.id)}
+                                                        title="Jump to original message"
+                                                        className={`block w-full text-left border-l-2 px-2 py-1 mb-1 hover:opacity-80 ${isSender ? 'border-[#C9A86A]/70 bg-white/10' : 'border-[#CC5A2A]/60 bg-black/5'}`}
+                                                    >
+                                                        <p className={`truncate text-[11px] font-medium ${isSender ? 'text-[#C9A86A]' : 'text-gray-600'}`}>
+                                                            {chat.reply_to.sender === authStore.authUserName ? 'You' : chat.reply_to.sender}
+                                                        </p>
+                                                        <p className={`truncate text-xs ${isSender ? 'text-white/80' : 'text-gray-500'}`}>
+                                                            {chat.reply_to.message}
+                                                        </p>
+                                                    </button>
+                                                )}
                                                 <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
                                                     <LinkifiedText
                                                         text={chat.message}
@@ -244,6 +280,14 @@ const SingleChatPage: React.FC = () => {
                                                     {isSender && (
                                                         <CheckCheck className="w-3 h-3 ml-1 text-[#C9A86A]" />
                                                     )}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setReplyTarget(chat)}
+                                                        aria-label="Reply to this message"
+                                                        className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                                                    >
+                                                        <Reply className="w-3.5 h-3.5" />
+                                                    </button>
                                                 </div>
                                             )}
                                         </div>
@@ -257,6 +301,24 @@ const SingleChatPage: React.FC = () => {
 
             {/* Clean Message Input */}
             <footer className="sticky bottom-0 bg-white border-t border-gray-200 p-4 safe-area-inset-bottom">
+                {replyTarget && (
+                    <div className="mb-2 flex items-center gap-2 border-l-2 border-[#CC5A2A] bg-gray-50 px-2 py-1.5">
+                        <div className="min-w-0 flex-1">
+                            <p className="truncate text-[11px] font-medium text-[#CC5A2A]">
+                                Replying to {replyTarget.sender === authStore.authUserName ? 'yourself' : replyTarget.sender}
+                            </p>
+                            <p className="truncate text-xs text-gray-500">{replyTarget.message}</p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setReplyTarget(null)}
+                            aria-label="Cancel reply"
+                            className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+                        >
+                            <X className="w-4 h-4 text-gray-500" />
+                        </button>
+                    </div>
+                )}
                 <div className="flex items-center space-x-3">
                     {/* Attachment Button */}
                     <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0">

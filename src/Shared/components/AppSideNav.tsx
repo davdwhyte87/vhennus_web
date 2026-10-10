@@ -11,6 +11,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../features/auth/useAuthStore.ts'
 import { isAdminToken } from '../../features/membership/membershipUtils.ts'
 import { useChatStore } from '../../features/chats/useChatStore.ts'
+import { useGroupStore } from '../../features/groups/useGroupStore.ts'
 
 const NAV_ITEMS = [
   { route: '/home/feeds', label: 'Feed', icon: Home },
@@ -27,6 +28,7 @@ export default function AppSideNav() {
   const token = useAuthStore((state) => state.token)
   const isAdmin = isAdminToken(token)
   const unreadTotal = useChatStore((s) => s.unreadTotal)
+  const groupUnread = useGroupStore((s) => s.unreadTotal)
   const shellClassName = [
     'sticky top-0 hidden h-screen w-60 shrink-0 flex-col',
     'border-r border-[#C9A86A]/60 bg-[#0A1931] text-[#F5F5F0] lg:flex',
@@ -52,7 +54,10 @@ export default function AppSideNav() {
           const isActive =
             location.pathname === route ||
             location.pathname.startsWith(`${route}/`)
-          const showBadge = route === '/home/chats' && unreadTotal > 0
+          const showBadge =
+            (route === '/home/chats' && unreadTotal > 0) ||
+            (route === '/home/groups' && groupUnread > 0)
+          const badgeCount = route === '/home/chats' ? unreadTotal : groupUnread
           return (
             <button
               key={route}
@@ -69,7 +74,7 @@ export default function AppSideNav() {
                 <Icon className="h-5 w-5" />
                 {showBadge && (
                   <span className="absolute -right-2 -top-2 grid h-5 min-w-5 place-items-center rounded-full bg-[#CC5A2A] px-1 text-[11px] font-bold text-white">
-                    {unreadTotal > 99 ? '99+' : unreadTotal}
+                    {badgeCount > 99 ? '99+' : badgeCount}
                   </span>
                 )}
               </span>

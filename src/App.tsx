@@ -44,6 +44,11 @@ const AllWalletsPage = lazy(() => import('./features/wallet/pages/AllWalletsPage
 const CreateWalletPage = lazy(() => import('./features/wallet/pages/CreateWallet.tsx').then((m) => ({ default: m.CreateWalletPage })))
 const AddWalletPage = lazy(() => import('./features/wallet/pages/AddWallet.tsx').then((m) => ({ default: m.AddWalletPage })))
 const GroupsListPage = lazy(() => import('./features/groups/pages/GroupsListPage.tsx').then((m) => ({ default: m.GroupsListPage })))
+const SingleGroupPage = lazy(() => import('./features/groups/pages/SingleGroupPage.tsx'))
+const GroupSettingsPage = lazy(() => import('./features/groups/pages/GroupSettingsPage.tsx'))
+const JoinGroupPage = lazy(() => import('./features/groups/pages/JoinGroupPage.tsx'))
+const AdminGroupsPage = lazy(() => import('./features/admin/pages/AdminGroupsPage.tsx'))
+const AdminGroupCategoriesPage = lazy(() => import('./features/admin/pages/AdminGroupCategoriesPage.tsx'))
 
 function RouteFallback() {
   return (
@@ -110,6 +115,9 @@ const App: React.FC = () => {
               />
               <Route path="home/chats" element={<AllChatsPage />} />
               <Route path="home/groups" element={<GroupsListPage />} />
+              <Route path="home/groups/join/:code" element={<JoinGroupPage />} />
+              <Route path="home/groups/:id" element={<SingleGroupPage />} />
+              <Route path="home/groups/:id/settings" element={<GroupSettingsPage />} />
 
               <Route path="myprofile" element={<MyProfilePage />} />
               <Route path="user_profile/:id" element={<UserProfilePage />} />
@@ -142,6 +150,8 @@ const App: React.FC = () => {
               />
               <Route path="admin/questions" element={<AdminQuestionsPage />} />
               <Route path="admin/users" element={<AdminUsersPage />} />
+              <Route path="admin/groups" element={<AdminGroupsPage />} />
+              <Route path="admin/groups/categories" element={<AdminGroupCategoriesPage />} />
             </Route>
           </Route>
 

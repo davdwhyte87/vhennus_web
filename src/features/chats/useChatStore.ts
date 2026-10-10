@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Chat } from './socket'
+import type { Chat, ChatReplyPreview } from './socket'
 import type { ChatPair } from './api'
 import { getUnreadAPI, markChatReadAPI } from './api'
 
@@ -31,7 +31,8 @@ interface ChatState {
     receiver: string,
     message: string,
     senderName: string,
-    pairIdHint: string
+    pairIdHint: string,
+    replyTo?: ChatReplyPreview | null
   ) => string | null
   // Mark a pair read via socket, falling back to REST when offline.
   markRead: (pairId: string) => void
@@ -123,7 +124,7 @@ export const useChatStore = create<ChatState>()((set, get) => ({
     }
   },
 
-  sendChat: (receiver, message, senderName, pairIdHint) => {
+  sendChat: (receiver, message, senderName, pairIdHint, replyTo) => {
     const { sender } = get()
     if (!sender || !message.trim()) return null
     const tempId = `tmp-${Date.now()}-${Math.random().toString(36).slice(2)}`
@@ -134,6 +135,8 @@ export const useChatStore = create<ChatState>()((set, get) => ({
       sender: senderName,
       receiver,
       message,
+      reply_to_id: replyTo?.id ?? null,
+      reply_to: replyTo ?? null,
       created_at: now,
       updated_at: now,
     }
@@ -143,7 +146,7 @@ export const useChatStore = create<ChatState>()((set, get) => ({
         [pairIdHint]: [...(state.messagesByPair[pairIdHint] ?? []), optimistic],
       },
     }))
-    sender({ type: 'send', temp_id: tempId, receiver, message })
+    sender({ type: 'send', temp_id: tempId, receiver, message, reply_to_id: replyTo?.id ?? null })
     return tempId
   },
 

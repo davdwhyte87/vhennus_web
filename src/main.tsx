@@ -5,11 +5,13 @@ import App from './App.tsx'
 import {ToastContainer} from "react-toastify";
 import { LikedPostsProvider } from './features/Feed/Components/LikedPostContext.tsx';
 import { WSChatProvider } from './features/chats/socket.tsx';
+import { WSGroupProvider } from './features/groups/socket.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <LikedPostsProvider>
       <WSChatProvider>
+        <WSGroupProvider>
         <App />
         <ToastContainer
             position="top-right"
@@ -22,6 +24,7 @@ createRoot(document.getElementById('root')!).render(
             limit={1}
             theme="colored"
         />
+        </WSGroupProvider>
       </WSChatProvider>
       </LikedPostsProvider>
   </StrictMode>,

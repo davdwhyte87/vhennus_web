@@ -6,8 +6,18 @@ interface LinkifiedTextProps {
   linkClassName?: string;
 }
 
-const URL_PATTERN = /(https?:\/\/[^\s<>"')\]]+|www\.[^\s<>"')\]]+)/gi;
+const URL_PATTERN = /(https?:\/\/[^\s<>"')\]]+|www\.[^\s<>"')\]]+|(?<![\w@/:.-])((?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}(?::\d+)?(?:\/[^\s<>"')\]]*)?))/gi;
 const TRAILING_PUNCT = /[.,;:!?)\]}"'`]+$/;
+
+// Inline style (not Tailwind classes) so the default link look renders even if
+// the CSS bundle is stale — color/decoration must always apply.
+const DEFAULT_LINK_STYLE: React.CSSProperties = {
+  color: '#2563EB',
+  textDecorationLine: 'underline',
+  textDecorationColor: 'rgba(37, 99, 235, 0.45)',
+  textUnderlineOffset: '2px',
+  overflowWrap: 'anywhere',
+};
 
 /** Render plain text with URLs turned into safe external links. */
 const LinkifiedText: React.FC<LinkifiedTextProps> = ({
@@ -29,7 +39,7 @@ const LinkifiedText: React.FC<LinkifiedTextProps> = ({
       const trailingMatch = raw.match(TRAILING_PUNCT);
       const trailing = trailingMatch ? trailingMatch[0] : "";
       const urlPart = trailing ? raw.slice(0, -trailing.length) : raw;
-      const href = /^www\./i.test(urlPart) ? `https://${urlPart}` : urlPart;
+      const href = /^https?:\/\//i.test(urlPart) ? urlPart : `https://${urlPart}`;
       out.push(
         <a
           key={`link-${key++}`}
@@ -37,10 +47,8 @@ const LinkifiedText: React.FC<LinkifiedTextProps> = ({
           target="_blank"
           rel="noopener noreferrer nofollow"
           onClick={(e) => e.stopPropagation()}
-          className={
-            linkClassName ||
-            "text-[#CC5A2A] underline decoration-[#CC5A2A]/40 underline-offset-2 break-all hover:text-[#0A1931]"
-          }
+          className={linkClassName || undefined}
+          style={linkClassName ? undefined : DEFAULT_LINK_STYLE}
         >
           {urlPart}
         </a>
