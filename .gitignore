@@ -13,6 +13,10 @@ dist-ssr
 *.local
 yarn.lock
 
+# Local env (Vite reads .env.local over .env; never commit secrets)
+.env
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
