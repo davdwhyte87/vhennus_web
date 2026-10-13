@@ -9,6 +9,7 @@ import AppButton from '../../../Shared/components/Button.tsx'
 import GroupListItem from '../components/GroupListItem.tsx'
 import {
   createGroupAPI,
+  getCallAPI,
   getMyGroupsAPI,
   listGroupCategoriesAPI,
   searchGroupsAPI,
@@ -16,6 +17,7 @@ import {
   type MyGroupItem,
 } from '../api.ts'
 import { useGroupStore } from '../useGroupStore.ts'
+import { useGroupCallStore } from '../useGroupCallStore.ts'
 import { useAuthStore } from '../../auth/useAuthStore.ts'
 
 export const GroupsListPage = () => {
@@ -33,6 +35,7 @@ export const GroupsListPage = () => {
   const unreadTotal = useGroupStore((s) => s.unreadTotal)
   const setGroupsStore = useGroupStore((s) => s.setGroups)
   const refreshUnread = useGroupStore((s) => s.refreshUnread)
+  const callsByGroup = useGroupCallStore((s) => s.callsByGroup)
   const myName = useAuthStore((s) => s.authUserName ?? '')
 
   const loadMine = async () => {
@@ -41,6 +44,16 @@ export const GroupsListPage = () => {
       const resp = await getMyGroupsAPI()
       setGroups(resp.data ?? [])
       setGroupsStore(resp.data ?? [])
+      // One-off sweep so calls that started before this tab opened still show
+      // as LIVE. WS broadcasts cover every change after this. Only active
+      // states are stored to avoid a slow response clobbering fresh WS state.
+      void Promise.allSettled(
+        (resp.data ?? []).map((g) =>
+          getCallAPI(g.id).then((r) => {
+            if (r.data?.active) useGroupCallStore.getState().setCall(r.data)
+          }),
+        ),
+      ).catch(() => {})
     } catch (err) {
       if (axios.isAxiosError(err)) toast.error(err.response?.data?.message || 'Error loading groups')
       else toast.error('Error loading groups')
@@ -80,12 +93,15 @@ export const GroupsListPage = () => {
   }, [tab])
 
   const countOf = (g: (typeof groups)[number]) => unreadByGroup[g.id] ?? g.unread_count ?? 0
-  const unreadGroups = groups.filter((g) => countOf(g) > 0)
-  const readGroups = groups.filter((g) => countOf(g) === 0)
+  const liveGroups = groups.filter((g) => callsByGroup[g.id]?.active)
+  const rest = groups.filter((g) => !callsByGroup[g.id]?.active)
+  const unreadGroups = rest.filter((g) => countOf(g) > 0)
+  const readGroups = rest.filter((g) => countOf(g) === 0)
+  const liveCountOf = (id: string) => callsByGroup[id]?.participants?.length ?? 0
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-30 border-b border-[#C9A86A]/60 bg-[#F5F5F0]/95 px-4 py-4 backdrop-blur-md sm:px-6">
+      <header className="sticky top-0 z-30 border-b border-[#C9A86A]/60 bg-[#F5F5F0]/95 py-4 backdrop-blur-md">
         <div className="mb-4 flex items-center justify-between">
           <PageHeader eyebrow={`${groups.length} group${groups.length === 1 ? '' : 's'}`} title="Groups" />
           <button
@@ -160,7 +176,23 @@ export const GroupsListPage = () => {
               <AppButton onClick={() => setShowCreate(true)}>Create group</AppButton>
             </div>
           ) : (
-            <div className="space-y-2 px-4 pt-4 sm:px-6">
+            <div className="space-y-2 pt-4">
+              {liveGroups.length > 0 && (
+                <>
+                  <div className="flex items-center justify-between px-2">
+                    <h2 className="flex items-center gap-1.5 text-sm font-semibold text-green-700">
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-green-600" />
+                      Live now
+                    </h2>
+                    <span className="text-xs text-[#4d5666]">
+                      {liveGroups.length} call{liveGroups.length === 1 ? '' : 's'}
+                    </span>
+                  </div>
+                  {liveGroups.map((g) => (
+                    <GroupListItem key={g.id} group={g} unreadCount={countOf(g)} live liveCount={liveCountOf(g.id)} />
+                  ))}
+                </>
+              )}
               {unreadGroups.length > 0 && (
                 <>
                   <div className="flex items-center justify-between px-2">
@@ -187,7 +219,7 @@ export const GroupsListPage = () => {
         ) : results.length === 0 ? (
           <p className="py-20 text-center text-[#4d5666]">No public groups found. Try another search.</p>
         ) : (
-          <div className="space-y-2 px-4 pt-4 sm:px-6">
+          <div className="space-y-2 pt-4">
             {results.map((g) => (
               <button
                 key={g.id}

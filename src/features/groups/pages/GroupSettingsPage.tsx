@@ -6,7 +6,7 @@ import { ArrowLeft, Copy, ImagePlus, Loader2, X } from 'lucide-react'
 import AppButton from '../../../Shared/components/Button.tsx'
 import PageHeader from '../../../Shared/components/PageHeader.tsx'
 import { uploadImageDirect } from '../../../Shared/api.ts'
-import { getGroupAPI, getGroupMembersAPI, listJoinRequestsAPI, removeMemberAPI, respondJoinAPI, updateGroupAPI, type GroupDetail, type GroupMember, type JoinRequest } from '../api.ts'
+import { getGroupAPI, getGroupMembersAPI, listJoinRequestsAPI, removeMemberAPI, respondJoinAPI, setGroupRoleAPI, updateGroupAPI, type GroupDetail, type GroupMember, type JoinRequest } from '../api.ts'
 import { useAuthStore } from '../../auth/useAuthStore.ts'
 
 export default function GroupSettingsPage() {
@@ -32,8 +32,10 @@ export default function GroupSettingsPage() {
     getGroupAPI(id)
       .then((r) => {
         const g = r.data
-        if (g.owner !== myName) {
-          toast.error('Only the group owner can open settings')
+        const myRole = g.my_role ?? null
+        const canOpen = g.owner === myName || myRole === 'admin' || myRole === 'owner'
+        if (!canOpen) {
+          toast.error('Only the group owner or admins can open settings')
           navigate(`/home/groups/${id}`, { replace: true })
           return
         }
@@ -104,6 +106,7 @@ export default function GroupSettingsPage() {
   }
   if (!group) return null
 
+  const amOwner = group.owner === myName
   const inviteUrl = `${window.location.origin}/home/groups/join/${group.invite_code}`
 
   return (
@@ -235,6 +238,25 @@ export default function GroupSettingsPage() {
                   <span className="block truncate text-sm text-[#0A1931]">{m.profile?.name || m.user_name}</span>
                   <span className="block text-xs text-[#6b7180]">@{m.user_name} · {m.role}</span>
                 </button>
+                {amOwner && m.user_name !== group.owner && m.role !== 'owner' && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await setGroupRoleAPI(group.id, m.user_name, m.role === 'admin' ? 'demote' : 'promote')
+                        setMembers((prev) =>
+                          prev.map((x) => (x.user_name === m.user_name ? { ...x, role: x.role === 'admin' ? 'member' : 'admin' } : x)),
+                        )
+                        toast.success(m.role === 'admin' ? 'Demoted to member' : 'Promoted to admin')
+                      } catch {
+                        toast.error('Failed to update role')
+                      }
+                    }}
+                    className="shrink-0 text-xs font-medium text-[#0A1931] hover:underline"
+                  >
+                    {m.role === 'admin' ? 'Demote' : 'Make admin'}
+                  </button>
+                )}
                 {m.user_name !== group.owner && (
                   <button
                     type="button"

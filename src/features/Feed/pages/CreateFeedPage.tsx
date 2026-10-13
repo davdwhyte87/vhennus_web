@@ -128,7 +128,7 @@ const CreateFeedPage = () => {
         </div>
       </nav>
 
-      <main className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
+      <main className="mx-auto max-w-2xl py-2">
         <div className="mb-8 flex items-center gap-3">
           <div className="grid h-10 w-10 place-items-center bg-[#0A1931] font-bold text-[#C9A86A]">
             You

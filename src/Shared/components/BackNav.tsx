@@ -12,7 +12,7 @@ const BackNav: React.FC<BackNavProp> = ({ title, className = '' }) => {
   return (
     <nav
       className={[
-        'sticky top-0 z-40 flex h-14 w-full items-center px-4 sm:px-6',
+        'sticky top-0 z-40 flex h-14 w-full items-center',
         'border-b border-[#C9A86A]/60 bg-[#F5F5F0]/95 backdrop-blur-md',
         className,
       ].join(' ')}

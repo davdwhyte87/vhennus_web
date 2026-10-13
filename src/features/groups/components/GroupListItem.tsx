@@ -4,9 +4,13 @@ import type { MyGroupItem } from '../api'
 export default function GroupListItem({
   group,
   unreadCount,
+  live = false,
+  liveCount = 0,
 }: {
   group: MyGroupItem
   unreadCount: number
+  live?: boolean
+  liveCount?: number
 }) {
   const navigate = useNavigate()
   return (
@@ -25,6 +29,12 @@ export default function GroupListItem({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <p className="truncate font-medium text-[#0A1931]">{group.name}</p>
+          {live && (
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-green-600 px-2 py-0.5 text-[11px] font-bold text-white">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+              LIVE{liveCount > 0 ? ` · ${liveCount}` : ''}
+            </span>
+          )}
           {group.is_private && (
             <span className="shrink-0 rounded-full bg-[#0A1931]/10 px-2 py-0.5 text-[11px] text-[#4d5666]">
               Private

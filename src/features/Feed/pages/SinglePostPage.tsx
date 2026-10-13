@@ -132,7 +132,7 @@ const SinglePostPage: React.FC = () => {
                 
                 />
                 
-                <main className="container mx-auto max-w-3xl px-4 py-6">
+                <main className="mx-auto max-w-3xl py-2">
 
                     {/* Post Content */}
                     <div className="mb-8">

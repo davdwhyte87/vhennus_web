@@ -158,7 +158,7 @@ const SingleChatPage: React.FC = () => {
     const otherUserImage = chatPair ? (authStore.authUserName === chatPair.user1 ? chatPair.user2_image || profileImage : chatPair.user1_image || profileImage) : profileImage
 
     return (
-        <div className="h-screen bg-gray-50 flex flex-col">
+        <div className="flex h-[100dvh] flex-col bg-gray-50 pb-20 lg:pb-0">
             <style>{`
                 @keyframes fadeIn {
                     from { opacity: 0; transform: translateY(10px); }
@@ -169,7 +169,7 @@ const SingleChatPage: React.FC = () => {
 
             {/* Clean Header */}
             <header className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
-                <div className="flex items-center justify-between">
+                <div className="mx-auto flex w-full max-w-4xl items-center justify-between">
                     <div className="flex items-center space-x-3">
                         <button 
                             onClick={() => navigate(-1)}
@@ -202,7 +202,7 @@ const SingleChatPage: React.FC = () => {
             <main className="flex-1 overflow-hidden">
                 <div
                     ref={scrollableContainerRef}
-                    className="h-full overflow-y-auto scroll-smooth px-4 py-4"
+                    className="mx-auto h-full w-full max-w-4xl overflow-y-auto scroll-smooth px-4 py-4"
                 >
                     {/* Simple Welcome Message */}
                     <div className="text-center mb-8 animate-fade-in">
@@ -301,6 +301,7 @@ const SingleChatPage: React.FC = () => {
 
             {/* Clean Message Input */}
             <footer className="sticky bottom-0 bg-white border-t border-gray-200 p-4 safe-area-inset-bottom">
+                <div className="mx-auto w-full max-w-4xl">
                 {replyTarget && (
                     <div className="mb-2 flex items-center gap-2 border-l-2 border-[#CC5A2A] bg-gray-50 px-2 py-1.5">
                         <div className="min-w-0 flex-1">
@@ -352,6 +353,7 @@ const SingleChatPage: React.FC = () => {
                     >
                         <Send className="w-5 h-5 text-white" />
                     </AppButton>
+                </div>
                 </div>
             </footer>
         </div>

@@ -183,6 +183,44 @@ export const listGroupCategoriesAPI = async (): Promise<GenericResponse<GroupCat
   return res.data
 }
 
+export interface CallParticipant {
+  user_name: string
+  joined_at: string
+  group_role: string
+}
+
+export interface GroupCallState {
+  group_id: string
+  active: boolean
+  version: number
+  speaker?: string | null
+  call_admin?: string | null
+  participants: CallParticipant[]
+  hands: string[]
+  started_by?: string | null
+  started_at?: string | null
+}
+
+export const setGroupRoleAPI = async (id: string, userName: string, action: 'promote' | 'demote') => {
+  const res = await api.post(`${BASE}/${id}/roles`, { user_name: userName, action })
+  return res.data
+}
+
+export const getCallAPI = async (id: string): Promise<GenericResponse<GroupCallState>> => {
+  const res = await api.get(`${BASE}/${id}/call`)
+  return res.data
+}
+
+export const startCallAPI = async (id: string): Promise<GenericResponse<GroupCallState>> => {
+  const res = await api.post(`${BASE}/${id}/call/start`)
+  return res.data
+}
+
+export const endCallAPI = async (id: string) => {
+  const res = await api.post(`${BASE}/${id}/call/end`)
+  return res.data
+}
+
 // ---- admin ----
 export const adminListGroupsAPI = async (limit = 20, offset = 0) => {
   const res = await api.get(`${BASE}/admin/groups`, { params: { limit, offset } })

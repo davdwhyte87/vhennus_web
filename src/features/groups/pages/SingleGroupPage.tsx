@@ -18,6 +18,7 @@ import { useGroupStore } from '../useGroupStore.ts'
 import { useAuthStore } from '../../auth/useAuthStore.ts'
 import formatISOTime from '../../../Shared/formatISOString.ts'
 import LinkifiedText from '../../../Shared/components/LinkifiedText.tsx'
+import GroupCallBar, { GroupCallHeaderButton } from '../components/GroupCallBar.tsx'
 
 const EMPTY_MESSAGES: GroupMessage[] = []
 
@@ -147,12 +148,14 @@ export default function SingleGroupPage() {
   if (!group) return <p className="py-20 text-center text-[#4d5666]">Group not found.</p>
 
   const isOwner = group.owner === myName
+  const myRole = group.my_role ?? null
+  const isGroupAdmin = isOwner || myRole === 'admin' || myRole === 'owner'
 
   return (
     <div className="flex min-h-screen flex-col">
       {/* header */}
       <header className="sticky top-0 z-30 border-b border-[#C9A86A]/60 bg-[#F5F5F0]/95 backdrop-blur-md">
-        <div className="flex items-center gap-2 px-3 py-3 sm:px-5">
+        <div className="mx-auto flex w-full max-w-4xl items-center gap-2 px-3 py-3 sm:px-5">
           <button type="button" onClick={() => navigate('/home/groups')} aria-label="Back" className="grid h-9 w-9 place-items-center rounded-full hover:bg-[#0A1931]/5">
             <ArrowLeft className="h-5 w-5" />
           </button>
@@ -169,7 +172,10 @@ export default function SingleGroupPage() {
           <button type="button" onClick={() => setShowMembers(true)} className="grid h-9 w-9 place-items-center rounded-full hover:bg-[#0A1931]/5" aria-label="Group info">
             <Info className="h-5 w-5" />
           </button>
-          {isOwner && (
+          {group.is_member && (
+            <GroupCallHeaderButton groupId={group.id} myName={myName} myRole={myRole} isOwner={isOwner} />
+          )}
+          {isGroupAdmin && (
             <button
               type="button"
               onClick={() => navigate(`/home/groups/${group.id}/settings`)}
@@ -180,12 +186,13 @@ export default function SingleGroupPage() {
             </button>
           )}
         </div>
+        {group.is_member && <GroupCallBar groupId={group.id} myName={myName} myRole={myRole} isOwner={isOwner} />}
         {/* topic banner */}
         {group.open_topic ? (
           <div className="flex items-center gap-2 bg-[#0A1931] px-4 py-2 text-sm text-white">
             <span className="shrink-0 rounded bg-[#C9A86A] px-1.5 py-0.5 text-[11px] font-bold uppercase text-[#0A1931]">Topic</span>
             <span className="min-w-0 flex-1 truncate">{group.open_topic.title}</span>
-            {isOwner && (
+            {isGroupAdmin && (
               <button
                 type="button"
                 onClick={async () => {
@@ -204,14 +211,14 @@ export default function SingleGroupPage() {
             )}
           </div>
         ) : (
-          isOwner && <TopicCreator groupId={group.id} draft={topicDraft} setDraft={setTopicDraft} onDone={load} />
+          isGroupAdmin && <TopicCreator groupId={group.id} draft={topicDraft} setDraft={setTopicDraft} onDone={load} />
         )}
       </header>
 
       {showMembers && <MembersModal groupId={group.id} onClose={() => setShowMembers(false)} />}
 
       {/* messages */}
-      <main className="flex-1 space-y-2 px-3 py-4 sm:px-5">
+      <main className="mx-auto w-full max-w-4xl flex-1 space-y-2 px-3 py-4 sm:px-5">
         {msgError && (
           <div className="mx-auto flex max-w-md items-center justify-between gap-2 bg-[#CC5A2A]/10 px-3 py-2 text-sm text-[#0A1931]">
             <span>Couldn't load messages.</span>
@@ -243,7 +250,8 @@ export default function SingleGroupPage() {
       </main>
 
       {/* composer */}
-      <footer className="sticky bottom-20 z-30 border-t border-[#C9A86A]/60 bg-white/95 px-3 py-3 backdrop-blur-md lg:bottom-0">
+      <footer className="sticky bottom-20 z-30 border-t border-[#C9A86A]/60 bg-white/95 px-3 py-3 backdrop-blur-md sm:px-5 lg:bottom-0">
+        <div className="mx-auto w-full max-w-4xl">
         {!connected && <p className="mb-1 text-center text-xs text-[#CC5A2A]">Connecting to live chat…</p>}
         {replyTarget && (
           <div className="mb-2 flex items-center gap-2 border-l-2 border-[#CC5A2A] bg-[#0A1931]/5 px-2 py-1.5">
@@ -275,6 +283,7 @@ export default function SingleGroupPage() {
           <button type="button" onClick={send} aria-label="Send" className="grid h-11 w-11 place-items-center bg-[#0A1931] text-white hover:bg-[#CC5A2A]">
             <Send className="h-5 w-5" />
           </button>
+        </div>
         </div>
       </footer>
     </div>

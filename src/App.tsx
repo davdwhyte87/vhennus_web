@@ -46,6 +46,7 @@ const CreateWalletPage = lazy(() => import('./features/wallet/pages/CreateWallet
 const AddWalletPage = lazy(() => import('./features/wallet/pages/AddWallet.tsx').then((m) => ({ default: m.AddWalletPage })))
 const GroupsListPage = lazy(() => import('./features/groups/pages/GroupsListPage.tsx').then((m) => ({ default: m.GroupsListPage })))
 const SingleGroupPage = lazy(() => import('./features/groups/pages/SingleGroupPage.tsx'))
+const GroupCallPage = lazy(() => import('./features/groups/pages/GroupCallPage.tsx'))
 const GroupSettingsPage = lazy(() => import('./features/groups/pages/GroupSettingsPage.tsx'))
 const JoinGroupPage = lazy(() => import('./features/groups/pages/JoinGroupPage.tsx'))
 const AdminGroupsPage = lazy(() => import('./features/admin/pages/AdminGroupsPage.tsx'))
@@ -118,6 +119,7 @@ const App: React.FC = () => {
               <Route path="home/groups" element={<GroupsListPage />} />
               <Route path="home/groups/join/:code" element={<JoinGroupPage />} />
               <Route path="home/groups/:id" element={<SingleGroupPage />} />
+              <Route path="home/groups/:id/call" element={<GroupCallPage />} />
               <Route path="home/groups/:id/settings" element={<GroupSettingsPage />} />
 
               <Route path="myprofile" element={<MyProfilePage />} />

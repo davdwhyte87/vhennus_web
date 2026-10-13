@@ -2,7 +2,8 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useAuthStore } from '../auth/useAuthStore'
 import { useGroupStore } from './useGroupStore'
-import type { GroupMessage } from './api'
+import { useGroupCallStore } from './useGroupCallStore'
+import type { GroupCallState, GroupMessage } from './api'
 
 export type GroupServerFrame =
   | { type: 'joined'; groups: string[] }
@@ -11,6 +12,10 @@ export type GroupServerFrame =
   | { type: 'unread'; total: number; groups: { group_id: string; unread: number }[] }
   | { type: 'error'; temp_id?: string | null; message: string }
   | { type: 'presence'; group_id: string; online: string[] }
+  | { type: 'call_state'; call: GroupCallState }
+  | { type: 'call_offer'; group_id: string; from: string; sdp: string }
+  | { type: 'call_answer'; group_id: string; from: string; sdp: string }
+  | { type: 'call_ice'; group_id: string; from: string; candidate: string }
 
 interface WsGroupContextType {
   isConnected: boolean
@@ -66,6 +71,14 @@ export const WSGroupProvider: React.FC<{ children: React.ReactNode }> = ({ child
           break
         case 'joined':
         case 'presence':
+          break
+        case 'call_state':
+          if (frame.call) useGroupCallStore.getState().setCall(frame.call)
+          break
+        case 'call_offer':
+        case 'call_answer':
+        case 'call_ice':
+          window.dispatchEvent(new CustomEvent('group-rtc', { detail: frame }))
           break
         default:
           break

@@ -58,7 +58,7 @@ export default function JoinGroupPage() {
   if (!group) return null
 
   return (
-    <div className="mx-auto max-w-md px-4 py-8">
+    <div className="mx-auto max-w-md py-2">
       <button type="button" onClick={() => navigate('/home/groups')} className="mb-4 flex items-center gap-1 text-sm text-[#4d5666] hover:text-[#0A1931]">
         <ArrowLeft className="h-4 w-4" /> All groups
       </button>

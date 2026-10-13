@@ -57,7 +57,7 @@ const HomePage: React.FC = () => {
       <HomeNav />
 
       <div className="sticky top-16 z-30 mt-6 border border-[#C9A86A]/60 bg-white/95 backdrop-blur-md">
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between py-3">
           <div className="flex items-center gap-2">
             <span className="grid h-9 w-9 place-items-center bg-[#0A1931] text-[#C9A86A]">
               <TrendingUp className="h-4 w-4" />

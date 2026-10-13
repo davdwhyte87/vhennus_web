@@ -42,7 +42,7 @@ const AllChatsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-30 border-b border-[#C9A86A]/60 bg-[#F5F5F0]/95 px-4 py-4 backdrop-blur-md sm:px-6">
+      <header className="sticky top-0 z-30 border-b border-[#C9A86A]/60 bg-[#F5F5F0]/95 py-4 backdrop-blur-md">
         <div className="mb-4 flex items-center justify-between">
           <PageHeader
             eyebrow={`${chatPairs.length} ${
@@ -95,7 +95,7 @@ const AllChatsPage: React.FC = () => {
                 <AppButton>Start New Chat</AppButton>
               </div>
             ) : (
-              <div className="px-4 sm:px-6">
+              <div>
                   <div className="mb-3">
                     <div className="mb-3 flex items-center justify-between px-2">
                       <h2 className="text-sm font-semibold text-[#0A1931]">
