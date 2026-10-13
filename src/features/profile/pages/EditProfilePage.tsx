@@ -5,7 +5,8 @@ import TextArea from "../../../Shared/components/TextArea"
 import { useEffect, useRef, useState } from "react"
 import { uploadImageDirect } from "../../../Shared/api"
 import { toast } from "react-toastify"
-import { getUserProfileAPI, UpdateUserProfileAPI, type UpdateProfileReq, type UserProfile } from "../api"
+import { getUserProfileAPI, UpdateUserProfileAPI, listSearchTagsAPI, getMyTagsAPI, setMyTagsAPI, MAX_INTERESTS_PER_USER, MAX_SKILLS_PER_USER, type UpdateProfileReq, type UserProfile, type SearchTag } from "../api"
+import TagPicker from "../../../Shared/components/TagPicker"
 import BackNav from "../../../Shared/components/BackNav"
 import PageLoad from "../../../Shared/components/PageLoad"
 
@@ -24,6 +25,9 @@ const EditProfilePage: React.FC = () => {
     const [bio, setBio] = useState<string>("");
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [getProfileLoading, setGetProfileLoading] = useState<boolean>(true);
+    const [allSkills, setAllSkills] = useState<SearchTag[]>([]);
+    const [allInterests, setAllInterests] = useState<SearchTag[]>([]);
+    const [myTagIds, setMyTagIds] = useState<string[]>([]);
 
     const handleImageClick = () => {
         fileInputRef.current?.click();
@@ -63,6 +67,18 @@ const EditProfilePage: React.FC = () => {
             setUserProfile(resp.data.profile);
             setName(resp.data.profile.name ?? "");
             setBio(resp.data.profile.bio ?? "");
+            try {
+                const [tagsRes, myTagsRes] = await Promise.all([
+                    listSearchTagsAPI(),
+                    getMyTagsAPI(),
+                ]);
+                const tags = tagsRes.data ?? [];
+                setAllSkills(tags.filter((t) => t.kind === "skill"));
+                setAllInterests(tags.filter((t) => t.kind === "interest"));
+                setMyTagIds(myTagsRes.data?.tag_ids ?? []);
+            } catch {
+                // Tags are optional — profile editing still works without them.
+            }
             setGetProfileLoading(false);
         } catch (err) {
             console.error("Error fetching user profile", err);
@@ -70,6 +86,27 @@ const EditProfilePage: React.FC = () => {
             setGetProfileLoading(false);
         }
     }
+
+    const skillIdSet = new Set(allSkills.map((t) => t.id));
+    const interestIdSet = new Set(allInterests.map((t) => t.id));
+    const mySkillIds = myTagIds.filter((id) => skillIdSet.has(id));
+    const myInterestIds = myTagIds.filter((id) => interestIdSet.has(id));
+
+    const setMySkillIds = (ids: string[]) => {
+        if (ids.length > MAX_SKILLS_PER_USER) {
+            toast.info(`Pick at most ${MAX_SKILLS_PER_USER} skills`);
+            return;
+        }
+        setMyTagIds((prev) => [...prev.filter((id) => !skillIdSet.has(id)), ...ids]);
+    };
+
+    const setMyInterestIds = (ids: string[]) => {
+        if (ids.length > MAX_INTERESTS_PER_USER) {
+            toast.info(`Pick at most ${MAX_INTERESTS_PER_USER} interests`);
+            return;
+        }
+        setMyTagIds((prev) => [...prev.filter((id) => !interestIdSet.has(id)), ...ids]);
+    };
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setName(e.target.value);
@@ -88,6 +125,14 @@ const EditProfilePage: React.FC = () => {
                 image: uploadedUrl || undefined
             }
             await UpdateUserProfileAPI(data);
+            try {
+                await setMyTagsAPI(myTagIds);
+            } catch (tagErr) {
+                console.error("Error updating skills/interests", tagErr);
+                toast.error("Profile saved, but skills/interests failed to save");
+                setIsSaving(false);
+                return;
+            }
             console.log("Profile updated successfully");
             toast.success("Profile updated successfully!");
             setIsSaving(false);
@@ -238,6 +283,40 @@ const EditProfilePage: React.FC = () => {
                                         {(bio ?? "").length}/150
                                     </div>
                                 </div>
+                            </div>
+
+                            {/* Skills & Interests */}
+                            <div>
+                                <label className="block text-left text-sm font-medium text-gray-700 mb-2">
+                                    Skills
+                                </label>
+                                <TagPicker
+                                    tags={allSkills}
+                                    selectedIds={mySkillIds}
+                                    onChange={setMySkillIds}
+                                    maxSelected={MAX_SKILLS_PER_USER}
+                                    placeholder="Search skills…"
+                                    emptyText="No skills available yet."
+                                    onLimitReached={() => toast.info(`Pick at most ${MAX_SKILLS_PER_USER} skills`)}
+                                />
+                                <p className="text-xs text-gray-500 mt-2">What are you good at? Friends can find you by these.</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-left text-sm font-medium text-gray-700 mb-2">
+                                    Interests
+                                </label>
+                                <TagPicker
+                                    tags={allInterests}
+                                    selectedIds={myInterestIds}
+                                    onChange={setMyInterestIds}
+                                    maxSelected={MAX_INTERESTS_PER_USER}
+                                    placeholder="Search interests…"
+                                    pill
+                                    emptyText="No interests available yet."
+                                    onLimitReached={() => toast.info(`Pick at most ${MAX_INTERESTS_PER_USER} interests`)}
+                                />
+                                <p className="text-xs text-gray-500 mt-2">What do you enjoy? Friends with the same interests can find you.</p>
                             </div>
 
                             {/* Additional Info Card (Read-only) */}

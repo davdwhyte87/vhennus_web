@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react";
 import BackNav from "../../../Shared/components/BackNav";
 
-import { Search, UserPlus, Users, Clock, Check, X, UserCheck, Mail, MoreVertical, Loader2 } from "lucide-react";
+import { Search, UserPlus, Users, Clock, Check, X, UserCheck, Mail, MoreVertical, Loader2, Sparkles, Heart } from "lucide-react";
 import AppButton from "../../../Shared/components/Button";
 import AppInput from "../../../Shared/components/AppInput";
-import { type FriendRequestResp, getMyFriendRequestsAPI, SearchUserProfileAPI, sendFriendRequest, type Friend } from "../api";
+import {
+    type FriendRequestResp,
+    getMyFriendRequestsAPI,
+    searchFriendsAPI,
+    listSearchTagsAPI,
+    sendFriendRequest,
+    MAX_INTERESTS_PER_USER,
+    MAX_SKILLS_PER_USER,
+    type FriendSearchHit,
+    type SearchTag,
+} from "../api";
+import TagPicker from "../../../Shared/components/TagPicker";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -13,32 +24,75 @@ const profileImage = (await import("../../../assets/profile2.png")).default
 
 const FindFriendsPage = () => {
     const [searchData, setSearchData] = useState<string>("");
-    const [friendSearchResults, setfriendSearchResults] = useState<Friend[]>([])
+    const [friendSearchResults, setfriendSearchResults] = useState<FriendSearchHit[]>([])
     const [friendRequests, setFriendRequests] = useState<FriendRequestResp[]>([])
     const [isLoadingsearch, setIsLoadingsearch] = useState<boolean>(false)
     const [showRequests, setShowRequests] = useState<boolean>(true)
     const [hasSearched, setHasSearched] = useState<boolean>(false)
 
+    const [allSkills, setAllSkills] = useState<SearchTag[]>([])
+    const [allInterests, setAllInterests] = useState<SearchTag[]>([])
+    const [selectedSkills, setSelectedSkills] = useState<string[]>([])
+    const [selectedInterests, setSelectedInterests] = useState<string[]>([])
+    const [showFilters, setShowFilters] = useState<boolean>(false)
+
     const handleChangeSearchData = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchData(e.target.value);
-        // Clear search results when user starts typing new search
         if (e.target.value === "") {
             setfriendSearchResults([]);
             setHasSearched(false);
         }
     }
 
-    const getFriend = async () => {
-        if (searchData.trim() === "") {
-            toast.info("Please enter a name or username to search");
+    const loadTags = async () => {
+        try {
+            const res = await listSearchTagsAPI()
+            const tags = res.data ?? []
+            setAllSkills(tags.filter((t) => t.kind === "skill"))
+            setAllInterests(tags.filter((t) => t.kind === "interest"))
+        } catch {
+            // Tags are optional — text search still works without them.
+        }
+    }
+
+    const applySkillFilter = (next: string[]) => {
+        if (next.length > MAX_SKILLS_PER_USER) {
+            toast.info(`Pick at most ${MAX_SKILLS_PER_USER} skills`);
+            return;
+        }
+        setSelectedSkills(next)
+        if (searchData.trim() || next.length > 0 || selectedInterests.length > 0) {
+            getFriend({ skills: next })
+        }
+    }
+
+    const applyInterestFilter = (next: string[]) => {
+        if (next.length > MAX_INTERESTS_PER_USER) {
+            toast.info(`Pick at most ${MAX_INTERESTS_PER_USER} interests`);
+            return;
+        }
+        setSelectedInterests(next)
+        if (searchData.trim() || selectedSkills.length > 0 || next.length > 0) {
+            getFriend({ interests: next })
+        }
+    }
+
+    const getFriend = async (opts?: { skills?: string[]; interests?: string[] }) => {
+        const skills = opts?.skills ?? selectedSkills
+        const interests = opts?.interests ?? selectedInterests
+        if (searchData.trim() === "" && skills.length === 0 && interests.length === 0) {
+            toast.info("Type a name, or pick a skill / interest to filter by");
             return;
         }
         setIsLoadingsearch(true);
         setHasSearched(true);
         try {
-            const res = await SearchUserProfileAPI(searchData)
-            console.log("ok", res)
-            setfriendSearchResults(res.data)
+            const res = await searchFriendsAPI({
+                query: searchData.trim() || undefined,
+                skill_ids: skills.length > 0 ? skills : undefined,
+                interest_ids: interests.length > 0 ? interests : undefined,
+            })
+            setfriendSearchResults(res.data ?? [])
         } catch (err) {
             if (axios.isAxiosError(err)) {
                 console.error("Error searching", err.response?.data?.message);
@@ -69,13 +123,18 @@ const FindFriendsPage = () => {
 
     useEffect(() => {
         getFriendRequests()
+        loadTags()
     }, [])
 
     const clearSearch = () => {
         setSearchData("");
         setfriendSearchResults([]);
         setHasSearched(false);
+        setSelectedSkills([]);
+        setSelectedInterests([]);
     }
+
+    const activeFilterCount = selectedSkills.length + selectedInterests.length
 
     return (
         <>
@@ -119,13 +178,14 @@ const FindFriendsPage = () => {
                                 </div>
                                 <h2 className="text-lg font-semibold text-gray-900">Search Friends</h2>
                             </div>
-                            
+
                             <div className="relative">
                                 <AppInput
                                     name={"Search"}
                                     value={searchData}
                                     onChange={handleChangeSearchData}
-                                    placeholder="Enter name or username..."
+                                    onKeyDown={(e) => { if (e.key === "Enter") getFriend() }}
+                                    placeholder="Search name, username, or bio..."
                                     className="w-full"
                                     rightElement={
                                         <button
@@ -148,20 +208,68 @@ const FindFriendsPage = () => {
                                     </button>
                                 )}
                             </div>
-                            
+
                             <div className="flex items-center justify-between mt-2 px-1">
                                 <p className="text-sm text-gray-500">
-                                    Press enter or click search button
+                                    Search by name, username, or bio
                                 </p>
-                                {searchData && !isLoadingsearch && (
-                                    <button
-                                        onClick={getFriend}
-                                        className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-                                    >
-                                        Search Now
-                                    </button>
-                                )}
+                                <button
+                                    onClick={() => setShowFilters((v) => !v)}
+                                    className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                                >
+                                    {showFilters ? "Hide filters" : `Filters${activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}`}
+                                </button>
                             </div>
+
+                            {showFilters && (
+                                <div className="mt-3 space-y-3 animate-fade-in">
+                                    <div className="border border-[#C9A86A]/40 bg-white p-3">
+                                        <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-[#0A1931]">
+                                            <Sparkles className="h-4 w-4 text-[#CC5A2A]" />
+                                            Skills
+                                        </p>
+                                        <TagPicker
+                                            tags={allSkills}
+                                            selectedIds={selectedSkills}
+                                            onChange={applySkillFilter}
+                                            maxSelected={MAX_SKILLS_PER_USER}
+                                            placeholder="Search skills…"
+                                            emptyText="No skills yet — check back soon."
+                                            onLimitReached={() => toast.info(`Pick at most ${MAX_SKILLS_PER_USER} skills`)}
+                                        />
+                                    </div>
+
+                                    <div className="border border-[#C9A86A]/40 bg-white p-3">
+                                        <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-[#0A1931]">
+                                            <Heart className="h-4 w-4 text-[#CC5A2A]" />
+                                            Interests
+                                        </p>
+                                        <TagPicker
+                                            tags={allInterests}
+                                            selectedIds={selectedInterests}
+                                            onChange={applyInterestFilter}
+                                            maxSelected={MAX_INTERESTS_PER_USER}
+                                            placeholder="Search interests…"
+                                            pill
+                                            emptyText="No interests yet — check back soon."
+                                            onLimitReached={() => toast.info(`Pick at most ${MAX_INTERESTS_PER_USER} interests`)}
+                                        />
+                                    </div>
+
+                                    {activeFilterCount > 0 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setSelectedSkills([])
+                                                setSelectedInterests([])
+                                            }}
+                                            className="text-xs font-medium text-gray-500 hover:text-gray-700"
+                                        >
+                                            Clear filters
+                                        </button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -187,19 +295,19 @@ const FindFriendsPage = () => {
                                     </button>
                                 </div>
                             </div>
-                            
+
                             {showRequests && (
                                 <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
                                     {friendRequests.map((request, index) => (
-                                        <div 
-                                            key={request.id} 
+                                        <div
+                                            key={request.id}
                                             className="bg-white rounded-xl p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all duration-300 request-card animate-fade-in"
                                             style={{ animationDelay: `${index * 0.1}s` }}
                                         >
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center space-x-3">
                                                     <div className="relative">
-                                                        <img 
+                                                        <img
                                                             className="w-12 h-12 rounded-full border-2 border-white shadow"
                                                             src={request.image || profileImage}
                                                             alt={request.name}
@@ -215,16 +323,16 @@ const FindFriendsPage = () => {
                                                 </button>
                                             </div>
                                             <div className="flex space-x-2 mt-3">
-                                                <AppButton 
-                                                    size="sm" 
+                                                <AppButton
+                                                    size="sm"
                                                     className="flex-1 bg-green-700"
                                                 >
                                                     <Check className="w-4 h-4 mr-2" />
                                                     Accept
                                                 </AppButton>
-                                                <AppButton 
-                                                    variant="outline" 
-                                                    size="sm" 
+                                                <AppButton
+                                                    variant="outline"
+                                                    size="sm"
                                                     className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
                                                 >
                                                     <X className="w-4 h-4 mr-2" />
@@ -251,7 +359,7 @@ const FindFriendsPage = () => {
                                         {friendSearchResults.length} found
                                     </span>
                                 </div>
-                                
+
                                 {(friendSearchResults.length > 0) ? (
                                     <div className="space-y-3">
                                         {friendSearchResults.map((data) => (
@@ -268,13 +376,13 @@ const FindFriendsPage = () => {
                                             <Users className="w-10 h-10 text-gray-400" />
                                         </div>
                                         <h3 className="text-lg font-semibold text-gray-700 mb-2">No users found</h3>
-                                        <p className="text-gray-500 mb-6">No results for "{searchData}"</p>
+                                        <p className="text-gray-500 mb-6">Try a different name or fewer filters</p>
                                         <AppButton
                                             variant="secondary"
                                             size="sm"
                                             onClick={clearSearch}
                                         >
-                                            Try a different search
+                                            Clear search
                                         </AppButton>
                                     </div>
                                 )}
@@ -286,32 +394,32 @@ const FindFriendsPage = () => {
                                     </div>
                                 <h3 className="text-xl font-bold text-gray-900 mb-3">Find Your Friends</h3>
                                 <p className="text-gray-600 max-w-md mx-auto mb-8 px-4">
-                                    Enter a name or username above to search for friends
+                                    Search by name, username, or bio — or filter by skills and interests
                                 </p>
-                                
+
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8 px-4">
                                     <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                                         <div className="mx-auto mb-3 grid h-10 w-10 place-items-center bg-[#0A1931]/5">
                                             <Search className="w-5 h-5 text-[#0A1931]" />
                                         </div>
                                         <h4 className="font-semibold text-gray-900 mb-1 text-center">1. Search</h4>
-                                        <p className="text-sm text-gray-500 text-center">Enter name or username</p>
+                                        <p className="text-sm text-gray-500 text-center">Name, username, or bio</p>
                                     </div>
-                                    
+
                                     <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                                         <div className="mx-auto mb-3 grid h-10 w-10 place-items-center bg-[#0A1931]/5">
                                             <UserCheck className="w-5 h-5 text-[#CC5A2A]" />
                                         </div>
-                                        <h4 className="font-semibold text-gray-900 mb-1 text-center">2. Connect</h4>
-                                        <p className="text-sm text-gray-500 text-center">Send friend requests</p>
+                                        <h4 className="font-semibold text-gray-900 mb-1 text-center">2. Filter</h4>
+                                        <p className="text-sm text-gray-500 text-center">By skills &amp; interests</p>
                                     </div>
-                                    
+
                                     <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                                         <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mb-3 mx-auto">
                                             <Clock className="w-5 h-5 text-green-600" />
                                         </div>
                                         <h4 className="font-semibold text-gray-900 mb-1 text-center">3. Connect</h4>
-                                        <p className="text-sm text-gray-500 text-center">Start chatting</p>
+                                        <p className="text-sm text-gray-500 text-center">Send requests &amp; chat</p>
                                     </div>
                                 </div>
                             </div>
@@ -324,7 +432,7 @@ const FindFriendsPage = () => {
 }
 
 interface FriendSearchProps {
-    friend: Friend,
+    friend: FriendSearchHit,
     friendRequests: FriendRequestResp[],
 }
 
@@ -362,15 +470,29 @@ const FriendSearchResult: React.FC<FriendSearchProps> = ({ friend, friendRequest
                         <img
                             className="h-14 w-14 rounded-full border-2 border-white object-cover shadow-sm"
                             src={friend.image || profileImage}
-                            alt={friend.name}
+                            alt={friend.name ?? friend.user_name}
                         />
                         <div className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500" />
                     </div>
                     <div className="min-w-0 flex-1">
-                        <h3 className="truncate text-base font-semibold text-[#0A1931]">{friend.name}</h3>
+                        <h3 className="truncate text-base font-semibold text-[#0A1931]">{friend.name || friend.user_name}</h3>
                         <p className="truncate text-sm text-[#4d5666]">@{friend.user_name}</p>
                         {friend.bio && (
                             <p className="mt-0.5 truncate text-left text-sm text-[#4d5666]">{friend.bio}</p>
+                        )}
+                        {(friend.skills.length > 0 || friend.interests.length > 0) && (
+                            <div className="mt-1.5 flex flex-wrap gap-1">
+                                {friend.skills.slice(0, 3).map((s) => (
+                                    <span key={s.id} className="bg-[#0A1931]/5 px-2 py-0.5 text-[11px] font-medium text-[#0A1931]">
+                                        {s.name}
+                                    </span>
+                                ))}
+                                {friend.interests.slice(0, 3).map((s) => (
+                                    <span key={s.id} className="rounded-full bg-[#C9A86A]/20 px-2 py-0.5 text-[11px] font-medium text-[#0A1931]">
+                                        {s.name}
+                                    </span>
+                                ))}
+                            </div>
                         )}
                         {hasPendingRequest && (
                             <p className="mt-1 text-xs font-medium text-[#CC5A2A]">

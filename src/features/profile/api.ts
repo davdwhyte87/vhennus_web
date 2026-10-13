@@ -97,6 +97,68 @@ export const SearchUserProfileAPI = async (userName:string): Promise<GenericResp
     return response.data;
 }
 
+// ---------- Skills & interests (friend search) ----------
+
+export interface SearchTag {
+    id: string;
+    name: string;
+    kind: 'skill' | 'interest';
+    created_at: string;
+    updated_at: string;
+}
+
+export interface FriendSearchHit {
+    user_name: string;
+    name: string | null;
+    bio: string | null;
+    image: string | null;
+    skills: SearchTag[];
+    interests: SearchTag[];
+}
+
+export interface MyTagsResp {
+    tag_ids: string[];
+    tags: SearchTag[];
+}
+
+export interface SearchFriendsReq {
+    query?: string;
+    skill_ids?: string[];
+    interest_ids?: string[];
+    limit?: number;
+}
+
+// Keep in sync with the backend (search_tags/models.rs).
+export const MAX_SKILLS_PER_USER = 5
+export const MAX_INTERESTS_PER_USER = 10
+
+export const listSearchTagsAPI = async (kind?: 'skill' | 'interest'): Promise<GenericResponse<SearchTag[]>> => {
+    const response = await api.get('/api/v1/auth/search/tags', {
+        params: kind ? { kind } : {},
+    });
+    return response.data;
+}
+
+export const searchFriendsAPI = async (req: SearchFriendsReq): Promise<GenericResponse<FriendSearchHit[]>> => {
+    const response = await api.post('/api/v1/auth/search/friends', {
+        query: req.query ?? null,
+        skill_ids: req.skill_ids ?? null,
+        interest_ids: req.interest_ids ?? null,
+        limit: req.limit ?? 30,
+    });
+    return response.data;
+}
+
+export const getMyTagsAPI = async (): Promise<GenericResponse<MyTagsResp>> => {
+    const response = await api.get('/api/v1/auth/profile/my_tags');
+    return response.data;
+}
+
+export const setMyTagsAPI = async (tagIds: string[]): Promise<GenericResponse<MyTagsResp>> => {
+    const response = await api.post('/api/v1/auth/profile/my_tags', { tag_ids: tagIds });
+    return response.data;
+}
+
 export const getMyFriendRequestsAPI = async (): Promise<GenericResponse<FriendRequestResp[]>> => {
     const response = await api.get(`/api/v1/auth/user/friend_requests`);
     console.log(response.data);

@@ -174,3 +174,45 @@ export const deleteAdminQuestionAPI = async (
   const response = await api.delete(`${BASE}/questions/${id}`)
   return response.data
 }
+
+// ---------- Skills & interests (search settings) ----------
+
+export interface SearchTag {
+  id: string
+  name: string
+  kind: 'skill' | 'interest'
+  created_at: string
+  updated_at: string
+}
+
+const SEARCH_BASE = '/api/v1/auth/admin/search'
+
+export const getAdminSearchTagsAPI = async (): Promise<
+  GenericResponse<SearchTag[]>
+> => {
+  const response = await api.get(`${SEARCH_BASE}/tags`)
+  return response.data
+}
+
+export const createAdminSearchTagAPI = async (data: {
+  name: string
+  kind: 'skill' | 'interest'
+}): Promise<GenericResponse<SearchTag>> => {
+  const response = await api.post(`${SEARCH_BASE}/tags`, data)
+  return response.data
+}
+
+export const updateAdminSearchTagAPI = async (
+  id: string,
+  data: { name?: string; kind?: 'skill' | 'interest' }
+): Promise<GenericResponse<SearchTag>> => {
+  const response = await api.put(`${SEARCH_BASE}/tags/${id}`, data)
+  return response.data
+}
+
+export const deleteAdminSearchTagAPI = async (
+  id: string
+): Promise<GenericResponse<string | null>> => {
+  const response = await api.delete(`${SEARCH_BASE}/tags/${id}`)
+  return response.data
+}

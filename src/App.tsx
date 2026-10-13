@@ -38,6 +38,7 @@ const AdminRequestsPage = lazy(() => import('./features/admin/pages/AdminRequest
 const AdminRequestDetailPage = lazy(() => import('./features/admin/pages/AdminRequestDetailPage.tsx'))
 const AdminQuestionsPage = lazy(() => import('./features/admin/pages/AdminQuestionsPage.tsx'))
 const AdminUsersPage = lazy(() => import('./features/admin/pages/AdminUsersPage.tsx'))
+const AdminSearchSettingsPage = lazy(() => import('./features/admin/pages/AdminSearchSettingsPage.tsx'))
 // Named exports need remapping to a default for lazy().
 const LogoutPage = lazy(() => import('./features/auth/pages/LogoutPage.tsx').then((m) => ({ default: m.LogoutPage })))
 const AllWalletsPage = lazy(() => import('./features/wallet/pages/AllWalletsPage.tsx').then((m) => ({ default: m.AllWalletsPage })))
@@ -150,6 +151,7 @@ const App: React.FC = () => {
               />
               <Route path="admin/questions" element={<AdminQuestionsPage />} />
               <Route path="admin/users" element={<AdminUsersPage />} />
+              <Route path="admin/users/search-settings" element={<AdminSearchSettingsPage />} />
               <Route path="admin/groups" element={<AdminGroupsPage />} />
               <Route path="admin/groups/categories" element={<AdminGroupCategoriesPage />} />
             </Route>

@@ -39,7 +39,15 @@ const NAV_ITEMS: NavEntry[] = [
       { route: '/admin/groups/categories', label: 'Categories' },
     ],
   },
-  { route: '/admin/users', label: 'Users', icon: Users },
+  {
+    route: '/admin/users',
+    label: 'Users',
+    icon: Users,
+    children: [
+      { route: '/admin/users', label: 'View users' },
+      { route: '/admin/users/search-settings', label: 'Search settings' },
+    ],
+  },
 ]
 
 function isEntryActive(pathname: string, route: string) {

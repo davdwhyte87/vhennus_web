@@ -4,7 +4,7 @@ import { ListCheck, UserPlus, Edit3, Users, Grid3x3, Heart } from "lucide-react"
 import Post from "../../Feed/Components/Post";
 import { getAllMyPosts, type PostFeed } from "../../Feed/api";
 import { toast } from "react-toastify";
-import { getUserProfileAPI, getMyFriendRequestsAPI, type Friend, type UserProfile } from "../api";
+import { getUserProfileAPI, getMyFriendRequestsAPI, getMyTagsAPI, type Friend, type SearchTag, type UserProfile } from "../api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackNav from "../../../Shared/components/BackNav";
@@ -19,6 +19,7 @@ const MyProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const [getProfileLoading, setGetProfileLoading] = useState<boolean>(false);
     const [pendingRequests, setPendingRequests] = useState<number>(0);
+    const [myTags, setMyTags] = useState<SearchTag[]>([]);
 
     const getUserProfile = async () => {
         setGetProfileLoading(true)
@@ -52,6 +53,9 @@ const MyProfilePage: React.FC = () => {
         getMyFriendRequestsAPI()
             .then((resp) => setPendingRequests(resp.data?.length ?? 0))
             .catch(() => setPendingRequests(0));
+        getMyTagsAPI()
+            .then((resp) => setMyTags(resp.data?.tags ?? []))
+            .catch(() => setMyTags([]));
     }, []);
 
     return (
@@ -135,10 +139,44 @@ const MyProfilePage: React.FC = () => {
                             </div>
 
                             {/* Bio */}
-                            <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200">
+                            <div className="bg-gray-50 rounded-xl p-4 mb-4 border border-gray-200">
                                 <p className="text-left text-gray-700 leading-relaxed">
                                     {userProfile?.bio || "You haven't added a bio yet. Tell people about yourself!"}
                                 </p>
+                            </div>
+
+                            {/* Skills & Interests */}
+                            <div className="border border-[#C9A86A]/40 bg-white p-4 mb-6">
+                                <div className="flex items-center justify-between mb-2">
+                                    <p className="text-sm font-semibold text-[#0A1931]">Skills & Interests</p>
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate("/editprofile")}
+                                        className="text-xs font-medium text-primary hover:text-primary/80"
+                                    >
+                                        Edit
+                                    </button>
+                                </div>
+                                {myTags.length === 0 ? (
+                                    <p className="text-sm text-gray-500">
+                                        Add skills and interests so friends can find you.
+                                    </p>
+                                ) : (
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {myTags.map((t) => (
+                                            <span
+                                                key={t.id}
+                                                className={
+                                                    t.kind === "skill"
+                                                        ? "bg-[#0A1931]/5 px-2 py-0.5 text-xs font-medium text-[#0A1931]"
+                                                        : "rounded-full bg-[#C9A86A]/20 px-2 py-0.5 text-xs font-medium text-[#0A1931]"
+                                                }
+                                            >
+                                                {t.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Stats */}

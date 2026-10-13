@@ -13,6 +13,7 @@ interface AppInputProps {
   disabled?: boolean
   error?: string
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void
   className?: string
   required?: boolean
   rightElement?: ReactNode
@@ -30,6 +31,7 @@ export default function AppInput({
   disabled = false,
   error,
   onBlur,
+  onKeyDown,
   className = '',
   required = false,
   rightElement,
@@ -55,6 +57,7 @@ export default function AppInput({
           value={value}
           onChange={onChange}
           onBlur={onBlur}
+          onKeyDown={onKeyDown}
           placeholder={placeholder}
           autoComplete={autoComplete}
           disabled={disabled}
