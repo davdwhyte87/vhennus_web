@@ -25,7 +25,8 @@ export interface SendChatReq{
     pair_id?:string;
     message?:string;
     image?:string;
-    receiver:string
+    receiver:string;
+    reply_to_id?:string | null;
 }
 
 export const sendChatAPI = async (data: SendChatReq): Promise<GenericResponse<Chat>> => {

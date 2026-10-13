@@ -76,7 +76,28 @@ const SingleChatPage: React.FC = () => {
         return () => document.removeEventListener('visibilitychange', onVisible)
     }, [resolvedPairId, markRead])
 
-    const handleSend = () => {
+    // Brand-new conversation: the initial fetch found no pair, so the first
+    // message is keyed under "". Once the server confirms it under the real
+    // pair id, follow it there instead of showing an empty screen.
+    useEffect(() => {
+        if (chatPair || !id) return
+        const me = authStore.authUserName
+        for (const [pid, list] of Object.entries(messagesByPair)) {
+            if (!pid) continue
+            const mine = list.some(
+                (m) =>
+                    !m.id.startsWith('tmp-') &&
+                    ((m.sender === me && m.receiver === id) ||
+                        (m.sender === id && m.receiver === me))
+            )
+            if (mine) {
+                setChatPair({ id: pid } as ChatPair)
+                break
+            }
+        }
+    }, [messagesByPair, chatPair, id, authStore.authUserName])
+
+    const handleSend = async () => {
         if (id == null) {
             return
         }
@@ -86,7 +107,7 @@ const SingleChatPage: React.FC = () => {
             const reply: ChatReplyPreview | null = replyTarget && !replyTarget.id.startsWith('tmp-')
                 ? { id: replyTarget.id, sender: replyTarget.sender, message: replyTarget.message }
                 : null
-            const tempId = sendChat(
+            const tempId = await sendChat(
                 id,
                 message,
                 authStore.authUserName ? authStore.authUserName : "",
@@ -94,7 +115,8 @@ const SingleChatPage: React.FC = () => {
                 reply
             )
             if (tempId === null) {
-                toast.error("Connecting… please try again in a moment.")
+                // sendChat already removed the optimistic row and toasted the
+                // real reason (network or server validation) — keep the draft.
                 return
             }
             setMessage("")

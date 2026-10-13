@@ -169,8 +169,22 @@ export const WSChatProvider:React.FC<{ children: React.ReactNode }> = ({children
         store.refreshUnread();
         const poll = setInterval(() => useChatStore.getState().refreshUnread(), 30000);
 
+        // The socket must track "online": mobile OS kills sockets in
+        // background and throttles backoff timers, so retry the moment the
+        // network returns or the tab becomes usable again.
+        const retry = () => newClient.retryNow();
+        const onVisible = () => {
+            if (document.visibilityState === 'visible') retry();
+        };
+        window.addEventListener('online', retry);
+        document.addEventListener('visibilitychange', onVisible);
+        window.addEventListener('focus', retry);
+
         return () => {
             clearInterval(poll);
+            window.removeEventListener('online', retry);
+            document.removeEventListener('visibilitychange', onVisible);
+            window.removeEventListener('focus', retry);
             newClient.disconnect();
         };
     },[token])
@@ -197,7 +211,6 @@ class ChatClient {
 
     // Reconnection fields
     private reconnectAttempts: number = 0;
-    private maxReconnectAttempts: number = 15;
     private initialReconnectDelayMs: number = 1000; // 1 second
     private maxReconnectDelayMs: number = 30000; // 30 seconds
     private reconnectTimeout: number | undefined;
@@ -227,15 +240,11 @@ class ChatClient {
             this.statusHandler(false);
             return;
         }
-        
-        if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-            console.error("Max reconnection attempts reached. Giving up.");
-            this.statusHandler(false);
-            return;
-        }
 
+        // No permanent give-up: an online user must keep a socket. Backoff
+        // stays capped (see getReconnectDelay) so retries continue forever
+        // across server deploys, proxy blips and mobile radio sleep.
         const wsUrl = `${import.meta.env.VITE_WS_CHAT}?token=${token}`;
-        
         try {
             this.reconnecting = true;
             this.socket = new WebSocket(wsUrl);
@@ -244,6 +253,22 @@ class ChatClient {
             console.error("Failed to create WebSocket connection object:", err);
             this.scheduleReconnect();
         }
+    }
+
+    /**
+     * Immediate reconnect attempt (network back, tab foregrounded, window
+     * focused). Resets the backoff so recovery isn't stuck behind a 30s timer.
+     */
+    public retryNow(): void {
+        if (!this.shouldReconnect) return;
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) return;
+        if (this.reconnecting) return;
+        this.reconnectAttempts = 0;
+        if (this.reconnectTimeout) {
+            clearTimeout(this.reconnectTimeout);
+            this.reconnectTimeout = undefined;
+        }
+        this.connect();
     }
 
     private setupListeners(): void {
@@ -310,13 +335,16 @@ class ChatClient {
 
     /**
      * Public method to send data to the server.
+     * Returns true when handed to an open socket, false when it was dropped
+     * (callers must fall back — e.g. REST — instead of failing silently).
      */
-    public sendDataToServer(data: object): void {
+    public sendDataToServer(data: object): boolean {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             this.socket.send(JSON.stringify(data));
+            return true;
         } else {
             console.warn("Socket is not OPEN (State: " + (this.socket?.readyState || 'N/A') + "). Data not sent.", data);
-            // Optionally: Queue messages to send once reconnected
+            return false;
         }
     }
 
