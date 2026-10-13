@@ -17,7 +17,7 @@ const NAV_ITEMS = [
   { route: '/home/feeds', label: 'Feed', icon: Home },
   { route: '/home/chats', label: 'Chat', icon: MessageSquareText },
   { route: '/home/groups', label: 'Groups', icon: MessagesSquare },
-  { route: '/wallet', label: 'Wallet', icon: Wallet },
+  { route: '/wallet', label: 'Wallet', icon: Wallet, disabled: true },
   { route: '/myprofile', label: 'Profile', icon: User },
   { route: '/home/menu', label: 'Menu', icon: AlignJustify },
 ]
@@ -50,7 +50,7 @@ export default function AppSideNav() {
       </button>
 
       <nav className="flex-1 space-y-1 px-3">
-        {NAV_ITEMS.map(({ route, label, icon: Icon }) => {
+        {NAV_ITEMS.map(({ route, label, icon: Icon, disabled }) => {
           const isActive =
             location.pathname === route ||
             location.pathname.startsWith(`${route}/`)
@@ -62,12 +62,18 @@ export default function AppSideNav() {
             <button
               key={route}
               type="button"
-              onClick={() => navigate(route)}
+              onClick={() => {
+                if (!disabled) navigate(route)
+              }}
+              disabled={disabled}
+              title={disabled ? 'Coming soon' : label}
               className={[
                 'flex w-full items-center gap-3 px-4 py-3 text-left text-[15px] transition-colors',
-                isActive
-                  ? 'bg-[#F5F5F0] font-medium text-[#0A1931]'
-                  : 'text-[#d7dce4] hover:bg-white/10 hover:text-white',
+                disabled
+                  ? 'cursor-not-allowed opacity-50'
+                  : isActive
+                    ? 'bg-[#F5F5F0] font-medium text-[#0A1931]'
+                    : 'text-[#d7dce4] hover:bg-white/10 hover:text-white',
               ].join(' ')}
             >
               <span className="relative">
@@ -79,6 +85,11 @@ export default function AppSideNav() {
                 )}
               </span>
               {label}
+              {disabled && (
+                <span className="ml-auto rounded-full bg-[#C9A86A]/20 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[#C9A86A]">
+                  Soon
+                </span>
+              )}
             </button>
           )
         })}
