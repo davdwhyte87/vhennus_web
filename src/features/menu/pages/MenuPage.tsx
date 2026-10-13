@@ -42,6 +42,8 @@ const MenuPage: React.FC = () => {
             icon={Wallet}
             page="/wallet"
             description="Manage your balance"
+            disabled
+            disabledReason="Coming soon"
           />
           <MenuItem
             text="Profile"
