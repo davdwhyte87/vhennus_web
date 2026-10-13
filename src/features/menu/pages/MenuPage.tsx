@@ -2,6 +2,7 @@ import {
   BarChart,
   Bell,
   Bitcoin,
+  Check,
   ChevronRight,
   CreditCard,
   HelpCircle,
@@ -10,14 +11,24 @@ import {
   Medal,
   Settings,
   Shield,
+  Smartphone,
   User,
   Users,
   Wallet,
 } from 'lucide-react'
 import type React from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import AppCard from '../../../Shared/components/AppCard.tsx'
 import PageHeader from '../../../Shared/components/PageHeader.tsx'
+import {
+  isPwaInstalled,
+  notificationPermission,
+  promptPwaInstall,
+  requestNotificationPermission,
+  usePwaInstall,
+} from '../../../Shared/pwaInstall.ts'
 
 const MenuPage: React.FC = () => {
   const navigate = useNavigate()
@@ -78,6 +89,7 @@ const MenuPage: React.FC = () => {
           <PageHeader title="Preferences" />
           <AppCard className="mt-3 p-0">
             <div className="divide-y divide-[#C9A86A]/40">
+              <InstallAppMenuLink />
               <MenuLink
                 text="Notifications"
                 icon={Bell}
@@ -206,8 +218,82 @@ const MenuItem: React.FC<MenuItemProps> = ({
   )
 }
 
-interface MenuLinkProps {
-  text: string
+/**
+ * PWA entry: tapping it fires the browser install prompt (captured at
+ * startup), then asks for the notification permission. On platforms without
+ * programmatic install (iOS Safari) it explains the manual steps instead.
+ */
+const InstallAppMenuLink: React.FC = () => {
+  const { canInstall } = usePwaInstall()
+  const [busy, setBusy] = useState(false)
+  const installed = isPwaInstalled()
+  const perm = notificationPermission()
+  const fullyDone = installed && perm === 'granted'
+
+  const subtitle = !installed
+    ? 'Install + enable notifications'
+    : perm === 'granted'
+      ? 'Installed • Notifications on'
+      : 'Installed — tap to enable notifications'
+
+  const handleClick = async () => {
+    if (busy) return
+    setBusy(true)
+    try {
+      if (!installed) {
+        if (canInstall) {
+          const outcome = await promptPwaInstall()
+          if (outcome === 'dismissed') {
+            toast.info('Install dismissed — you can try again anytime.')
+            return
+          }
+          if (outcome === 'accepted') toast.success('Vhennus installed!')
+        } else {
+          toast.info(
+            'To install: open your browser menu → "Add to Home Screen" (on iPhone: Share → Add to Home Screen).',
+            { autoClose: 7000 },
+          )
+          return
+        }
+      }
+      const result = await requestNotificationPermission()
+      if (result === 'granted') toast.success('Notifications enabled.')
+      else if (result === 'denied') {
+        toast.error('Notifications blocked — allow them in your browser site settings.')
+      }
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={busy}
+      className="flex w-full items-center justify-between p-4 transition-colors hover:bg-[#F5F5F0] disabled:opacity-60"
+    >
+      <span className="flex items-center gap-3">
+        <span className="grid h-9 w-9 place-items-center bg-[#0A1931] text-[#C9A86A]">
+          <Smartphone className="h-5 w-5" />
+        </span>
+        <span className="text-left">
+          <span className="block font-medium text-[#0A1931]">Install App</span>
+          <span className="block text-xs font-medium text-[#CC5A2A]">{subtitle}</span>
+        </span>
+      </span>
+      <span className="flex items-center gap-2">
+        {fullyDone ? (
+          <Check className="h-4 w-4 text-green-600" />
+        ) : (
+          <ChevronRight className="h-4 w-4 text-[#4d5666]" />
+        )}
+      </span>
+    </button>
+  )
+}
+
+interface MenuLinkProps {  text: string
   icon: React.ForwardRefExoticComponent<
     Omit<React.SVGProps<SVGSVGElement>, 'ref'>
   >

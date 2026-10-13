@@ -6,6 +6,10 @@ import {ToastContainer} from "react-toastify";
 import { LikedPostsProvider } from './features/Feed/Components/LikedPostContext.tsx';
 import { WSChatProvider } from './features/chats/socket.tsx';
 import { WSGroupProvider } from './features/groups/socket.tsx';
+import { initPwaInstallCapture, registerServiceWorker } from './Shared/pwaInstall.ts';
+
+initPwaInstallCapture();
+registerServiceWorker();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
