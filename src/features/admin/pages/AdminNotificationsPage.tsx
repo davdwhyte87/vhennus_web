@@ -7,8 +7,10 @@ import Modal from '../../../Shared/components/modal.tsx'
 import PageHeader from '../../../Shared/components/PageHeader.tsx'
 import {
   getAdminStatsAPI,
+  getPushStatusAPI,
   sendBroadcastAPI,
   type BroadcastResp,
+  type PushStatus,
 } from '../api.tsx'
 
 const TITLE_MAX = 140
@@ -19,6 +21,7 @@ const AdminNotificationsPage: React.FC = () => {
   const [body, setBody] = useState('')
   const [link, setLink] = useState('')
   const [totalUsers, setTotalUsers] = useState<number | null>(null)
+  const [pushStatus, setPushStatus] = useState<PushStatus | null>(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [sending, setSending] = useState(false)
   const [lastResult, setLastResult] = useState<BroadcastResp | null>(null)
@@ -27,6 +30,9 @@ const AdminNotificationsPage: React.FC = () => {
     getAdminStatsAPI()
       .then((result) => setTotalUsers(result.data?.total_users ?? null))
       .catch(() => setTotalUsers(null))
+    getPushStatusAPI()
+      .then((result) => setPushStatus(result.data ?? null))
+      .catch(() => setPushStatus(null))
   }, [])
 
   const valid =
@@ -48,6 +54,9 @@ const AdminNotificationsPage: React.FC = () => {
       toast.success(
         result.message || `Sent to ${result.data.users_notified} users.`,
       )
+      getPushStatusAPI()
+        .then((status) => setPushStatus(status.data ?? null))
+        .catch(() => {})
       setTitle('')
       setBody('')
       setLink('')
@@ -87,6 +96,21 @@ const AdminNotificationsPage: React.FC = () => {
                 {totalUsers === null
                   ? 'Reaches every user'
                   : `Reaches all ${totalUsers} user${totalUsers === 1 ? '' : 's'}`}
+              </p>
+              <p className="mt-1 text-xs font-medium text-[#4d5666]">
+                {pushStatus === null ? (
+                  'Checking push reach…'
+                ) : pushStatus.users_with_tokens === 0 ? (
+                  <span className="text-[#CC5A2A]">
+                    Push reach: 0 devices — no one has enabled push yet. Users
+                    enable it in the installed app → Notifications.
+                  </span>
+                ) : (
+                  <span className="text-green-700">
+                    Push reach: {pushStatus.users_with_tokens} of{' '}
+                    {pushStatus.total_users} devices
+                  </span>
+                )}
               </p>
             </div>
           </div>

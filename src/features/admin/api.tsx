@@ -242,3 +242,15 @@ export const sendBroadcastAPI = async (
   })
   return response.data
 }
+
+export interface PushStatus {
+  total_users: number
+  users_with_tokens: number
+}
+
+export const getPushStatusAPI = async (): Promise<
+  GenericResponse<PushStatus>
+> => {
+  const response = await api.get(`${NOTIF_BASE}/status`)
+  return response.data
+}
