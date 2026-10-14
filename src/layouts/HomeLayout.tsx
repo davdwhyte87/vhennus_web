@@ -55,6 +55,28 @@ const HomeLayout: React.FC = () => {
     }
   }, [])
 
+  // Fresh install that happened outside our sheet (browser menu, etc.):
+  // user activation may still be live, so attempt registration now.
+  useEffect(() => {
+    const onInstalled = () => {
+      if (
+        typeof window !== 'undefined' &&
+        'Notification' in window &&
+        Notification.permission === 'default'
+      ) {
+        ensurePushToken()
+          .then((token) => {
+            if (token) return registerPushToken(token)
+          })
+          .catch(() => {
+            /* best-effort */
+          })
+      }
+    }
+    window.addEventListener('appinstalled', onInstalled)
+    return () => window.removeEventListener('appinstalled', onInstalled)
+  }, [])
+
   return (
     <div className="min-h-screen bg-[#F5F5F0] text-[#0A1931]">
       <div className="flex min-h-screen w-full">
