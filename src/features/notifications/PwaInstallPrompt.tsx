@@ -11,18 +11,24 @@ import {
 import { isPushConfigured } from '../../Shared/firebase'
 import { enablePushOnThisDevice, pushFailureMessage } from './usePushSetup'
 
-const DISMISS_KEY = 'vhennus-pwa-prompt-dismissed'
-
 /**
- * Bottom-sheet shown once per session on the feeds page while the app
- * isn't fully set up (not installed as PWA and/or push not enabled).
- * Both actions need a real user tap, so this sheet *is* the gesture that
- * unlocks the install dialog and the notification permission dialog.
+ * Bottom-sheet shown on the feeds page (phones only) while the PWA is not
+ * installed. ONE primary button runs the whole flow inline: install the
+ * PWA, then enable push alerts — no navigation, no menu detour.
+ *
+ * Detection: `display-mode: standalone` tells us we're running inside the
+ * installed app (never prompt then), and `beforeinstallprompt` only ever
+ * fires when the app is NOT installed — so the sheet appears only on a
+ * positive not-installed signal. Push-only setup stays available via the
+ * Notifications page and Menu → Install App.
+ *
+ * Deliberately has no memory: dismissing only closes it for this view —
+ * it comes back on next open or refresh until the app is installed.
  */
 const PwaInstallPrompt: React.FC = () => {
   const { canInstall } = usePwaInstall()
   const [visible, setVisible] = useState(false)
-  const [busy, setBusy] = useState<'install' | 'notify' | null>(null)
+  const [busy, setBusy] = useState(false)
   const [installed, setInstalled] = useState<boolean>(() =>
     typeof window === 'undefined' ? true : isPwaInstalled(),
   )
@@ -31,75 +37,87 @@ const PwaInstallPrompt: React.FC = () => {
       ? Notification.permission
       : 'denied',
   )
-  const [showIosHelp, setShowIosHelp] = useState(false)
+
+  const pushWanted = isPushConfigured && perm !== 'granted'
 
   useEffect(() => {
     if (typeof window === 'undefined') return
     // Phones only — desktop and tablet never see this sheet.
     if (!isMobilePhone()) return
-    if (sessionStorage.getItem(DISMISS_KEY)) return
-    const fullyDone =
-      isPwaInstalled() &&
-      (!('Notification' in window) || Notification.permission === 'granted')
-    if (fullyDone) return
-    // Small delay so beforeinstallprompt has a chance to arrive first.
+    // Running inside the installed app → never prompt.
+    if (isPwaInstalled()) return
+    // beforeinstallprompt fires only when the app is NOT installed, so this
+    // is our positive not-installed signal. No event (already installed,
+    // unsupported browser) → stay quiet.
+    if (!canInstall) return
+    // Small delay so the sheet doesn't jump in instantly on page open.
     const timer = setTimeout(() => setVisible(true), 1200)
     return () => clearTimeout(timer)
   }, [canInstall])
 
+  // Auto-close shortly after everything is done.
   useEffect(() => {
-    if (visible && installed && perm === 'granted') {
-      const timer = setTimeout(() => {
-        sessionStorage.setItem(DISMISS_KEY, '1')
-        setVisible(false)
-      }, 900)
+    if (visible && installed && !pushWanted) {
+      const timer = setTimeout(() => setVisible(false), 900)
       return () => clearTimeout(timer)
     }
-  }, [visible, installed, perm])
+  }, [visible, installed, pushWanted])
 
-  const dismiss = () => {
-    sessionStorage.setItem(DISMISS_KEY, '1')
-    setVisible(false)
+  const dismiss = () => setVisible(false)
+
+  const refreshPerm = () =>
+    setPerm(
+      'Notification' in window ? Notification.permission : 'denied',
+    )
+
+  /** Step 2 of the combined flow. */
+  const enableAlerts = async (): Promise<boolean> => {
+    if (!isPushConfigured) return true
+    const result = await enablePushOnThisDevice()
+    refreshPerm()
+    if (result.ok) {
+      toast.success('Push alerts enabled on this device.')
+      return true
+    }
+    toast.error(pushFailureMessage(result.reason))
+    return false
   }
 
-  const handleInstall = async () => {
+  /** The single combined action: install, then enable alerts. */
+  const handleSetup = async () => {
     if (busy) return
-    if (!canInstall) {
-      // iOS Safari and friends: no programmatic prompt — show manual steps.
-      setShowIosHelp((v) => !v)
-      return
-    }
-    setBusy('install')
+    setBusy(true)
     try {
-      const outcome = await promptPwaInstall()
-      if (outcome === 'accepted') {
+      if (!installed) {
+        const outcome = await promptPwaInstall()
+        if (outcome === 'unavailable') {
+          toast.info('Install is not available right now — try Menu → Install App.')
+          return
+        }
+        if (outcome !== 'accepted') {
+          toast.info('Install dismissed — tap again anytime to retry.')
+          return
+        }
         setInstalled(true)
         toast.success('Vhennus installed!')
-      } else if (outcome === 'dismissed') {
-        toast.info('Install dismissed — you can try again anytime.')
+      }
+      if (pushWanted) {
+        await enableAlerts()
       }
     } finally {
-      setBusy(null)
-    }
-  }
-
-  const handleNotify = async () => {
-    if (busy) return
-    setBusy('notify')
-    try {
-      const result = await enablePushOnThisDevice()
-      setPerm('Notification' in window ? Notification.permission : 'denied')
-      if (result.ok) {
-        toast.success('Push alerts enabled on this device.')
-      } else {
-        toast.error(pushFailureMessage(result.reason))
-      }
-    } finally {
-      setBusy(null)
+      setBusy(false)
     }
   }
 
   if (!visible) return null
+
+  const primaryLabel = !installed
+    ? pushWanted
+      ? 'Install & enable alerts'
+      : 'Install app'
+    : pushWanted
+      ? 'Enable alerts'
+      : 'Done'
 
   return (
     <div className="fixed inset-0 z-50" role="dialog" aria-label="Install Vhennus">
@@ -130,72 +148,42 @@ const PwaInstallPrompt: React.FC = () => {
           </button>
         </div>
 
-        {/* Install row */}
-        <div className="mt-4 flex items-center gap-3 rounded-2xl border border-[#E8E0CF] p-3">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0A1931]/5">
-            <Download className="h-5 w-5 text-[#CC5A2A]" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-[#0A1931]">Install the app</p>
-            <p className="text-xs text-[#4d5666]">
-              {installed ? 'Installed on this device' : 'Home-screen app, works offline'}
-            </p>
-          </div>
-          {installed ? (
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-green-100">
-              <Check className="h-5 w-5 text-green-700" />
-            </span>
-          ) : (
-            <AppButton size="sm" loading={busy === 'install'} onClick={handleInstall}>
-              Install
-            </AppButton>
-          )}
-        </div>
-        {showIosHelp && !installed && (
-          <p className="mt-2 rounded-xl bg-[#F5F5F0] p-3 text-xs leading-relaxed text-[#4d5666]">
-            To install: open your browser menu → "Add to Home Screen" (on
-            iPhone: Share → Add to Home Screen), then reopen Vhennus from the
-            new icon.
-          </p>
-        )}
-
-        {/* Push row */}
-        <div className="mt-2 flex items-center gap-3 rounded-2xl border border-[#E8E0CF] p-3">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0A1931]/5">
-            <BellRing className="h-5 w-5 text-[#CC5A2A]" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-[#0A1931]">Push alerts</p>
-            <p className="text-xs text-[#4d5666]">
-              {!isPushConfigured
-                ? 'Coming soon'
+        {/* Combined status */}
+        <div className="mt-4 space-y-2 rounded-2xl border border-[#E8E0CF] p-3">
+          <StatusRow
+            icon={<Download className="h-4 w-4 text-[#CC5A2A]" />}
+            label="App installed"
+            done={installed}
+          />
+          <StatusRow
+            icon={<BellRing className="h-4 w-4 text-[#CC5A2A]" />}
+            label={
+              !isPushConfigured
+                ? 'Push alerts (coming soon)'
                 : perm === 'granted'
-                  ? 'On — alerts enabled'
+                  ? 'Push alerts on'
                   : perm === 'denied'
-                    ? 'Blocked — allow in browser site settings'
-                    : 'Get notified even when the app is closed'}
-            </p>
-          </div>
-          {perm === 'granted' ? (
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-green-100">
-              <Check className="h-5 w-5 text-green-700" />
-            </span>
-          ) : (
-            <AppButton
-              size="sm"
-              loading={busy === 'notify'}
-              disabled={!isPushConfigured || perm === 'denied'}
-              onClick={handleNotify}
-            >
-              Enable
-            </AppButton>
-          )}
+                    ? 'Push alerts blocked — allow in browser settings'
+                    : 'Push alerts'
+            }
+            done={perm === 'granted'}
+            dimmed={!isPushConfigured}
+          />
         </div>
+
+        <AppButton
+          fullWidth
+          loading={busy}
+          onClick={handleSetup}
+          className="mt-3 rounded-full py-3.5"
+        >
+          {primaryLabel}
+        </AppButton>
 
         <button
           type="button"
           onClick={dismiss}
-          className="mt-3 w-full py-2 text-center text-sm font-medium text-[#4d5666] hover:text-[#0A1931]"
+          className="mt-1 w-full py-2 text-center text-sm font-medium text-[#4d5666] hover:text-[#0A1931]"
         >
           Not now
         </button>
@@ -203,5 +191,33 @@ const PwaInstallPrompt: React.FC = () => {
     </div>
   )
 }
+
+const StatusRow: React.FC<{
+  icon: React.ReactNode
+  label: string
+  done: boolean
+  dimmed?: boolean
+}> = ({ icon, label, done, dimmed = false }) => (
+  <div className="flex items-center gap-3">
+    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#0A1931]/5">
+      {icon}
+    </span>
+    <p
+      className={[
+        'min-w-0 flex-1 text-sm font-medium',
+        dimmed ? 'text-gray-400' : 'text-[#0A1931]',
+      ].join(' ')}
+    >
+      {label}
+    </p>
+    {done ? (
+      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-green-100">
+        <Check className="h-4 w-4 text-green-700" />
+      </span>
+    ) : (
+      <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-gray-200" />
+    )}
+  </div>
+)
 
 export default PwaInstallPrompt
