@@ -1,7 +1,16 @@
+import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import HomeBottomNav from '../features/Feed/Components/HomeBottomNav.tsx'
 import AppSideNav from '../Shared/components/AppSideNav.tsx'
 import GlobalCallBanner from '../features/groups/components/GlobalCallBanner.tsx'
+import {
+  configureServiceWorkerPush,
+  ensurePushToken,
+  startForegroundPushListener,
+} from '../Shared/firebase.ts'
+import { registerPushToken } from '../features/notifications/api.ts'
+
+let pushBootstrapped = false
 
 const FULL_BLEED_PATTERNS = [
   /\/home\/groups\/[^/]+\/call\/?$/,
@@ -23,6 +32,28 @@ function isFullBleed(pathname: string) {
 const HomeLayout: React.FC = () => {
   const { pathname } = useLocation()
   const fullBleed = isFullBleed(pathname)
+
+  // Push bootstrap (once per session): foreground listener + silent token
+  // refresh when the user already granted permission on this browser.
+  useEffect(() => {
+    startForegroundPushListener()
+    configureServiceWorkerPush()
+    if (pushBootstrapped) return
+    pushBootstrapped = true
+    if (
+      typeof window !== 'undefined' &&
+      'Notification' in window &&
+      Notification.permission === 'granted'
+    ) {
+      ensurePushToken()
+        .then((token) => {
+          if (token) return registerPushToken(token)
+        })
+        .catch(() => {
+          /* best-effort */
+        })
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] text-[#0A1931]">

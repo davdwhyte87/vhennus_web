@@ -216,3 +216,29 @@ export const deleteAdminSearchTagAPI = async (
   const response = await api.delete(`${SEARCH_BASE}/tags/${id}`)
   return response.data
 }
+
+// ---------- Mass notifications (broadcast to all users) ----------
+
+export interface BroadcastReq {
+  title: string
+  body: string
+  link?: string | null
+}
+
+export interface BroadcastResp {
+  users_notified: number
+  pushes_sent: number
+}
+
+const NOTIF_BASE = '/api/v1/auth/admin/notifications'
+
+export const sendBroadcastAPI = async (
+  data: BroadcastReq
+): Promise<GenericResponse<BroadcastResp>> => {
+  const response = await api.post(`${NOTIF_BASE}/broadcast`, {
+    title: data.title,
+    body: data.body,
+    link: data.link ?? null,
+  })
+  return response.data
+}

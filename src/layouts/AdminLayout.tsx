@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
+  Bell,
   ChevronDown,
   ClipboardList,
   HelpCircle,
@@ -28,6 +29,7 @@ interface NavEntry {
 
 const NAV_ITEMS: NavEntry[] = [
   { route: '/admin', label: 'Home', icon: Home },
+  { route: '/admin/notifications', label: 'Notifications', icon: Bell },
   { route: '/admin/requests', label: 'Membership Requests', icon: ClipboardList },
   { route: '/admin/questions', label: 'Questions', icon: HelpCircle },
   {

@@ -9,6 +9,21 @@ import { api, type GenericResponse } from '../../Shared/api';
 export interface CreatePostData{
     text:string;
     image?:string  | null;
+    poll_options?: string[];
+}
+
+export interface PollOptionResult {
+  id: string;
+  text: string;
+  position: number;
+  vote_count: number;
+}
+
+export interface PostPollData {
+  options: PollOptionResult[];
+  total_votes: number;
+  user_voted_option_id?: string | null;
+  has_poll: boolean;
 }
 
 export interface PostFeed{
@@ -22,6 +37,7 @@ export interface PostFeed{
   text:string
   updated_at:string;
   user_name:string;
+  poll?: PostPollData | null;
 }
 
 export const createPost = async (data: CreatePostData): Promise<void> => {
@@ -55,6 +71,16 @@ export interface Comment{
 export interface SinglePostResponse{
   comments:Comment[];
   post:PostFeed;
+}
+
+export const votePoll = async (postId: string, optionId: string): Promise<GenericResponse<PostPollData>> => {
+    const response = await api.post(`/api/v1/auth/post/${postId}/poll/vote`, { option_id: optionId });
+    return response.data;
+}
+
+export const getPoll = async (postId: string): Promise<GenericResponse<PostPollData>> => {
+    const response = await api.get(`/api/v1/auth/post/${postId}/poll`);
+    return response.data;
 }
 
 export const getSinglePost = async (id:string): Promise<GenericResponse<SinglePostResponse>> => {

@@ -1,3 +1,5 @@
+import NotificationBell from '../../features/notifications/NotificationBell'
+
 const HomeNav: React.FC = () => {
   return (
     <nav className="sticky top-0 z-40 border-b border-[#C9A86A]/60 bg-[#F5F5F0]/95 backdrop-blur-md">
@@ -12,6 +14,7 @@ const HomeNav: React.FC = () => {
               <p className="text-xs text-[#4d5666]">Social Network</p>
             </div>
           </div>
+          <NotificationBell />
         </div>
       </div>
     </nav>

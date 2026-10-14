@@ -19,6 +19,7 @@ const LoginPage = lazy(() => import('./features/auth/pages/LoginPage.tsx'))
 const SignupPage = lazy(() => import('./features/auth/pages/Signup.tsx'))
 const CreateFeedPage = lazy(() => import('./features/Feed/pages/CreateFeedPage.tsx'))
 const SinglePostPage = lazy(() => import('./features/Feed/pages/SinglePostPage.tsx'))
+const NotificationsPage = lazy(() => import('./features/notifications/pages/NotificationsPage.tsx'))
 const MyProfilePage = lazy(() => import('./features/profile/pages/MyProfilePage.tsx'))
 const EditProfilePage = lazy(() => import('./features/profile/pages/EditProfilePage.tsx'))
 const MenuPage = lazy(() => import('./features/menu/pages/MenuPage.tsx'))
@@ -51,6 +52,7 @@ const GroupSettingsPage = lazy(() => import('./features/groups/pages/GroupSettin
 const JoinGroupPage = lazy(() => import('./features/groups/pages/JoinGroupPage.tsx'))
 const AdminGroupsPage = lazy(() => import('./features/admin/pages/AdminGroupsPage.tsx'))
 const AdminGroupCategoriesPage = lazy(() => import('./features/admin/pages/AdminGroupCategoriesPage.tsx'))
+const AdminNotificationsPage = lazy(() => import('./features/admin/pages/AdminNotificationsPage.tsx'))
 
 function RouteFallback() {
   return (
@@ -82,7 +84,9 @@ function ScrollToTop() {
 
 const App: React.FC = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
       <ScrollToTop />
       <Suspense fallback={<RouteFallback />}>
         <Routes>
@@ -101,6 +105,7 @@ const App: React.FC = () => {
                 element={<CreateFeedPage />}
               />
               <Route path="home/post/:id" element={<SinglePostPage />} />
+              <Route path="home/notifications" element={<NotificationsPage />} />
               <Route path="home/menu" element={<MenuPage />} />
               <Route path="home/membership" element={<MembershipPage />} />
               <Route
@@ -156,6 +161,7 @@ const App: React.FC = () => {
               <Route path="admin/users/search-settings" element={<AdminSearchSettingsPage />} />
               <Route path="admin/groups" element={<AdminGroupsPage />} />
               <Route path="admin/groups/categories" element={<AdminGroupCategoriesPage />} />
+              <Route path="admin/notifications" element={<AdminNotificationsPage />} />
             </Route>
           </Route>
 

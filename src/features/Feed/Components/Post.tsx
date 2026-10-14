@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import profileImage from "../../../assets/profile2.png";
 import LinkifiedText from "../../../Shared/components/LinkifiedText";
 import LinkPreview from "../../../Shared/components/LinkPreview";
+import Poll from "./Poll";
 
 export interface PostProps {
     mpost: PostFeed;
@@ -143,6 +144,10 @@ const Post: React.FC<PostProps> = ({
                             }}
                         />
                     </div>
+                )}
+
+                {post?.poll && post.poll.has_poll !== false && post.poll.options?.length > 0 && (
+                    <Poll key={`${post.id}-${post.poll.user_voted_option_id ?? 'novote'}-${post.poll.total_votes}`} postId={post.id} initialPoll={post.poll} />
                 )}
             </div>
 

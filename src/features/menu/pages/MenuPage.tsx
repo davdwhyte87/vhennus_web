@@ -29,6 +29,8 @@ import {
   requestNotificationPermission,
   usePwaInstall,
 } from '../../../Shared/pwaInstall.ts'
+import { ensurePushToken } from '../../../Shared/firebase.ts'
+import { registerPushToken } from '../../notifications/api.ts'
 
 const MenuPage: React.FC = () => {
   const navigate = useNavigate()
@@ -93,10 +95,7 @@ const MenuPage: React.FC = () => {
               <MenuLink
                 text="Notifications"
                 icon={Bell}
-                page="/notifications"
-                badge="3"
-                disabled
-                disabledReason="Coming soon."
+                page="/home/notifications"
               />
               <MenuLink
                 text="Privacy & Security"
@@ -257,8 +256,16 @@ const InstallAppMenuLink: React.FC = () => {
         }
       }
       const result = await requestNotificationPermission()
-      if (result === 'granted') toast.success('Notifications enabled.')
-      else if (result === 'denied') {
+      if (result === 'granted') {
+        toast.success('Notifications enabled.')
+        // Register this browser for push delivery (best-effort).
+        try {
+          const token = await ensurePushToken()
+          if (token) await registerPushToken(token)
+        } catch {
+          /* token save is best-effort */
+        }
+      } else if (result === 'denied') {
         toast.error('Notifications blocked — allow them in your browser site settings.')
       }
     } finally {
