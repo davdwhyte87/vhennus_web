@@ -7,6 +7,7 @@ import { getPostFeeds, type PostFeed } from '../api.ts'
 import HomeNav from '../../../Shared/components/HomeNav.tsx'
 import PageLoad from '../../../Shared/components/PageLoad.tsx'
 import AppButton from '../../../Shared/components/Button.tsx'
+import PwaInstallPrompt from '../../notifications/PwaInstallPrompt.tsx'
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate()
@@ -146,6 +147,8 @@ const HomePage: React.FC = () => {
           </svg>
         </button>
       )}
+
+      <PwaInstallPrompt />
     </div>
   )
 }

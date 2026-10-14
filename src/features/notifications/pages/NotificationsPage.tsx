@@ -17,16 +17,15 @@ import BackNav from '../../../Shared/components/BackNav'
 import RelativeTime from '../../../Shared/components/RelativeTime'
 import AppButton from '../../../Shared/components/Button'
 import {
-  ensurePushToken,
   isPushConfigured,
   pushSupport,
   startForegroundPushListener,
   subscribeForegroundPush,
 } from '../../../Shared/firebase'
+import { enablePushOnThisDevice, pushFailureMessage } from '../usePushSetup'
 import {
   listNotifications,
   markNotificationsRead,
-  registerPushToken,
   type AppNotification,
 } from '../api'
 
@@ -105,22 +104,15 @@ const NotificationsPage: React.FC = () => {
   const handleEnablePush = async () => {
     setEnabling(true)
     try {
-      const token = await ensurePushToken()
+      const result = await enablePushOnThisDevice()
       setPermission(
         'Notification' in window ? Notification.permission : 'unsupported',
       )
-      if (!token) {
-        if (!isPushConfigured) {
-          toast.error('Push is not configured yet — contact support.')
-        } else if (Notification.permission === 'denied') {
-          toast.error('Notifications are blocked — allow them in browser site settings.')
-        } else {
-          toast.error('Could not enable push on this device.')
-        }
-        return
+      if (result.ok) {
+        toast.success('Push notifications enabled on this device.')
+      } else {
+        toast.error(pushFailureMessage(result.reason))
       }
-      await registerPushToken(token)
-      toast.success('Push notifications enabled on this device.')
     } catch {
       toast.error('Could not enable push notifications.')
     } finally {

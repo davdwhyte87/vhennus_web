@@ -59,6 +59,22 @@ export function isPwaInstalled() {
   )
 }
 
+/** True only on mobile phones (not desktop, not tablet). */
+export function isMobilePhone(): boolean {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return false
+  }
+  const nav = navigator as Navigator & {
+    userAgentData?: { mobile?: boolean }
+  }
+  if (typeof nav.userAgentData?.mobile === 'boolean') {
+    return nav.userAgentData.mobile
+  }
+  const ua = navigator.userAgent || ''
+  if (/iPad|Tablet/i.test(ua)) return false
+  return /Mobi|Android|iPhone|iPod/i.test(ua)
+}
+
 /** Shows the browser install dialog. Returns the outcome. */
 export async function promptPwaInstall(): Promise<'accepted' | 'dismissed' | 'unavailable'> {
   if (!deferredPrompt) return 'unavailable'
