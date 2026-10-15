@@ -17,10 +17,13 @@ import BackNav from '../../../Shared/components/BackNav'
 import RelativeTime from '../../../Shared/components/RelativeTime'
 import AppButton from '../../../Shared/components/Button'
 import {
+  copyPushToken,
+  getPushDiagnostic,
   isPushConfigured,
   pushSupport,
   startForegroundPushListener,
   subscribeForegroundPush,
+  type PushDiagnostic,
 } from '../../../Shared/firebase'
 import { enablePushOnThisDevice, pushFailureMessage } from '../usePushSetup'
 import {
@@ -57,6 +60,8 @@ const NotificationsPage: React.FC = () => {
   const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(false)
   const [enabling, setEnabling] = useState(false)
+  const [diagnostic, setDiagnostic] = useState<PushDiagnostic | null>(null)
+  const [copied, setCopied] = useState(false)
   const [permission, setPermission] = useState<string>(
     typeof window !== 'undefined' && 'Notification' in window
       ? Notification.permission
@@ -86,6 +91,9 @@ const NotificationsPage: React.FC = () => {
   useEffect(() => {
     loadMore(true)
     startForegroundPushListener()
+    getPushDiagnostic()
+      .then(setDiagnostic)
+      .catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -184,6 +192,61 @@ const NotificationsPage: React.FC = () => {
               Enable push on this device
             </AppButton>
           )}
+
+          {/* On-device diagnostics: read these off the phone screen. */}
+          <div className="mt-3 rounded-xl bg-[#0A1931] p-3 font-mono text-[11px] leading-relaxed text-[#C9A86A]">
+            {!diagnostic ? (
+              <p>Reading device state…</p>
+            ) : (
+              <>
+                <p>config: {diagnostic.configured ? 'baked ✓' : 'MISSING'}</p>
+                <p>permission: {diagnostic.permission}</p>
+                {diagnostic.workers.length === 0 && <p>workers: none!</p>}
+                {diagnostic.workers.map((w) => (
+                  <p key={w.scriptURL + w.scope}>
+                    worker: {w.scriptURL.split('/').pop()} [{w.state}]
+                  </p>
+                ))}
+                <p>
+                  token:{' '}
+                  {diagnostic.tokenPreview
+                    ? `${diagnostic.tokenPreview} (${diagnostic.tokenLength} chars)`
+                    : 'none'}
+                </p>
+              </>
+            )}
+          </div>
+          <div className="mt-2 flex gap-2">
+            <AppButton
+              variant="outline"
+              size="sm"
+              fullWidth
+              onClick={() => {
+                getPushDiagnostic()
+                  .then(setDiagnostic)
+                  .catch(() => {})
+              }}
+            >
+              Refresh status
+            </AppButton>
+            <AppButton
+              variant="outline"
+              size="sm"
+              fullWidth
+              onClick={async () => {
+                const ok = await copyPushToken()
+                if (ok) {
+                  setCopied(true)
+                  toast.success('Token copied — paste into Firebase console test.')
+                  setTimeout(() => setCopied(false), 2000)
+                } else {
+                  toast.error('No token to copy — enable push first.')
+                }
+              }}
+            >
+              {copied ? 'Copied!' : 'Copy FCM token'}
+            </AppButton>
+          </div>
         </section>
 
         {/* Inbox header */}

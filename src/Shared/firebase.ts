@@ -169,6 +169,82 @@ export interface ForegroundPush {
   link?: string
 }
 
+export interface WorkerDiagnostic {
+  scriptURL: string
+  scope: string
+  state: string
+}
+
+export interface PushDiagnostic {
+  configured: boolean
+  permission: string
+  workers: WorkerDiagnostic[]
+  tokenPreview: string | null
+  tokenLength: number
+}
+
+/** Phone-readable diagnostics: which worker owns push, permission, token. */
+export async function getPushDiagnostic(): Promise<PushDiagnostic> {
+  const permission =
+    typeof window !== 'undefined' && 'Notification' in window
+      ? Notification.permission
+      : 'unsupported'
+  const workers: WorkerDiagnostic[] = []
+  try {
+    const regs = await navigator.serviceWorker.getRegistrations()
+    for (const reg of regs) {
+      const worker =
+        reg.active ?? reg.waiting ?? reg.installing ?? null
+      workers.push({
+        scriptURL: worker?.scriptURL ?? '(none)',
+        scope: reg.scope,
+        state:
+          reg.active != null
+            ? `active`
+            : reg.waiting != null
+              ? 'waiting'
+              : reg.installing != null
+                ? 'installing'
+                : 'unknown',
+      })
+    }
+  } catch {
+    /* leave empty */
+  }
+  let tokenPreview: string | null = null
+  let tokenLength = 0
+  if (isPushConfigured && permission === 'granted') {
+    try {
+      const token = await ensurePushToken()
+      if (token) {
+        tokenPreview = `${token.slice(0, 16)}…`
+        tokenLength = token.length
+      }
+    } catch {
+      /* leave empty */
+    }
+  }
+  return {
+    configured: isPushConfigured,
+    permission,
+    workers,
+    tokenPreview,
+    tokenLength,
+  }
+}
+
+/** Copies the full current FCM token (for Firebase console testing). */
+export async function copyPushToken(): Promise<boolean> {
+  try {
+    const token = await ensurePushToken()
+    if (!token) return false
+    await navigator.clipboard.writeText(token)
+    return true
+  } catch {
+    return false
+  }
+}
+
 type ForegroundHandler = (push: ForegroundPush) => void
 const foregroundListeners = new Set<ForegroundHandler>()
 
