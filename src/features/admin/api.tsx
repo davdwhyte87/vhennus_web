@@ -254,3 +254,20 @@ export const getPushStatusAPI = async (): Promise<
   const response = await api.get(`${NOTIF_BASE}/status`)
   return response.data
 }
+
+export interface TestPushResp {
+  stored: boolean
+  has_token: boolean
+  push_sent: boolean
+}
+
+export const sendTestPushAPI = async (
+  userName: string,
+): Promise<GenericResponse<TestPushResp>> => {
+  const response = await api.post(`${NOTIF_BASE}/test`, {
+    user_name: userName,
+    title: 'Test notification',
+    body: 'If you see this, push works on this device.',
+  })
+  return response.data
+}

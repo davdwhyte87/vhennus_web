@@ -9,8 +9,10 @@ import {
   getAdminStatsAPI,
   getPushStatusAPI,
   sendBroadcastAPI,
+  sendTestPushAPI,
   type BroadcastResp,
   type PushStatus,
+  type TestPushResp,
 } from '../api.tsx'
 
 const TITLE_MAX = 140
@@ -25,6 +27,9 @@ const AdminNotificationsPage: React.FC = () => {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [sending, setSending] = useState(false)
   const [lastResult, setLastResult] = useState<BroadcastResp | null>(null)
+  const [testUser, setTestUser] = useState('')
+  const [testing, setTesting] = useState(false)
+  const [testResult, setTestResult] = useState<TestPushResp | null>(null)
 
   useEffect(() => {
     getAdminStatsAPI()
@@ -41,8 +46,29 @@ const AdminNotificationsPage: React.FC = () => {
     body.trim().length > 0 &&
     body.trim().length <= BODY_MAX
 
-  const handleConfirmSend = async () => {
-    if (!valid || sending) return
+  const handleTestPush = async () => {
+    if (testUser.trim() === '' || testing) return
+    setTesting(true)
+    setTestResult(null)
+    try {
+      const result = await sendTestPushAPI(testUser.trim())
+      setTestResult(result.data)
+      toast.info(result.message || 'Test sent.')
+    } catch (err) {
+      const serverMessage = (
+        err as { response?: { data?: { message?: string } } }
+      )?.response?.data?.message
+      toast.error(
+        serverMessage && serverMessage.trim() !== ''
+          ? serverMessage
+          : 'Could not send test push.',
+      )
+    } finally {
+      setTesting(false)
+    }
+  }
+
+  const handleConfirmSend = async () => {    if (!valid || sending) return
     setSending(true)
     try {
       const result = await sendBroadcastAPI({
@@ -214,6 +240,50 @@ const AdminNotificationsPage: React.FC = () => {
               </p>
             </AppCard>
           )}
+
+          <AppCard className="p-5">
+            <h2 className="text-sm font-semibold text-[#0A1931]">
+              Send a test to one user
+            </h2>
+            <p className="mt-1 text-xs text-[#4d5666]">
+              Debugging delivery? Fire a single test and watch that device.
+            </p>
+            <div className="mt-3 flex gap-2">
+              <input
+                type="text"
+                value={testUser}
+                onChange={(e) => setTestUser(e.target.value)}
+                placeholder="user_name"
+                className="min-w-0 flex-1 border border-[#C9A86A]/60 bg-white px-3 py-2.5 text-sm text-[#0A1931] placeholder:text-gray-400 focus:border-[#CC5A2A] focus:outline-none"
+              />
+              <AppButton
+                size="sm"
+                loading={testing}
+                disabled={testUser.trim() === '' || testing}
+                onClick={handleTestPush}
+              >
+                <Send className="h-4 w-4" />
+                Test
+              </AppButton>
+            </div>
+            {testResult && (
+              <div className="mt-3 space-y-1 rounded-xl bg-[#F5F5F0] p-3 text-xs">
+                <TestLine ok={testResult.stored} label="Inbox row stored" />
+                <TestLine ok={testResult.has_token} label="Device token on file" />
+                <TestLine ok={testResult.push_sent} label="FCM accepted the push" />
+                {!testResult.has_token && (
+                  <p className="pt-1 text-[#CC5A2A]">
+                    No token — enable push inside that user's installed app first.
+                  </p>
+                )}
+                {testResult.has_token && !testResult.push_sent && (
+                  <p className="pt-1 text-[#CC5A2A]">
+                    Token exists but FCM rejected it — check server logs.
+                  </p>
+                )}
+              </div>
+            )}
+          </AppCard>
         </div>
       </div>
 
@@ -258,3 +328,9 @@ const AdminNotificationsPage: React.FC = () => {
 }
 
 export default AdminNotificationsPage
+
+const TestLine: React.FC<{ ok: boolean; label: string }> = ({ ok, label }) => (
+  <p className={ok ? 'text-green-700' : 'text-[#4d5666]'}>
+    {ok ? '✓' : '○'} {label}
+  </p>
+)

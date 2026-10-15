@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import HomeBottomNav from '../features/Feed/Components/HomeBottomNav.tsx'
 import AppSideNav from '../Shared/components/AppSideNav.tsx'
 import GlobalCallBanner from '../features/groups/components/GlobalCallBanner.tsx'
@@ -7,6 +8,7 @@ import {
   configureServiceWorkerPush,
   ensurePushToken,
   startForegroundPushListener,
+  subscribeForegroundPush,
 } from '../Shared/firebase.ts'
 import { registerPushToken } from '../features/notifications/api.ts'
 
@@ -31,12 +33,26 @@ function isFullBleed(pathname: string) {
 
 const HomeLayout: React.FC = () => {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const fullBleed = isFullBleed(pathname)
+
+  // Global foreground push: toast on every protected screen while the app
+  // is open, tapping it follows the notification link.
+  useEffect(() => {
+    startForegroundPushListener()
+    const unsubscribe = subscribeForegroundPush((push) => {
+      toast.info(`${push.title} — ${push.body}`, {
+        onClick: () => {
+          if (push.link) navigate(push.link)
+        },
+      })
+    })
+    return unsubscribe
+  }, [navigate])
 
   // Push bootstrap (once per session): foreground listener + silent token
   // refresh when the user already granted permission on this browser.
   useEffect(() => {
-    startForegroundPushListener()
     configureServiceWorkerPush()
     if (pushBootstrapped) return
     pushBootstrapped = true
