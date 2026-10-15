@@ -32,6 +32,11 @@ function readConfig(): FirebaseWebConfig | null {
 
 export const isPushConfigured = readConfig() !== null
 
+if (typeof window !== 'undefined') {
+  // Secret-free: boolean only, never logs the keys themselves.
+  console.info('[push] FCM configured:', isPushConfigured)
+}
+
 /**
  * Forwards the Firebase web config to the active service worker so it can
  * show background notifications. Service workers are static files and
@@ -59,8 +64,11 @@ export function pushSupport(): 'supported' | 'unsupported' {
 async function messagingSupported(): Promise<boolean> {
   try {
     const { isSupported } = await import('firebase/messaging')
-    return await isSupported()
-  } catch {
+    const ok = await isSupported()
+    if (!ok) console.warn('[push] firebase messaging not supported in this browser')
+    return ok
+  } catch (err) {
+    console.warn('[push] firebase messaging failed to load', err)
     return false
   }
 }
@@ -117,10 +125,15 @@ export async function ensurePushToken(): Promise<string | null> {
     // Push the web config to whichever worker owns the subscription so
     // background notifications render when the app is closed.
     await configureServiceWorkerPush()
-    return await getToken(getMessaging(app), {
-      vapidKey,
-      serviceWorkerRegistration: registration,
-    })
+    try {
+      return await getToken(getMessaging(app), {
+        vapidKey,
+        serviceWorkerRegistration: registration,
+      })
+    } catch (err) {
+      console.warn('[push] getToken failed (check VAPID key + sender ID match)', err)
+      return null
+    }
   } catch {
     return null
   }
