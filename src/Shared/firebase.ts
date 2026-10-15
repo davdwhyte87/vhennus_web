@@ -167,6 +167,9 @@ export async function startForegroundPushListener(): Promise<void> {
   try {
     const { getMessaging, onMessage } = await import('firebase/messaging')
     onMessage(getMessaging(app), (payload) => {
+      // Secret-free marker: proves a push reached this page (see it with
+      // chrome://inspect or Safari Web Inspector filtering "[push]").
+      console.info('[push] foreground message received:', payload.notification?.title ?? '(no title)')
       const title = payload.notification?.title ?? 'Vhennus'
       const body = payload.notification?.body ?? ''
       const rawLink = payload.data?.['link']

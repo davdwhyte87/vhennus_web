@@ -90,16 +90,12 @@ const NotificationsPage: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    const unsubscribe = subscribeForegroundPush((push) => {
-      toast.info(`${push.title} — ${push.body}`, {
-        onClick: () => {
-          if (push.link) navigate(push.link)
-        },
-      })
+    // Refresh-only: the global toast lives in HomeLayout (avoids doubles).
+    const unsubscribe = subscribeForegroundPush(() => {
       loadMore(true)
     })
     return unsubscribe
-  }, [loadMore, navigate])
+  }, [loadMore])
 
   const handleEnablePush = async () => {
     setEnabling(true)

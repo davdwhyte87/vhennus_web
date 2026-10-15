@@ -19,13 +19,13 @@ createRoot(document.getElementById('root')!).render(
         <App />
         <ToastContainer
             position="top-right"
-            autoClose={3000}
-            hideProgressBar
+            autoClose={4000}
+            hideProgressBar={false}
             newestOnTop
             closeOnClick
             pauseOnHover
             draggable
-            limit={1}
+            limit={3}
             theme="colored"
         />
         </WSGroupProvider>
