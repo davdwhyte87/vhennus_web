@@ -3,11 +3,15 @@
  *
  * Setup (one time): in the Firebase console create a Web app for the
  * project used by the server (vhennus-dev / vhennus-916a0), copy its config
- * into the VITE_FIREBASE_* vars in vhennus_web/.env, and add a Web Push
- * certificate (VAPID key) under Project settings -> Cloud Messaging as
- * VITE_FIREBASE_VAPID_KEY. The .env file is the only place keys live — the
- * app forwards them to the service worker at runtime (service workers can't
- * read Vite env vars). Until the vars are set every helper is a safe no-op.
+ * into the VITE_FIREBASE_* vars in vhennus_web/.env (local) or the Vercel
+ * dashboard (production), and add a Web Push certificate (VAPID key) under
+ * Project settings -> Cloud Messaging as VITE_FIREBASE_VAPID_KEY.
+ *
+ * The .env/dashboard vars are the single source of truth: Vite inlines
+ * them into the app bundle, and scripts/inject-sw-config.mjs bakes them
+ * into public/sw.js at build/dev-start so the worker initializes on cold
+ * start (background push). Until the vars are set every helper is a safe
+ * no-op and the worker stays push-inert.
  */
 
 export interface FirebaseWebConfig {
@@ -38,10 +42,10 @@ if (typeof window !== 'undefined') {
 }
 
 /**
- * Forwards the Firebase web config to the active service worker so it can
- * show background notifications. Service workers are static files and
- * can't read Vite env vars — this postMessage bridge keeps .env as the
- * single source of truth. Safe to call repeatedly; the worker inits once.
+ * Forwards the Firebase web config to the active service worker.
+ * Mostly a fallback now that the config is baked in at build time —
+ * kept for edge cases (e.g. worker generated before keys were set).
+ * Safe to call repeatedly; the worker inits once.
  */
 export async function configureServiceWorkerPush(): Promise<boolean> {
   const config = readConfig()

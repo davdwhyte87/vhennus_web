@@ -271,3 +271,14 @@ export const sendTestPushAPI = async (
   })
   return response.data
 }
+
+export const startHeartbeatAPI = async (
+  userName: string,
+  count = 10,
+): Promise<GenericResponse<string>> => {
+  const response = await api.post(`${NOTIF_BASE}/heartbeat`, {
+    user_name: userName,
+    count,
+  })
+  return response.data
+}

@@ -3,10 +3,19 @@
  * Used when no service worker is registered yet (local dev, where /sw.js is
  * skipped). In production push is handled inside /sw.js.
  *
- * No keys live in this file: the app posts its Firebase web config (from
- * the VITE_FIREBASE_* env vars, single source of truth) here at startup
- * via postMessage (see Shared/firebase.ts).
+ * NOTE: this is a TEMPLATE. scripts/inject-sw-config.mjs bakes the
+ * Firebase config into public/firebase-messaging-sw.js at dev-start/build
+ * time from the VITE_FIREBASE_* env vars. Edit here, never in the
+ * generated file.
  */
+
+const FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyDW48-eyC_oSupHoaL8Ly2OkK-0YARTNro',
+  authDomain: 'vhennus-dev.firebaseapp.com',
+  projectId: 'vhennus-dev',
+  messagingSenderId: '109067936878',
+  appId: '1:109067936878:web:18b0f904077c8c6abc727f',
+}
 
 let pushInit = false
 
@@ -17,7 +26,8 @@ function setupPush(config) {
     !config.apiKey ||
     !config.projectId ||
     !config.messagingSenderId ||
-    !config.appId
+    !config.appId ||
+    String(config.apiKey).startsWith('__FIREBASE_')
   ) {
     return
   }
@@ -47,6 +57,9 @@ function setupPush(config) {
     /* push stays disabled */
   }
 }
+
+// Cold-start init: runs on every worker start, including push-wakeups.
+setupPush(FIREBASE_CONFIG)
 
 self.addEventListener('message', (event) => {
   const data = event.data

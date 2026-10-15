@@ -2,6 +2,10 @@
  * Navigations are network-first (never serve a stale app shell); static
  * same-origin GETs are cached on first use for offline resilience.
  * Background web-push is handled at the bottom (Firebase, optional).
+ *
+ * NOTE: this is a TEMPLATE. scripts/inject-sw-config.mjs bakes the
+ * Firebase config into public/sw.js at dev-start/build time from the
+ * VITE_FIREBASE_* env vars. Edit here, never in the generated file.
  */
 const VERSION = 'vhennus-sw-v2'
 const STATIC_CACHE = `${VERSION}-static`
@@ -72,13 +76,21 @@ self.addEventListener('fetch', (event) => {
   )
 })
 
-/* Background web push (Firebase Cloud Messaging, optional).
- * No keys live in this file: the app posts its Firebase web config
- * (from the VITE_FIREBASE_* env vars, single source of truth) to this
- * worker at startup via postMessage (see Shared/firebase.ts), which then
- * lazily loads the Firebase compat SDK and shows background notifications.
- * Local dev uses public/firebase-messaging-sw.js instead (same pattern).
+/* Background web push (Firebase Cloud Messaging).
+ * FIREBASE_CONFIG below is baked in at build/dev-start time (placeholders
+ * replaced by scripts/inject-sw-config.mjs). Initializing at worker
+ * evaluation — NOT on a runtime message — is what makes pushes work when
+ * the worker wakes cold with the app closed and no page alive to message
+ * it. The postMessage bridge is kept only as a fallback.
  */
+const FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyDW48-eyC_oSupHoaL8Ly2OkK-0YARTNro',
+  authDomain: 'vhennus-dev.firebaseapp.com',
+  projectId: 'vhennus-dev',
+  messagingSenderId: '109067936878',
+  appId: '1:109067936878:web:18b0f904077c8c6abc727f',
+}
+
 let pushInit = false
 
 function setupPush(config) {
@@ -88,7 +100,8 @@ function setupPush(config) {
     !config.apiKey ||
     !config.projectId ||
     !config.messagingSenderId ||
-    !config.appId
+    !config.appId ||
+    String(config.apiKey).startsWith('__FIREBASE_')
   ) {
     return
   }
@@ -118,6 +131,9 @@ function setupPush(config) {
     /* push stays disabled */
   }
 }
+
+// Cold-start init: runs on every worker start, including push-wakeups.
+setupPush(FIREBASE_CONFIG)
 
 self.addEventListener('message', (event) => {
   const data = event.data

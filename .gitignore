@@ -17,6 +17,10 @@ yarn.lock
 .env
 !.env.example
 
+# Generated service workers (baked from *.template.js + env at dev-start/build)
+public/sw.js
+public/firebase-messaging-sw.js
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

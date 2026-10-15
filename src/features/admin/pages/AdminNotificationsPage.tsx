@@ -10,6 +10,7 @@ import {
   getPushStatusAPI,
   sendBroadcastAPI,
   sendTestPushAPI,
+  startHeartbeatAPI,
   type BroadcastResp,
   type PushStatus,
   type TestPushResp,
@@ -30,6 +31,7 @@ const AdminNotificationsPage: React.FC = () => {
   const [testUser, setTestUser] = useState('')
   const [testing, setTesting] = useState(false)
   const [testResult, setTestResult] = useState<TestPushResp | null>(null)
+  const [heartbeatOn, setHeartbeatOn] = useState(false)
 
   useEffect(() => {
     getAdminStatsAPI()
@@ -46,8 +48,26 @@ const AdminNotificationsPage: React.FC = () => {
     body.trim().length > 0 &&
     body.trim().length <= BODY_MAX
 
-  const handleTestPush = async () => {
-    if (testUser.trim() === '' || testing) return
+  const handleHeartbeat = async () => {
+    if (testUser.trim() === '' || heartbeatOn) return
+    setHeartbeatOn(true)
+    try {
+      const result = await startHeartbeatAPI(testUser.trim(), 10)
+      toast.success(result.message || 'Heartbeat started — watch the phone.')
+    } catch (err) {
+      const serverMessage = (
+        err as { response?: { data?: { message?: string } } }
+      )?.response?.data?.message
+      toast.error(
+        serverMessage && serverMessage.trim() !== ''
+          ? serverMessage
+          : 'Could not start heartbeat.',
+      )
+      setHeartbeatOn(false)
+    }
+  }
+
+  const handleTestPush = async () => {    if (testUser.trim() === '' || testing) return
     setTesting(true)
     setTestResult(null)
     try {
@@ -266,6 +286,19 @@ const AdminNotificationsPage: React.FC = () => {
                 Test
               </AppButton>
             </div>
+            <AppButton
+              variant="outline"
+              size="sm"
+              fullWidth
+              disabled={testUser.trim() === '' || heartbeatOn}
+              onClick={handleHeartbeat}
+              className="mt-2"
+            >
+              <BellRing className="h-4 w-4" />
+              {heartbeatOn
+                ? 'Heartbeat running — 1 ping/min, watch the phone'
+                : 'Start 10-min heartbeat (1 ping/min)'}
+            </AppButton>
             {testResult && (
               <div className="mt-3 space-y-1 rounded-xl bg-[#F5F5F0] p-3 text-xs">
                 <TestLine ok={testResult.stored} label="Inbox row stored" />
