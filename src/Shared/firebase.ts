@@ -110,6 +110,25 @@ export async function ensurePushToken(): Promise<string | null> {
   const { getMessaging, getToken } = await import('firebase/messaging')
   const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY as string | undefined
   try {
+    // A stray /firebase-messaging-sw.js registration will swallow pushes
+    // without displaying them (Chrome's "updated in the background").
+    // Remove it so the single armed worker (/sw.js in prod) owns the
+    // subscription. Only done here on explicit enable, never on boot.
+    try {
+      const regs = await navigator.serviceWorker.getRegistrations()
+      for (const reg of regs) {
+        const url =
+          reg.active?.scriptURL ??
+          reg.installing?.scriptURL ??
+          reg.waiting?.scriptURL ??
+          ''
+        if (url.includes('firebase-messaging-sw.js')) {
+          await reg.unregister().catch(() => {})
+        }
+      }
+    } catch {
+      /* best-effort cleanup */
+    }
     // Prefer the app's own /sw.js registration (production); fall back to
     // /firebase-messaging-sw.js (local dev, where /sw.js is skipped).
     let registration: ServiceWorkerRegistration | undefined
@@ -120,8 +139,9 @@ export async function ensurePushToken(): Promise<string | null> {
     }
     if (!registration) {
       try {
-        registration =
-          await navigator.serviceWorker.register('/firebase-messaging-sw.js')
+        registration = await navigator.serviceWorker.register(
+          import.meta.env.PROD ? '/sw.js' : '/firebase-messaging-sw.js',
+        )
       } catch {
         return null
       }
