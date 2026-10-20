@@ -177,6 +177,9 @@ export interface WorkerDiagnostic {
 
 export interface PushDiagnostic {
   configured: boolean
+  /** Firebase project the token is minted under — must match the
+   *  server's FCM_PROJECT_ID (vhennus-916a0 in prod) or FCM rejects it. */
+  projectId: string | null
   permission: string
   workers: WorkerDiagnostic[]
   tokenPreview: string | null
@@ -226,6 +229,7 @@ export async function getPushDiagnostic(): Promise<PushDiagnostic> {
   }
   return {
     configured: isPushConfigured,
+    projectId: readConfig()?.projectId ?? null,
     permission,
     workers,
     tokenPreview,

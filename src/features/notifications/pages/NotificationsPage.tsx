@@ -200,6 +200,12 @@ const NotificationsPage: React.FC = () => {
             ) : (
               <>
                 <p>config: {diagnostic.configured ? 'baked ✓' : 'MISSING'}</p>
+                <p>
+                  project: {diagnostic.projectId ?? '(none)'}
+                  {import.meta.env.PROD && diagnostic.projectId !== 'vhennus-916a0' && (
+                    <> ⚠️ expected vhennus-916a0</>
+                  )}
+                </p>
                 <p>permission: {diagnostic.permission}</p>
                 {diagnostic.workers.length === 0 && <p>workers: none!</p>}
                 {diagnostic.workers.map((w) => (
