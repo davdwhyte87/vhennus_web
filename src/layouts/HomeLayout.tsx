@@ -53,14 +53,17 @@ const HomeLayout: React.FC = () => {
     }
   }, [])
 
-  // Fresh install that happened outside our sheet (browser menu, etc.):
-  // user activation may still be live, so attempt registration now.
+  // Fresh install (browser menu, etc.). Never request permission here: the
+  // appinstalled event is not a user gesture, so the browser would silently
+  // ignore the request. If permission is already granted we can still mint
+  // and register the token; otherwise the in-app prompt (PwaInstallPrompt)
+  // asks for a tap on the next launch.
   useEffect(() => {
     const onInstalled = () => {
       if (
         typeof window !== 'undefined' &&
         'Notification' in window &&
-        Notification.permission === 'default'
+        Notification.permission === 'granted'
       ) {
         ensurePushToken()
           .then((token) => {

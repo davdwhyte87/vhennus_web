@@ -1,5 +1,6 @@
 import { isPushConfigured } from '../../Shared/firebase'
 import { ensurePushToken } from '../../Shared/firebase'
+import { requestNotificationPermission } from '../../Shared/pwaInstall'
 import { registerPushToken } from './api'
 
 export type EnablePushOutcome =
@@ -17,11 +18,20 @@ export async function enablePushOnThisDevice(): Promise<EnablePushOutcome> {
     return { ok: false, reason: 'unsupported' }
   }
   try {
+    // Ask for permission first, while the caller's tap is still a user
+    // gesture. `ensurePushToken` awaits dynamic imports before it would
+    // request permission, and by then the browser may ignore the prompt.
+    if (Notification.permission === 'default') {
+      const result = await requestNotificationPermission()
+      if (result !== 'granted') {
+        return { ok: false, reason: result === 'denied' ? 'denied' : 'failed' }
+      }
+    }
+    if (Notification.permission !== 'granted') {
+      return { ok: false, reason: 'denied' }
+    }
     const token = await ensurePushToken()
     if (!token) {
-      if (Notification.permission === 'denied') {
-        return { ok: false, reason: 'denied' }
-      }
       return { ok: false, reason: 'failed' }
     }
     await registerPushToken(token)

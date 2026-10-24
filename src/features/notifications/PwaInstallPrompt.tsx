@@ -6,24 +6,30 @@ import {
   isMobilePhone,
   isPwaInstalled,
   promptPwaInstall,
+  requestNotificationPermission,
   usePwaInstall,
 } from '../../Shared/pwaInstall'
 import { isPushConfigured } from '../../Shared/firebase'
 import { enablePushOnThisDevice, pushFailureMessage } from './usePushSetup'
 
+/** Session flag: the installed app asks for notifications once per launch. */
+const PUSH_PROMPT_KEY = 'vhennus.pushPromptShown'
+
 /**
- * Bottom-sheet shown on the feeds page (phones only) while the PWA is not
- * installed. ONE primary button runs the whole flow inline: install the
- * PWA, then enable push alerts — no navigation, no menu detour.
+ * Bottom-sheet shown on the feeds page (phones only).
  *
- * Detection: `display-mode: standalone` tells us we're running inside the
- * installed app (never prompt then), and `beforeinstallprompt` only ever
- * fires when the app is NOT installed — so the sheet appears only on a
- * positive not-installed signal. Push-only setup stays available via the
- * Notifications page and Menu → Install App.
+ * Two modes:
+ *  - Not installed: ONE button installs the PWA and enables alerts. The
+ *    permission request and the install prompt are both started inside the
+ *    same tap, because the browser drops the permission dialog if it is
+ *    requested after an await (i.e. after the install prompt resolves).
+ *  - Installed but notifications still undecided: browsers never ask on
+ *    their own, so the sheet appears once per session with an "Enable
+ *    alerts" button. This is the only way to turn push on inside the
+ *    installed app (and the only way at all on iOS).
  *
- * Deliberately has no memory: dismissing only closes it for this view —
- * it comes back on next open or refresh until the app is installed.
+ * Detection: `display-mode: standalone` tells us we're inside the installed
+ * app; `beforeinstallprompt` only fires when the app is NOT installed.
  */
 const PwaInstallPrompt: React.FC = () => {
   const { canInstall } = usePwaInstall()
@@ -35,21 +41,58 @@ const PwaInstallPrompt: React.FC = () => {
   const [perm, setPerm] = useState<string>(() =>
     typeof window !== 'undefined' && 'Notification' in window
       ? Notification.permission
-      : 'denied',
+      : 'unsupported',
   )
 
-  const pushWanted = isPushConfigured && perm !== 'granted'
+  const pushSupported = typeof Notification !== 'undefined'
+  const pushWanted = isPushConfigured && pushSupported && perm !== 'granted'
+
+  // Keep the local `installed` flag in sync when the app is installed from
+  // the browser menu (not through our button).
+  useEffect(() => {
+    const onInstalled = () => setInstalled(true)
+    window.addEventListener('appinstalled', onInstalled)
+    return () => window.removeEventListener('appinstalled', onInstalled)
+  }, [])
+
+  // Re-read permission when the user comes back from browser settings.
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        setPerm(
+          'Notification' in window ? Notification.permission : 'unsupported',
+        )
+      }
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
     // Phones only — desktop and tablet never see this sheet.
     if (!isMobilePhone()) return
-    // Running inside the installed app → never prompt.
-    if (isPwaInstalled()) return
-    // beforeinstallprompt fires only when the app is NOT installed, so this
-    // is our positive not-installed signal. No event (already installed,
-    // unsupported browser) → stay quiet.
-    if (!canInstall) return
+    if (!isPushConfigured) return
+
+    if (isPwaInstalled()) {
+      // Inside the installed app the browser never asks for notification
+      // permission by itself. Prompt once per session until the user decides
+      // (a denial switches permission to "denied", which stops it for good).
+      if (typeof Notification === 'undefined') return
+      if (Notification.permission !== 'default') return
+      try {
+        if (sessionStorage.getItem(PUSH_PROMPT_KEY) === '1') return
+        sessionStorage.setItem(PUSH_PROMPT_KEY, '1')
+      } catch {
+        /* storage unavailable — show it anyway */
+      }
+    } else {
+      // beforeinstallprompt fires only when the app is NOT installed, so this
+      // is our positive not-installed signal. No event (already installed,
+      // unsupported browser) → stay quiet.
+      if (!canInstall) return
+    }
+
     // Small delay so the sheet doesn't jump in instantly on page open.
     const timer = setTimeout(() => setVisible(true), 1200)
     return () => clearTimeout(timer)
@@ -67,7 +110,7 @@ const PwaInstallPrompt: React.FC = () => {
 
   const refreshPerm = () =>
     setPerm(
-      'Notification' in window ? Notification.permission : 'denied',
+      'Notification' in window ? Notification.permission : 'unsupported',
     )
 
   /** Step 2 of the combined flow. */
@@ -88,20 +131,51 @@ const PwaInstallPrompt: React.FC = () => {
     if (busy) return
     setBusy(true)
     try {
+      // Read the live value — the `perm` state may be stale.
+      let permission: NotificationPermission | 'unsupported' =
+        'Notification' in window ? Notification.permission : 'unsupported'
+
       if (!installed) {
-        const outcome = await promptPwaInstall()
-        if (outcome === 'unavailable') {
-          toast.info('Install is not available right now — try Menu → Install App.')
-          return
-        }
-        if (outcome !== 'accepted') {
+        // Both APIs need the tap's user activation. Start the install prompt
+        // and the permission request in the SAME task (before awaiting) so
+        // the browser does not drop either one.
+        const installPromise = promptPwaInstall()
+        const permissionPromise =
+          pushWanted && permission === 'default'
+            ? requestNotificationPermission()
+            : Promise.resolve(permission)
+        const outcome = await installPromise
+        permission = await permissionPromise
+        refreshPerm()
+
+        if (outcome === 'accepted') {
+          setInstalled(true)
+          toast.success('Vhennus installed!')
+        } else if (outcome === 'dismissed') {
           toast.info('Install dismissed — tap again anytime to retry.')
+        } else {
+          toast.info('Install is not available right now — try Menu → Install App.')
+        }
+        // Even if the install was dismissed, a granted permission still
+        // lets us register push for this origin (it survives installation).
+      } else if (pushWanted) {
+        // Installed app: this tap is the user gesture the browser needs.
+        if (permission === 'denied') {
+          toast.error(
+            'Notifications are blocked — allow them in your browser site settings.',
+          )
           return
         }
-        setInstalled(true)
-        toast.success('Vhennus installed!')
+        if (permission === 'default') {
+          permission = await requestNotificationPermission()
+          refreshPerm()
+        }
       }
-      if (pushWanted) {
+
+      // Mint + register the token now that permission may have been granted.
+      // If the user left the dialog undecided, the sheet stays open and the
+      // button retries on the next tap.
+      if (isPushConfigured && permission === 'granted') {
         await enableAlerts()
       }
     } finally {
@@ -131,10 +205,14 @@ const PwaInstallPrompt: React.FC = () => {
             </span>
             <div>
               <h2 className="font-serif text-lg leading-tight text-[#0A1931]">
-                Get the full Vhennus experience
+                {installed
+                  ? 'Turn on notifications'
+                  : 'Get the full Vhennus experience'}
               </h2>
               <p className="mt-0.5 text-xs text-[#4d5666]">
-                Install the app and get alerts for likes, comments and votes.
+                {installed
+                  ? 'Get alerts for likes, comments and votes — even when the app is closed.'
+                  : 'Install the app and get alerts for likes, comments and votes.'}
               </p>
             </div>
           </div>
@@ -160,14 +238,16 @@ const PwaInstallPrompt: React.FC = () => {
             label={
               !isPushConfigured
                 ? 'Push alerts (coming soon)'
-                : perm === 'granted'
-                  ? 'Push alerts on'
-                  : perm === 'denied'
-                    ? 'Push alerts blocked — allow in browser settings'
-                    : 'Push alerts'
+                : !pushSupported
+                  ? 'Push alerts (not supported here)'
+                  : perm === 'granted'
+                    ? 'Push alerts on'
+                    : perm === 'denied'
+                      ? 'Push alerts blocked — allow in browser settings'
+                      : 'Push alerts'
             }
             done={perm === 'granted'}
-            dimmed={!isPushConfigured}
+            dimmed={!isPushConfigured || !pushSupported}
           />
         </div>
 

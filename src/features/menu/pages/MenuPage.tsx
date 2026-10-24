@@ -239,23 +239,35 @@ const InstallAppMenuLink: React.FC = () => {
     if (busy) return
     setBusy(true)
     try {
-      if (!installed) {
-        if (canInstall) {
-          const outcome = await promptPwaInstall()
-          if (outcome === 'dismissed') {
-            toast.info('Install dismissed — you can try again anytime.')
-            return
-          }
-          if (outcome === 'accepted') toast.success('Vhennus installed!')
+      if (!installed && !canInstall) {
+        toast.info(
+          'To install: open your browser menu → "Add to Home Screen" (on iPhone: Share → Add to Home Screen).',
+          { autoClose: 7000 },
+        )
+        return
+      }
+
+      // Start BOTH calls inside the tap, before awaiting anything. The
+      // browser drops the permission dialog if it is requested after an
+      // await (i.e. once the install prompt has consumed the gesture).
+      const installPromise = installed ? null : promptPwaInstall()
+      const permissionPromise = requestNotificationPermission()
+
+      if (installPromise) {
+        const outcome = await installPromise
+        if (outcome === 'accepted') {
+          toast.success('Vhennus installed!')
+        } else if (outcome === 'dismissed') {
+          toast.info('Install dismissed — you can try again anytime.')
         } else {
           toast.info(
-            'To install: open your browser menu → "Add to Home Screen" (on iPhone: Share → Add to Home Screen).',
+            'Install is not available right now — use your browser menu → "Add to Home Screen".',
             { autoClose: 7000 },
           )
-          return
         }
       }
-      const result = await requestNotificationPermission()
+
+      const result = await permissionPromise
       if (result === 'granted') {
         toast.success('Notifications enabled.')
         // Register this browser for push delivery (best-effort).
