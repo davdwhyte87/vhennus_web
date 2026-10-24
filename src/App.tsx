@@ -11,6 +11,7 @@ import LandingPage from './features/home/pages/HomePage.tsx'
 import HomeLayout from './layouts/HomeLayout.tsx'
 import AdminLayout from './layouts/AdminLayout.tsx'
 import ProtectedLayout from './features/auth/components/ProtectedRoutesLayout.tsx'
+import GlobalPushListener from './Shared/GlobalPushListener.tsx'
 
 // Everything else is route-split so landing visitors don't download the app.
 const FeedHomePage = lazy(() => import('./features/Feed/pages/HomePage.tsx'))
@@ -88,6 +89,7 @@ const App: React.FC = () => {
       future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
     >
       <ScrollToTop />
+      <GlobalPushListener />
       <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={<LandingPage />} />

@@ -21,7 +21,7 @@ import {
   getPushDiagnostic,
   isPushConfigured,
   pushSupport,
-  startForegroundPushListener,
+  resetPushToken,
   subscribeForegroundPush,
   type PushDiagnostic,
 } from '../../../Shared/firebase'
@@ -90,7 +90,6 @@ const NotificationsPage: React.FC = () => {
 
   useEffect(() => {
     loadMore(true)
-    startForegroundPushListener()
     getPushDiagnostic()
       .then(setDiagnostic)
       .catch(() => {})
@@ -119,6 +118,30 @@ const NotificationsPage: React.FC = () => {
       }
     } catch {
       toast.error('Could not enable push notifications.')
+    } finally {
+      setEnabling(false)
+    }
+  }
+
+  // Clears the cached FCM token and mints a fresh one. Fixes tokens that
+  // were created under an old service worker / Firebase project (they can
+  // still be cached and accepted by the console, but deliver nowhere).
+  const handleResetPush = async () => {
+    setEnabling(true)
+    try {
+      await resetPushToken()
+      const result = await enablePushOnThisDevice()
+      setPermission(
+        'Notification' in window ? Notification.permission : 'unsupported',
+      )
+      if (result.ok) {
+        toast.success('Push registration refreshed — copy the new token.')
+      } else {
+        toast.error(pushFailureMessage(result.reason))
+      }
+      getPushDiagnostic()
+        .then(setDiagnostic)
+        .catch(() => {})
     } finally {
       setEnabling(false)
     }
@@ -253,6 +276,14 @@ const NotificationsPage: React.FC = () => {
               {copied ? 'Copied!' : 'Copy FCM token'}
             </AppButton>
           </div>
+          <button
+            type="button"
+            disabled={enabling}
+            onClick={handleResetPush}
+            className="mt-2 w-full py-1 text-center text-[11px] font-semibold text-[#4d5666] hover:text-[#CC5A2A] disabled:opacity-50"
+          >
+            {enabling ? 'Resetting…' : 'Reset push registration'}
+          </button>
         </section>
 
         {/* Inbox header */}

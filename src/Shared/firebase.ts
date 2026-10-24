@@ -51,7 +51,13 @@ export async function configureServiceWorkerPush(): Promise<boolean> {
   const config = readConfig()
   if (!config || pushSupport() === 'unsupported') return false
   try {
-    const registration = await navigator.serviceWorker.ready
+    // Bounded: `ready` never resolves when no worker is registered, which
+    // used to leave the enable/copy flows hanging forever.
+    const registration = await Promise.race([
+      navigator.serviceWorker.ready,
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 5000)),
+    ])
+    if (!registration) return false
     registration.active?.postMessage({ type: 'FIREBASE_CONFIG', config })
     return true
   } catch {
@@ -84,6 +90,41 @@ async function getApp() {
   const existing = getApps()
   if (existing.length > 0) return existing[0]
   return initializeApp(config)
+}
+
+/**
+ * Waits for a registration to become active before subscribing.
+ * getToken() throws "no active Service Worker" while the worker is still
+ * installing/waiting — which happens on a first run and right after an
+ * update. Bounded so a broken worker can't hang the UI.
+ */
+async function waitForActive(
+  registration: ServiceWorkerRegistration,
+): Promise<ServiceWorkerRegistration | null> {
+  if (registration.active) return registration
+  const worker = registration.installing ?? registration.waiting
+  if (!worker) {
+    return await Promise.race([
+      navigator.serviceWorker.ready,
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 10000)),
+    ])
+  }
+  return await new Promise((resolve) => {
+    let settled = false
+    const finish = (ok: boolean) => {
+      if (settled) return
+      settled = true
+      worker.removeEventListener('statechange', check)
+      resolve(ok ? registration : null)
+    }
+    const check = () => {
+      if (registration.active || worker.state === 'activated') finish(true)
+      else if (worker.state === 'redundant') finish(false)
+    }
+    worker.addEventListener('statechange', check)
+    check()
+    setTimeout(() => finish(false), 10000)
+  })
 }
 
 /**
@@ -146,6 +187,13 @@ export async function ensurePushToken(): Promise<string | null> {
         return null
       }
     }
+    // The worker must be active before we can create a push subscription.
+    const active = await waitForActive(registration)
+    if (!active) {
+      console.warn('[push] service worker did not activate in time')
+      return null
+    }
+    registration = active
     // Push the web config to whichever worker owns the subscription so
     // background notifications render when the app is closed.
     await configureServiceWorkerPush()
@@ -249,6 +297,45 @@ export async function copyPushToken(): Promise<boolean> {
   }
 }
 
+/**
+ * Deletes the cached FCM token and drops a stray /firebase-messaging-sw.js
+ * registration, so the next ensurePushToken() mints a fresh token for the
+ * current project + worker.
+ *
+ * getToken() returns the token cached in IndexedDB, so after a project or
+ * service-worker change the app can keep handing out a token whose push
+ * subscription is dead — the console accepts it but nothing is delivered.
+ */
+export async function resetPushToken(): Promise<boolean> {
+  let cleared = false
+  try {
+    const app = await getApp()
+    if (app) {
+      const { getMessaging, deleteToken } = await import('firebase/messaging')
+      await deleteToken(getMessaging(app))
+      cleared = true
+    }
+  } catch {
+    /* nothing cached, or messaging unavailable */
+  }
+  try {
+    const regs = await navigator.serviceWorker.getRegistrations()
+    for (const reg of regs) {
+      const url =
+        reg.active?.scriptURL ??
+        reg.installing?.scriptURL ??
+        reg.waiting?.scriptURL ??
+        ''
+      if (url.includes('firebase-messaging-sw.js')) {
+        await reg.unregister().catch(() => {})
+      }
+    }
+  } catch {
+    /* best-effort cleanup */
+  }
+  return cleared
+}
+
 type ForegroundHandler = (push: ForegroundPush) => void
 const foregroundListeners = new Set<ForegroundHandler>()
 
@@ -264,10 +351,18 @@ let foregroundStarted = false
 /** Delivers foreground FCM messages to subscribers (toast + badge refresh). */
 export async function startForegroundPushListener(): Promise<void> {
   if (foregroundStarted || !isPushConfigured) return
-  if (!(await messagingSupported())) return
-  const app = await getApp()
-  if (!app) return
+  // Claim the slot before the awaits: React StrictMode mounts effects twice
+  // in dev, and two concurrent calls used to register onMessage twice.
   foregroundStarted = true
+  if (!(await messagingSupported())) {
+    foregroundStarted = false
+    return
+  }
+  const app = await getApp()
+  if (!app) {
+    foregroundStarted = false
+    return
+  }
   try {
     const { getMessaging, onMessage } = await import('firebase/messaging')
     onMessage(getMessaging(app), (payload) => {
