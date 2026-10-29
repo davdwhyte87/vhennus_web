@@ -16,7 +16,7 @@ export default function GroupListItem({
   return (
     <button
       type="button"
-      onClick={() => navigate(`/home/groups/${group.id}`)}
+      onClick={() => navigate(`/social/groups/${group.id}`)}
       className="flex w-full items-center gap-3 bg-white px-4 py-3 text-left transition-colors hover:bg-[#F5F5F0]"
     >
       <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full bg-[#0A1931]/10 font-serif text-lg text-[#0A1931]">

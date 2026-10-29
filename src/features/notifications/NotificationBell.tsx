@@ -125,7 +125,7 @@ const NotificationBell: React.FC = () => {
                 type="button"
                 onClick={() => {
                   setOpen(false)
-                  navigate('/home/notifications')
+                  navigate('/social/notifications')
                 }}
                 className="text-xs font-semibold text-[#0A1931] hover:underline"
               >

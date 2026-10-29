@@ -25,7 +25,7 @@ export default function LoginPage() {
         authUserName: authStore.userName,
       })
       if (result.email_confirmed) {
-        navigate('/home/feeds')
+        navigate('/social/feeds')
       } else {
         authStore.setState({ emailToBeVerified: result.email })
         navigate('/confirm_email')

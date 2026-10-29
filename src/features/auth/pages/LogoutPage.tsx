@@ -21,7 +21,7 @@ export function LogoutPage() {
       eyebrow="Your Vhennus account"
       title="Sign out?"
       description={`You are currently signed in as ${authStore.authUserName || 'a Vhennus member'}.`}
-      backTo="/home/feeds"
+      backTo="/social/feeds"
       backLabel="Return to the community"
     >
       <div className="border border-[#C9A86A] bg-[#F5F5F0] p-6">
@@ -36,7 +36,7 @@ export function LogoutPage() {
         <AppButton
           fullWidth
           variant="secondary"
-          onClick={() => navigate('/home/feeds')}
+          onClick={() => navigate('/social/feeds')}
         >
           <ArrowLeft size={18} />
           Stay signed in

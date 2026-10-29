@@ -48,7 +48,7 @@ export default function ConfirmEmailPage() {
         code: authStore.confirmationCode,
       })
       toast.success('Email verified. Welcome to Vhennus.')
-      navigate('/home/feeds')
+      navigate('/social/feeds')
     } catch (error) {
       toast.error(
         axios.isAxiosError(error)

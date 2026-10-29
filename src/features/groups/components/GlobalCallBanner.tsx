@@ -75,7 +75,7 @@ export default function GlobalCallBanner() {
       if (id === openGroupId) continue
       playCallRing()
       toast.info(`Live call started in ${nameOf(id)} — tap to join`, {
-        onClick: () => navigate(`/home/groups/${id}/call`),
+        onClick: () => navigate(`/social/groups/${id}/call`),
       })
     }
     prevActive.current = nowActive
@@ -91,7 +91,7 @@ export default function GlobalCallBanner() {
         const amIn = (call.participants ?? []).some((p) => p.user_name === myName)
         const open = () => {
           if (!amIn) useGroupCallStore.getState().joinCall(call.group_id)
-          navigate(`/home/groups/${call.group_id}/call`)
+          navigate(`/social/groups/${call.group_id}/call`)
         }
         return (
           <button

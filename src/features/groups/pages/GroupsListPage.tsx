@@ -224,7 +224,7 @@ export const GroupsListPage = () => {
               <button
                 key={g.id}
                 type="button"
-                onClick={() => navigate(g.is_member ? `/home/groups/${g.id}` : `/home/groups/join/${g.invite_code}`)}
+                onClick={() => navigate(g.is_member ? `/social/groups/${g.id}` : `/social/groups/join/${g.invite_code}`)}
                 className="flex w-full items-center gap-3 bg-white px-4 py-3 text-left hover:bg-[#F5F5F0]"
               >
                 <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full bg-[#0A1931]/10 font-serif text-lg">
@@ -251,7 +251,7 @@ export const GroupsListPage = () => {
           onCreated={(id) => {
             setShowCreate(false)
             loadMine()
-            navigate(`/home/groups/${id}`)
+            navigate(`/social/groups/${id}`)
           }}
         />
       )}

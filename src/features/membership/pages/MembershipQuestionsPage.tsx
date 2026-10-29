@@ -206,7 +206,7 @@ const MembershipQuestionsPage: React.FC = () => {
       } catch {
         // ignore
       }
-      navigate('/home/membership/thank-you')
+      navigate('/social/membership/thank-you')
     } catch {
       toast.error('Unable to submit your answers. Please try again.')
     } finally {

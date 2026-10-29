@@ -259,6 +259,7 @@ export interface TestPushResp {
   stored: boolean
   has_token: boolean
   push_sent: boolean
+  error?: string | null
 }
 
 export const sendTestPushAPI = async (

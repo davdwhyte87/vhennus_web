@@ -45,7 +45,7 @@ export default function AdminGroupsPage() {
             <button
               key={g.id}
               type="button"
-              onClick={() => navigate(`/home/groups/${g.id}`)}
+              onClick={() => navigate(`/social/groups/${g.id}`)}
               className="flex w-full items-center gap-3 bg-white p-3 text-left hover:bg-[#F5F5F0]"
             >
               <div className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full bg-[#0A1931]/10">

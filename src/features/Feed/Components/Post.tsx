@@ -53,16 +53,16 @@ const Post: React.FC<PostProps> = ({
 
     const handlePostClick = () => {
         if (post == null || post.id == "") return;
-        navigate(`/home/post/${post.id}`);
+        navigate(`/social/post/${post.id}`);
     };
 
     const openUserProfile = () => {
         if (post == null || post.id == "") return;
-        navigate(`/user_profile/${post.user_name}`);
+        navigate(`/social/user_profile/${post.user_name}`);
     };
 
     const handleShare = async () => {
-        const postUrl = `${window.location.origin}/home/post/${post.id}`;
+        const postUrl = `${window.location.origin}/social/post/${post.id}`;
         if (navigator.share) {
             try {
                 await navigator.share({

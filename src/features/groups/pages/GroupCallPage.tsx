@@ -38,7 +38,7 @@ export default function GroupCallPage() {
       .catch((err) => {
         if (axios.isAxiosError(err)) {
           toast.error(err.response?.data?.message || 'Error loading call')
-          if (err.response?.status === 401 || err.response?.status === 404) navigate('/home/groups')
+          if (err.response?.status === 401 || err.response?.status === 404) navigate('/social/groups')
         }
       })
       .finally(() => {
@@ -78,7 +78,7 @@ export default function GroupCallPage() {
 
   const doLeave = () => {
     store.leaveCall(id)
-    navigate(`/home/groups/${id}`)
+    navigate(`/social/groups/${id}`)
   }
 
   const doEnd = async () => {
@@ -88,7 +88,7 @@ export default function GroupCallPage() {
       /* ws broadcast still ends it */
     }
     store.endCall(id)
-    navigate(`/home/groups/${id}`)
+    navigate(`/social/groups/${id}`)
   }
 
   // ---- idle: no live call ----
@@ -97,7 +97,7 @@ export default function GroupCallPage() {
       <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 text-center">
         <button
           type="button"
-          onClick={() => navigate(`/home/groups/${id}`)}
+          onClick={() => navigate(`/social/groups/${id}`)}
           aria-label="Back to group"
           className="absolute left-4 top-20 grid h-9 w-9 place-items-center rounded-full hover:bg-[#0A1931]/5 lg:top-6"
         >
@@ -133,7 +133,7 @@ export default function GroupCallPage() {
       <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 text-center">
         <button
           type="button"
-          onClick={() => navigate(`/home/groups/${id}`)}
+          onClick={() => navigate(`/social/groups/${id}`)}
           aria-label="Back to group"
           className="absolute left-4 top-20 grid h-9 w-9 place-items-center rounded-full hover:bg-[#0A1931]/5 lg:top-6"
         >
@@ -163,7 +163,7 @@ export default function GroupCallPage() {
       <div className="flex items-center gap-2">
         <button
           type="button"
-          onClick={() => navigate(`/home/groups/${id}`)}
+          onClick={() => navigate(`/social/groups/${id}`)}
           aria-label="Back to messages (stays on call)"
           className="grid h-9 w-9 place-items-center rounded-full hover:bg-white/10"
         >

@@ -75,7 +75,7 @@ export default function SingleGroupPage() {
     } catch (err) {
       if (axios.isAxiosError(err)) {
         toast.error(err.response?.data?.message || 'Error loading group')
-        if (err.response?.status === 401 || err.response?.status === 404) navigate('/home/groups')
+        if (err.response?.status === 401 || err.response?.status === 404) navigate('/social/groups')
       }
     } finally {
       setLoading(false)
@@ -156,7 +156,7 @@ export default function SingleGroupPage() {
       {/* header */}
       <header className="sticky top-0 z-30 border-b border-[#C9A86A]/60 bg-[#F5F5F0]/95 backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-4xl items-center gap-2 px-3 py-3 sm:px-5">
-          <button type="button" onClick={() => navigate('/home/groups')} aria-label="Back" className="grid h-9 w-9 place-items-center rounded-full hover:bg-[#0A1931]/5">
+          <button type="button" onClick={() => navigate('/social/groups')} aria-label="Back" className="grid h-9 w-9 place-items-center rounded-full hover:bg-[#0A1931]/5">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full bg-[#0A1931]/10 font-serif">
@@ -178,7 +178,7 @@ export default function SingleGroupPage() {
           {isGroupAdmin && (
             <button
               type="button"
-              onClick={() => navigate(`/home/groups/${group.id}/settings`)}
+              onClick={() => navigate(`/social/groups/${group.id}/settings`)}
               aria-label="Group settings"
               className="grid h-9 w-9 place-items-center rounded-full hover:bg-[#0A1931]/5"
             >
@@ -413,10 +413,10 @@ function MembersModal({ groupId, onClose }: { groupId: string; onClose: () => vo
           ) : (
             members.map((m) => (
               <div key={m.user_name} className="flex items-center gap-2 py-2">
-                <button type="button" onClick={() => navigate(`/user_profile/${m.user_name}`)} className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-[#0A1931]/10 text-sm">
+                <button type="button" onClick={() => navigate(`/social/user_profile/${m.user_name}`)} className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-[#0A1931]/10 text-sm">
                   {m.profile?.image ? <img src={m.profile.image} alt="" className="h-full w-full object-cover" /> : m.user_name.slice(0, 1).toUpperCase()}
                 </button>
-                <button type="button" onClick={() => navigate(`/user_profile/${m.user_name}`)} className="min-w-0 flex-1 text-left">
+                <button type="button" onClick={() => navigate(`/social/user_profile/${m.user_name}`)} className="min-w-0 flex-1 text-left">
                   <span className="block truncate text-sm text-[#0A1931]">{m.profile?.name || m.user_name}</span>
                   <span className="block text-xs text-[#6b7180]">@{m.user_name} · {m.role}</span>
                 </button>

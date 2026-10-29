@@ -1,17 +1,27 @@
 import './App.css'
 
 import { Suspense, lazy, useEffect } from 'react'
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
 
-// Landing page stays eager — it's the first paint and is lightweight.
-import LandingPage from './features/home/pages/HomePage.tsx'
+// Corporate homepage stays eager — it is the first paint and is lightweight.
+import CorporateHomePage from './features/corporate/pages/HomePage.tsx'
 
 // Layouts stay eager (tiny).
+import CorporateLayout from './layouts/CorporateLayout.tsx'
 import HomeLayout from './layouts/HomeLayout.tsx'
 import AdminLayout from './layouts/AdminLayout.tsx'
 import ProtectedLayout from './features/auth/components/ProtectedRoutesLayout.tsx'
 import GlobalPushListener from './Shared/GlobalPushListener.tsx'
+
+// Corporate pages are route-split.
+const CapitalPage = lazy(() => import('./features/corporate/pages/CapitalPage.tsx'))
+const NetworkPage = lazy(() => import('./features/corporate/pages/NetworkPage.tsx'))
+const VenturesPage = lazy(() => import('./features/corporate/pages/VenturesPage.tsx'))
+const AboutPage = lazy(() => import('./features/corporate/pages/AboutPage.tsx'))
+const ContactPage = lazy(() => import('./features/corporate/pages/ContactPage.tsx'))
+const PrivacyPage = lazy(() => import('./features/corporate/pages/PrivacyPage.tsx'))
+const TermsPage = lazy(() => import('./features/corporate/pages/TermsPage.tsx'))
 
 // Everything else is route-split so landing visitors don't download the app.
 const FeedHomePage = lazy(() => import('./features/Feed/pages/HomePage.tsx'))
@@ -83,6 +93,12 @@ function ScrollToTop() {
   return null
 }
 
+function LegacySocialRedirect() {
+  const location = useLocation()
+  const target = `/social${location.pathname.replace(/^\/home/, '')}${location.search}${location.hash}`
+  return <Navigate to={target} replace />
+}
+
 const App: React.FC = () => {
   return (
     <BrowserRouter
@@ -92,63 +108,75 @@ const App: React.FC = () => {
       <GlobalPushListener />
       <Suspense fallback={<RouteFallback />}>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route element={<CorporateLayout />}>
+            <Route index element={<CorporateHomePage />} />
+            <Route path="capital" element={<CapitalPage />} />
+            <Route path="social" element={<NetworkPage />} />
+            <Route path="vc" element={<VenturesPage />} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="contact" element={<ContactPage />} />
+            <Route path="privacy" element={<PrivacyPage />} />
+            <Route path="terms" element={<TermsPage />} />
+          </Route>
+
           <Route path="login" element={<LoginPage />} />
           <Route path="signup" element={<SignupPage />} />
           <Route path="confirm_email" element={<ConfirmEmailPage />} />
           <Route path="forgot_password" element={<ForgotPasswordPage />} />
           <Route path="logout" element={<LogoutPage />} />
 
+          {/* Legacy social paths keep deep links working after the /social move. */}
+          <Route path="home" element={<Navigate to="/social/feeds" replace />} />
+          <Route path="home/*" element={<LegacySocialRedirect />} />
+
           <Route element={<ProtectedLayout />}>
             <Route element={<HomeLayout />}>
-              <Route path="home/feeds" element={<FeedHomePage />} />
+              <Route path="social/feeds" element={<FeedHomePage />} />
               <Route
-                path="home/feeds/create-post"
+                path="social/feeds/create-post"
                 element={<CreateFeedPage />}
               />
-              <Route path="home/post/:id" element={<SinglePostPage />} />
-              <Route path="home/notifications" element={<NotificationsPage />} />
-              <Route path="home/menu" element={<MenuPage />} />
-              <Route path="home/membership" element={<MembershipPage />} />
+              <Route path="social/post/:id" element={<SinglePostPage />} />
+              <Route path="social/notifications" element={<NotificationsPage />} />
+              <Route path="social/menu" element={<MenuPage />} />
+              <Route path="social/membership" element={<MembershipPage />} />
               <Route
-                path="home/membership/badges"
+                path="social/membership/badges"
                 element={<BadgesInfoPage />}
               />
               <Route
-                path="home/membership/questions"
+                path="social/membership/questions"
                 element={<MembershipQuestionsPage />}
               />
               <Route
-                path="home/membership/thank-you"
+                path="social/membership/thank-you"
                 element={<MembershipThankYouPage />}
               />
-              <Route path="home/chats" element={<AllChatsPage />} />
-              <Route path="home/groups" element={<GroupsListPage />} />
-              <Route path="home/groups/join/:code" element={<JoinGroupPage />} />
-              <Route path="home/groups/:id" element={<SingleGroupPage />} />
-              <Route path="home/groups/:id/call" element={<GroupCallPage />} />
-              <Route path="home/groups/:id/settings" element={<GroupSettingsPage />} />
+              <Route path="social/chats" element={<AllChatsPage />} />
+              <Route path="social/groups" element={<GroupsListPage />} />
+              <Route path="social/groups/join/:code" element={<JoinGroupPage />} />
+              <Route path="social/groups/:id" element={<SingleGroupPage />} />
+              <Route path="social/groups/:id/call" element={<GroupCallPage />} />
+              <Route path="social/groups/:id/settings" element={<GroupSettingsPage />} />
 
-              <Route path="myprofile" element={<MyProfilePage />} />
-              <Route path="user_profile/:id" element={<UserProfilePage />} />
-              <Route path="editprofile" element={<EditProfilePage />} />
-              <Route path="find_friends" element={<FindFriendsPage />} />
+              <Route path="social/myprofile" element={<MyProfilePage />} />
+              <Route path="social/user_profile/:id" element={<UserProfilePage />} />
+              <Route path="social/editprofile" element={<EditProfilePage />} />
+              <Route path="social/find_friends" element={<FindFriendsPage />} />
               <Route
-                path="my_friend_requests"
+                path="social/my_friend_requests"
                 element={<MyFriendRequestsPage />}
               />
-              <Route path="my_friends" element={<MyFriendsPage />} />
+              <Route path="social/my_friends" element={<MyFriendsPage />} />
 
               <Route
-                path="chat/single_chat/:id"
+                path="social/chat/single_chat/:id"
                 element={<SingleChatPage />}
               />
 
-              <Route path="wallet" element={<AllWalletsPage />} />
-              <Route path="wallet/new" element={<CreateWalletPage />} />
-              <Route path="wallet/add" element={<AddWalletPage />} />
-
-              <Route path="groups" element={<GroupsListPage />} />
+              <Route path="social/wallet" element={<AllWalletsPage />} />
+              <Route path="social/wallet/new" element={<CreateWalletPage />} />
+              <Route path="social/wallet/add" element={<AddWalletPage />} />
             </Route>
 
             <Route element={<AdminLayout />}>

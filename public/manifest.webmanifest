@@ -2,12 +2,12 @@
   "name": "Vhennus — Build together",
   "short_name": "Vhennus",
   "description": "Vhennus brings people together to create, discover, and build better systems.",
-  "start_url": "/home/feeds",
+  "start_url": "/social/feeds",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#F5F5F0",
-  "theme_color": "#0A1931",
+  "background_color": "#F7F4ED",
+  "theme_color": "#0E241D",
   "icons": [
     {
       "src": "/pwa-192x192.png",

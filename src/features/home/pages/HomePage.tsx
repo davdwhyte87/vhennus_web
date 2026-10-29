@@ -51,7 +51,7 @@ export default function HomePage() {
     return () => { window.removeEventListener('scroll', onScroll); observer.disconnect() }
   }, [])
 
-  const enter = () => navigate(isLoggedIn ? '/home/feeds' : '/signup')
+  const enter = () => navigate(isLoggedIn ? '/social/feeds' : '/signup')
   const links = <>
     <a className={navLink} href="#vision" onClick={() => setMenuOpen(false)}>Our vision</a>
     <a className={navLink} href="#principles" onClick={() => setMenuOpen(false)}>Principles</a>

@@ -101,7 +101,7 @@ const HomePage: React.FC = () => {
             </p>
             <AppButton
               className="mt-6"
-              onClick={() => navigate('/home/feeds/create-post')}
+              onClick={() => navigate('/social/feeds/create-post')}
             >
               <Plus className="h-5 w-5" />
               Create First Post
@@ -118,7 +118,7 @@ const HomePage: React.FC = () => {
 
       <button
         type="button"
-        onClick={() => navigate('/home/feeds/create-post')}
+        onClick={() => navigate('/social/feeds/create-post')}
         aria-label="Create post"
         className={fabClassName}
       >

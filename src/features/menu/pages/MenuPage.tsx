@@ -53,7 +53,7 @@ const MenuPage: React.FC = () => {
           <MenuItem
             text="Wallet"
             icon={Wallet}
-            page="/wallet"
+            page="/social/wallet"
             description="Manage your balance"
             disabled
             disabledReason="Coming soon"
@@ -61,13 +61,13 @@ const MenuPage: React.FC = () => {
           <MenuItem
             text="Profile"
             icon={User}
-            page="/myprofile"
+            page="/social/myprofile"
             description="Edit your profile"
           />
           <MenuItem
             text="Membership"
             icon={Medal}
-            page="/home/membership"
+            page="/social/membership"
             description="Become a member"
           />
           <MenuItem
@@ -95,7 +95,7 @@ const MenuPage: React.FC = () => {
               <MenuLink
                 text="Notifications"
                 icon={Bell}
-                page="/home/notifications"
+                page="/social/notifications"
               />
               <MenuLink
                 text="Privacy & Security"

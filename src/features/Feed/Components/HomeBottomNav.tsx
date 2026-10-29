@@ -17,10 +17,10 @@ const NAV_ITEMS: {
   icon: typeof Home
   external?: boolean
 }[] = [
-  { route: '/home/feeds', label: 'Feed', icon: Home },
-  { route: '/home/chats', label: 'Chat', icon: MessageSquareText },
-  { route: '/home/groups', label: 'Groups', icon: MessagesSquare },
-  { route: '/home/menu', label: 'Menu', icon: AlignJustify },
+  { route: '/social/feeds', label: 'Feed', icon: Home },
+  { route: '/social/chats', label: 'Chat', icon: MessageSquareText },
+  { route: '/social/groups', label: 'Groups', icon: MessagesSquare },
+  { route: '/social/menu', label: 'Menu', icon: AlignJustify },
 ]
 
 function HomeBottomNav() {
@@ -49,9 +49,9 @@ function HomeBottomNav() {
               location.pathname === route ||
               location.pathname.startsWith(`${route}/`)
             const showBadge =
-              (route === '/home/chats' && unreadTotal > 0) ||
-              (route === '/home/groups' && groupUnread > 0)
-            const badgeCount = route === '/home/chats' ? unreadTotal : groupUnread
+              (route === '/social/chats' && unreadTotal > 0) ||
+              (route === '/social/groups' && groupUnread > 0)
+            const badgeCount = route === '/social/chats' ? unreadTotal : groupUnread
             return (
               <li key={label}>
                 <button

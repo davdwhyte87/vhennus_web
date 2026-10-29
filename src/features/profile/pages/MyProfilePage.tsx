@@ -124,7 +124,7 @@ const MyProfilePage: React.FC = () => {
                             <AppButton
                                 variant="outline"
                                 size="md"
-                                onClick={() => { navigate("/editprofile") }}
+                                onClick={() => { navigate("/social/editprofile") }}
                             >
                                 <Edit3 className="w-5 h-5 mr-2" />
                                 Edit Profile
@@ -151,7 +151,7 @@ const MyProfilePage: React.FC = () => {
                                     <p className="text-sm font-semibold text-[#0A1931]">Skills & Interests</p>
                                     <button
                                         type="button"
-                                        onClick={() => navigate("/editprofile")}
+                                        onClick={() => navigate("/social/editprofile")}
                                         className="text-xs font-medium text-primary hover:text-primary/80"
                                     >
                                         Edit
@@ -182,7 +182,7 @@ const MyProfilePage: React.FC = () => {
                             {/* Stats */}
                             <div className="flex items-center space-x-6 mb-8">
                                 <div 
-                                    onClick={() => navigate("/my_friends")}
+                                    onClick={() => navigate("/social/my_friends")}
                                     className="text-center cursor-pointer group"
                                 >
                                     <div className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">{userFriends.length}</div>
@@ -203,7 +203,7 @@ const MyProfilePage: React.FC = () => {
                             {/* Quick Actions */}
                                 <div className="grid grid-cols-1 gap-3 mb-8">
                                 <div
-                                    onClick={() => navigate("/find_friends")}
+                                    onClick={() => navigate("/social/find_friends")}
                                     className="border border-[#C9A86A]/60 bg-white p-4 cursor-pointer hover:border-[#CC5A2A] transition-colors group"
                                 >
                                     <div className="flex items-center space-x-3">
@@ -218,7 +218,7 @@ const MyProfilePage: React.FC = () => {
                                 </div>
 
                                 <div
-                                    onClick={() => navigate("/my_friend_requests")}
+                                    onClick={() => navigate("/social/my_friend_requests")}
                                     className="border border-[#C9A86A]/60 bg-white p-4 cursor-pointer hover:border-[#CC5A2A] transition-colors group"
                                 >
                                     <div className="flex items-center space-x-3">
@@ -271,7 +271,7 @@ const MyProfilePage: React.FC = () => {
                                 <h3 className="text-xl font-semibold text-gray-700 mb-2">No posts yet</h3>
                                 <p className="text-gray-500 mb-6">Share your first post with the community!</p>
                                 <AppButton
-                                    onClick={() => navigate("/home/feeds/create-post")}
+                                    onClick={() => navigate("/social/feeds/create-post")}
                                 >
                                     Create First Post
                                 </AppButton>
@@ -282,7 +282,7 @@ const MyProfilePage: React.FC = () => {
                     {/* Floating Action Button for Creating Post */}
                     <button
                         type="button"
-                        onClick={() => navigate("/home/feeds/create-post")}
+                        onClick={() => navigate("/social/feeds/create-post")}
                         aria-label="Create post"
                         className="fixed bottom-28 right-5 z-30 grid h-14 w-14 place-items-center rounded-full bg-[#0A1931] text-white shadow-2xl transition-colors hover:bg-[#CC5A2A] sm:right-8 lg:bottom-8"
                     >

@@ -125,7 +125,7 @@ function setupPush(config) {
         body,
         icon: '/pwa-192x192.png',
         badge: '/pwa-192x192.png',
-        data: { link: String(data.link || '/home/notifications') },
+        data: { link: String(data.link || '/social/notifications') },
       })
     })
     pushInit = true
@@ -156,7 +156,7 @@ self.addEventListener('push', (event) => {
       body,
       icon: '/pwa-192x192.png',
       badge: '/pwa-192x192.png',
-      data: { link: String(data.link || '/home/notifications') },
+      data: { link: String(data.link || '/social/notifications') },
     }),
   )
 })
@@ -179,7 +179,7 @@ self.addEventListener('notificationclick', (event) => {
     payload.link ||
     (fcm.data && fcm.data.link) ||
     (fcm.fcmOptions && fcm.fcmOptions.link) ||
-    '/home/notifications'
+    '/social/notifications'
   event.waitUntil(
     self.clients
       .matchAll({ type: 'window', includeUncontrolled: true })

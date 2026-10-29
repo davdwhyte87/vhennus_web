@@ -1,23 +1,58 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap');
 @import "tailwindcss";
 
-@theme {
-  --color-primary: #0A1931;
-  --color-secondary: #F5F5F0;
-  --color-gold: #C9A86A;
-  --color-accent: #CC5A2A;
-  --color-ink: #0A1931;
-  --color-cream: #F5F5F0;
-  --color-nav: #f3f3f3;
-  --font-roboto: "DM Sans", sans-serif;
+/* ---------------------------------------------------------------------------
+   NB International Pro — the typeface used by Diem.
+   Self-hosted so the corporate site matches it exactly.
+--------------------------------------------------------------------------- */
+@font-face {
+  font-family: "NB International Pro";
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/NBInternationalPro-Light.woff2") format("woff2");
+}
+@font-face {
+  font-family: "NB International Pro";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/NBInternationalPro-Regular.woff2") format("woff2");
 }
 
-:root { font-family: 'DM Sans', sans-serif; color: #0A1931; background: #F5F5F0; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-optical-sizing: auto; scroll-behavior: smooth; }
+@theme {
+  --color-primary: #42318c;
+  --color-secondary: #f4f2f9;
+  --color-gold: #b9addd;
+  --color-accent: #42318c;
+  --color-ink: #15112c;
+  --color-cream: #ffffff;
+  --color-nav: #ffffff;
+  --font-roboto: "NB International Pro", sans-serif;
+
+  /* Vhennus corporate identity — Diem-inspired */
+  --color-vh-forest: #42318c;
+  --color-vh-forest-deep: #15112c;
+  --color-vh-ivory: #ffffff;
+  --color-vh-paper: #f4f2f9;
+  --color-vh-sage: #b9addd;
+  --color-vh-sage-deep: #42318c;
+  --color-vh-ink: #15112c;
+  --color-vh-muted: #414f64;
+  --color-vh-line: #e5e5e5;
+  --color-vh-sand: #cbbfe8;
+  --font-vh-display: "NB International Pro", "Helvetica Neue", Arial, sans-serif;
+  --font-vh-sans: "NB International Pro", "Helvetica Neue", Arial, sans-serif;
+  --font-vh-mono: "NB International Pro", "Helvetica Neue", Arial, sans-serif;
+}
+
+:root { font-family: "NB International Pro", "Helvetica Neue", Arial, sans-serif; color: #15112c; background: #ffffff; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-optical-sizing: auto; scroll-behavior: smooth; }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 360px; }
-button, a { font: inherit; }
+@layer base {
+  button, a { font: inherit; }
+  a { color: inherit; text-decoration: none; }
+}
 button { cursor: pointer; }
-a { color: inherit; text-decoration: none; }
 #root { min-height: 100vh; }
 
 /* Small decorative CSS illustrations; page layout and responsiveness use Tailwind. */
@@ -42,5 +77,64 @@ a { color: inherit; text-decoration: none; }
 @keyframes coin-float { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-14px) rotate(2deg); } }
 .coin-float { animation: coin-float 6s ease-in-out infinite; transform-origin: 50% 50%; }
 .coin-glow { background: radial-gradient(closest-side, rgba(201,168,106,.45), transparent 72%); }
-:focus-visible { outline: 2px solid #CC5A2A; outline-offset: 3px; }
+:focus-visible { outline: 2px solid #42318c; outline-offset: 3px; }
+
+/* ---------------------------------------------------------------------------
+   Vhennus corporate site
+   Scoped to .vh-site so the social application keeps its existing styles.
+   Typography and colour follow Diem: NB International Pro, light weights,
+   generous whitespace, deep purple (#42318C) on white.
+--------------------------------------------------------------------------- */
+.vh-site {
+  font-family: var(--font-vh-sans);
+  font-weight: 300;
+  color: var(--color-vh-ink);
+  background: var(--color-vh-ivory);
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.vh-site ::selection { background: var(--color-vh-sage); color: var(--color-vh-forest-deep); }
+.vh-site :focus-visible { outline: 2px solid var(--color-vh-sage-deep); outline-offset: 4px; }
+.vh-site [id] { scroll-margin-top: 96px; }
+
+/* Diem-style headline rhythm: light, tight, tightly tracked. */
+.vh-site h1,
+.vh-site h2,
+.vh-site h3 {
+  font-weight: 300;
+  letter-spacing: -0.022em;
+}
+
+.vh-reveal {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition-delay: var(--vh-delay, 0ms);
+}
+.vh-reveal[data-visible='true'] { opacity: 1; transform: none; }
+
+.vh-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  padding-bottom: 2px;
+  transition: background-size 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.vh-underline:hover,
+.vh-underline:focus-visible { background-size: 100% 1px; }
+
+.vh-grain {
+  background-image: radial-gradient(rgba(21, 17, 44, 0.16) 0.5px, transparent 0.5px);
+  background-size: 4px 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vh-site { scroll-behavior: auto; }
+  .vh-reveal { opacity: 1; transform: none; transition: none; }
+  .vh-underline { transition: none; }
+}
 @media (prefers-reduced-motion: reduce) { :root { scroll-behavior:auto; } *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }

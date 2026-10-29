@@ -129,7 +129,7 @@ const FriendComponent: React.FC<FriendsComponentProps> = ({
         <div
           className="relative shrink-0 cursor-pointer"
           onClick={() => {
-            navigate(`/user_profile/${friend.user_name}`)
+            navigate(`/social/user_profile/${friend.user_name}`)
           }}
         >
           <img
@@ -143,7 +143,7 @@ const FriendComponent: React.FC<FriendsComponentProps> = ({
         <div
           className="min-w-0 flex-1 cursor-pointer"
           onClick={() => {
-            navigate(`/user_profile/${friend.user_name}`)
+            navigate(`/social/user_profile/${friend.user_name}`)
           }}
         >
           <div className="flex items-center gap-2">
@@ -168,7 +168,7 @@ const FriendComponent: React.FC<FriendsComponentProps> = ({
           <button
             type="button"
             onClick={() => {
-              navigate(`/chat/single_chat/${friend.user_name}`)
+              navigate(`/social/chat/single_chat/${friend.user_name}`)
             }}
             aria-label={`Message ${friend.user_name}`}
             className="grid h-10 w-10 place-items-center rounded-full bg-[#0A1931] text-white transition-colors hover:bg-[#CC5A2A]"

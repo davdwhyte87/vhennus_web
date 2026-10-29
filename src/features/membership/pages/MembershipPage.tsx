@@ -141,7 +141,7 @@ const MembershipPage: React.FC = () => {
             fullWidth
             onClick={() => {
               setWhitePaperOpen(false)
-              navigate('/home/membership/questions')
+              navigate('/social/membership/questions')
             }}
           >
             Yes
@@ -291,7 +291,7 @@ const MemberView: React.FC = () => {
             <p className="text-sm text-[#4d5666]">{earned.length} earned</p>
             <button
               type="button"
-              onClick={() => navigate('/home/membership/badges')}
+              onClick={() => navigate('/social/membership/badges')}
               className="text-sm font-medium text-[#CC5A2A] hover:text-[#0A1931]"
             >
               Read more about badges

@@ -64,7 +64,7 @@ const AdminLayout: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false)
 
   if (!isAdminToken(token)) {
-    return <Navigate to="/home/feeds" replace />
+    return <Navigate to="/social/feeds" replace />
   }
 
   const go = (route: string) => {

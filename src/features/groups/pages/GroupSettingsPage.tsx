@@ -36,7 +36,7 @@ export default function GroupSettingsPage() {
         const canOpen = g.owner === myName || myRole === 'admin' || myRole === 'owner'
         if (!canOpen) {
           toast.error('Only the group owner or admins can open settings')
-          navigate(`/home/groups/${id}`, { replace: true })
+          navigate(`/social/groups/${id}`, { replace: true })
           return
         }
         setGroup(g)
@@ -50,7 +50,7 @@ export default function GroupSettingsPage() {
       .catch((err) => {
         if (axios.isAxiosError(err)) toast.error(err.response?.data?.message || 'Error loading group')
         else toast.error('Error loading group')
-        navigate('/home/groups', { replace: true })
+        navigate('/social/groups', { replace: true })
       })
       .finally(() => setLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -88,7 +88,7 @@ export default function GroupSettingsPage() {
         is_private: isPrivate,
       })
       toast.success('Group updated')
-      navigate(`/home/groups/${id}`)
+      navigate(`/social/groups/${id}`)
     } catch (err) {
       if (axios.isAxiosError(err)) toast.error(err.response?.data?.message || 'Update failed')
       else toast.error('Update failed')
@@ -107,14 +107,14 @@ export default function GroupSettingsPage() {
   if (!group) return null
 
   const amOwner = group.owner === myName
-  const inviteUrl = `${window.location.origin}/home/groups/join/${group.invite_code}`
+  const inviteUrl = `${window.location.origin}/social/groups/join/${group.invite_code}`
 
   return (
     <div className="min-h-screen pb-20">
       <div className="mb-4 flex items-center gap-3">
         <button
           type="button"
-          onClick={() => navigate(`/home/groups/${group.id}`)}
+          onClick={() => navigate(`/social/groups/${group.id}`)}
           aria-label="Back to group"
           className="grid h-9 w-9 place-items-center rounded-full hover:bg-[#0A1931]/5"
         >
@@ -231,10 +231,10 @@ export default function GroupSettingsPage() {
           <div className="max-h-72 space-y-1 overflow-y-auto">
             {members.map((m) => (
               <div key={m.user_name} className="flex items-center gap-2 py-1">
-                <button type="button" onClick={() => navigate(`/user_profile/${m.user_name}`)} className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-[#0A1931]/10 text-sm">
+                <button type="button" onClick={() => navigate(`/social/user_profile/${m.user_name}`)} className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-[#0A1931]/10 text-sm">
                   {m.profile?.image ? <img src={m.profile.image} alt="" className="h-full w-full object-cover" /> : m.user_name.slice(0, 1).toUpperCase()}
                 </button>
-                <button type="button" onClick={() => navigate(`/user_profile/${m.user_name}`)} className="min-w-0 flex-1 text-left">
+                <button type="button" onClick={() => navigate(`/social/user_profile/${m.user_name}`)} className="min-w-0 flex-1 text-left">
                   <span className="block truncate text-sm text-[#0A1931]">{m.profile?.name || m.user_name}</span>
                   <span className="block text-xs text-[#6b7180]">@{m.user_name} · {m.role}</span>
                 </button>
@@ -285,7 +285,7 @@ export default function GroupSettingsPage() {
           <div className="max-h-72 space-y-2 overflow-y-auto">
             {requests.map((r) => (
               <div key={r.id} className="flex items-center gap-2">
-                <button type="button" onClick={() => navigate(`/user_profile/${r.user_name}`)} className="min-w-0 flex-1 text-left">
+                <button type="button" onClick={() => navigate(`/social/user_profile/${r.user_name}`)} className="min-w-0 flex-1 text-left">
                   <span className="block truncate text-sm text-[#0A1931]">{r.profile?.name || r.user_name}</span>
                   <span className="block truncate text-xs text-[#6b7180]">@{r.user_name} — view profile before deciding</span>
                 </button>

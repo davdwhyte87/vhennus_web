@@ -203,7 +203,7 @@ const AdminNotificationsPage: React.FC = () => {
               type="text"
               value={link}
               onChange={(e) => setLink(e.target.value)}
-              placeholder="e.g. /home/feeds"
+              placeholder="e.g. /social/feeds"
               className="w-full border border-[#C9A86A]/60 bg-white px-3 py-2.5 text-sm text-[#0A1931] placeholder:text-gray-400 focus:border-[#CC5A2A] focus:outline-none"
             />
             <span className="mt-1 block text-xs text-[#4d5666]">
@@ -310,9 +310,14 @@ const AdminNotificationsPage: React.FC = () => {
                   </p>
                 )}
                 {testResult.has_token && !testResult.push_sent && (
-                  <p className="pt-1 text-[#CC5A2A]">
-                    Token exists but FCM rejected it — check server logs.
-                  </p>
+                  <div className="pt-1 text-[#CC5A2A]">
+                    <p>Token exists but FCM rejected it — check server logs.</p>
+                    {testResult.error && (
+                      <p className="mt-1 break-words rounded bg-white/60 p-2 font-mono text-[10px] leading-snug">
+                        {testResult.error}
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
             )}

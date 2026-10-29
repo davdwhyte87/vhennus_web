@@ -198,7 +198,7 @@ const FriendRequestComponent: React.FC<FriendRequestComponentProps> = ({ friendR
         <div className="border border-[#C9A86A]/60 bg-white p-4 transition-colors hover:border-[#CC5A2A]">
             <div
                 className="flex cursor-pointer items-center gap-4 text-left"
-                onClick={() => { navigate(`/user_profile/${friendRequest.requester}`) }}
+                onClick={() => { navigate(`/social/user_profile/${friendRequest.requester}`) }}
             >
                 <div className="relative shrink-0">
                     <img

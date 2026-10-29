@@ -36,7 +36,7 @@ export function GroupCallHeaderButton({ groupId, myName, myRole, isOwner }: { gr
       if (r.data) setCall(r.data)
       store.startCall(groupId)
       store.joinCall(groupId)
-      navigate(`/home/groups/${groupId}/call`)
+      navigate(`/social/groups/${groupId}/call`)
     } catch {
       toast.error('Could not start call')
     }
@@ -44,7 +44,7 @@ export function GroupCallHeaderButton({ groupId, myName, myRole, isOwner }: { gr
 
   const doJoin = () => {
     store.joinCall(groupId)
-    navigate(`/home/groups/${groupId}/call`)
+    navigate(`/social/groups/${groupId}/call`)
   }
 
   // No call + no permission → no button at all
@@ -82,7 +82,7 @@ export function GroupCallHeaderButton({ groupId, myName, myRole, isOwner }: { gr
   return (
     <button
       type="button"
-      onClick={() => navigate(`/home/groups/${groupId}/call`)}
+      onClick={() => navigate(`/social/groups/${groupId}/call`)}
       aria-label="Return to call"
       title="Return to call (you're on this call)"
       className="relative grid h-9 w-9 place-items-center rounded-full bg-green-600/10 text-green-700 hover:bg-green-600 hover:text-white"
@@ -125,7 +125,7 @@ export default function GroupCallBar({ groupId, myName }: { groupId: string; myN
     <div className="border-b border-[#C9A86A]/60 bg-[#0A1931] text-white">
       <button
         type="button"
-        onClick={() => navigate(`/home/groups/${groupId}/call`)}
+        onClick={() => navigate(`/social/groups/${groupId}/call`)}
         className="flex w-full items-center gap-2 px-4 py-2.5 text-left"
       >
         <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-green-400" />

@@ -12,9 +12,9 @@ import { registerPushToken } from '../features/notifications/api.ts'
 let pushBootstrapped = false
 
 const FULL_BLEED_PATTERNS = [
-  /\/home\/groups\/[^/]+\/call\/?$/,
-  /\/chat\/single_chat\//,
-  /\/home\/groups\/[^/]+\/?$/,
+  /\/social\/groups\/[^/]+\/call\/?$/,
+  /\/social\/chat\/single_chat\//,
+  /\/social\/groups\/[^/]+\/?$/,
 ]
 
 /**

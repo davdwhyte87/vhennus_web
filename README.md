@@ -1,3 +1,16 @@
+# Vhennus web
+
+The Vhennus corporate site and social application.
+
+## Corporate contact
+
+The corporate site does not use contact forms. `/contact`, `/capital`, and `/vc` display the
+company email address directly:
+
+`team@vhennus.org`
+
+---
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

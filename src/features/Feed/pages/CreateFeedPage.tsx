@@ -86,7 +86,7 @@ const CreateFeedPage = () => {
       }
       await createPost(postData)
       toast.success('Post published')
-      navigate('/home/feeds')
+      navigate('/social/feeds')
     } catch (err) {
       console.error('Error creating post:', err)
       const serverMessage = (

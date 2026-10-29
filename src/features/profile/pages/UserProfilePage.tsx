@@ -239,7 +239,7 @@ const UserProfilePage: React.FC = () => {
                                 disabled={!isFriends}
                                 onClick={() => {
                                     if (isFriends && userProfile?.user_name) {
-                                        navigate(`/chat/single_chat/${userProfile.user_name}`)
+                                        navigate(`/social/chat/single_chat/${userProfile.user_name}`)
                                     }
                                 }}
                             >

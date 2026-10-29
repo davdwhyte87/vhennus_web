@@ -46,7 +46,7 @@ const ChatListItem: React.FC<ChatPairItemProps> = ({ pair, unreadCount = 0 }) =>
     }
 
     const handleOpenChat = () => {
-        navigate(`/chat/single_chat/${otherUserName}?pair_id=${pair.id}`)
+        navigate(`/social/chat/single_chat/${otherUserName}?pair_id=${pair.id}`)
     }
 
     return (

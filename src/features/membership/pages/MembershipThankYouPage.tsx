@@ -17,7 +17,7 @@ const MembershipThankYouPage: React.FC = () => {
           <AppButton
             className="mt-5"
             variant="outline"
-            onClick={() => navigate('/home/membership')}
+            onClick={() => navigate('/social/membership')}
           >
             Back to membership
           </AppButton>

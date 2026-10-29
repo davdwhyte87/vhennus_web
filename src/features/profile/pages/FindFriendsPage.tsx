@@ -464,7 +464,7 @@ const FriendSearchResult: React.FC<FriendSearchProps> = ({ friend, friendRequest
                 {/* User Info */}
                 <div
                     className="flex min-w-0 flex-1 cursor-pointer items-center gap-4 text-left"
-                    onClick={() => { navigate(`/user_profile/${friend.user_name}`) }}
+                    onClick={() => { navigate(`/social/user_profile/${friend.user_name}`) }}
                 >
                     <div className="relative shrink-0">
                         <img

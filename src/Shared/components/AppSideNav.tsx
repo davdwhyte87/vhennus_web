@@ -14,12 +14,12 @@ import { useChatStore } from '../../features/chats/useChatStore.ts'
 import { useGroupStore } from '../../features/groups/useGroupStore.ts'
 
 const NAV_ITEMS = [
-  { route: '/home/feeds', label: 'Feed', icon: Home },
-  { route: '/home/chats', label: 'Chat', icon: MessageSquareText },
-  { route: '/home/groups', label: 'Groups', icon: MessagesSquare },
-  { route: '/wallet', label: 'Wallet', icon: Wallet, disabled: true },
-  { route: '/myprofile', label: 'Profile', icon: User },
-  { route: '/home/menu', label: 'Menu', icon: AlignJustify },
+  { route: '/social/feeds', label: 'Feed', icon: Home },
+  { route: '/social/chats', label: 'Chat', icon: MessageSquareText },
+  { route: '/social/groups', label: 'Groups', icon: MessagesSquare },
+  { route: '/social/wallet', label: 'Wallet', icon: Wallet, disabled: true },
+  { route: '/social/myprofile', label: 'Profile', icon: User },
+  { route: '/social/menu', label: 'Menu', icon: AlignJustify },
 ]
 
 export default function AppSideNav() {
@@ -38,7 +38,7 @@ export default function AppSideNav() {
     <aside className={shellClassName}>
       <button
         type="button"
-        onClick={() => navigate('/home/feeds')}
+        onClick={() => navigate('/social/feeds')}
         className="px-6 pb-6 pt-8 text-left"
       >
         <p className="font-mono text-[10px] uppercase tracking-[.18em] text-[#C9A86A]">
@@ -55,9 +55,9 @@ export default function AppSideNav() {
             location.pathname === route ||
             location.pathname.startsWith(`${route}/`)
           const showBadge =
-            (route === '/home/chats' && unreadTotal > 0) ||
-            (route === '/home/groups' && groupUnread > 0)
-          const badgeCount = route === '/home/chats' ? unreadTotal : groupUnread
+            (route === '/social/chats' && unreadTotal > 0) ||
+            (route === '/social/groups' && groupUnread > 0)
+          const badgeCount = route === '/social/chats' ? unreadTotal : groupUnread
           return (
             <button
               key={route}

@@ -19,7 +19,7 @@ export default function JoinGroupPage() {
       .then((r) => setGroup(r.data))
       .catch((err) => {
         if (axios.isAxiosError(err)) toast.error(err.response?.data?.message || 'Invalid invite link')
-        navigate('/home/groups')
+        navigate('/social/groups')
       })
       .finally(() => setLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -28,7 +28,7 @@ export default function JoinGroupPage() {
   const join = async () => {
     if (!group) return
     if (group.is_member) {
-      navigate(`/home/groups/${group.id}`)
+      navigate(`/social/groups/${group.id}`)
       return
     }
     setJoining(true)
@@ -37,7 +37,7 @@ export default function JoinGroupPage() {
       const status = resp.data.status
       if (status === 'joined' || status === 'already') {
         toast.success('Welcome to the group!')
-        navigate(`/home/groups/${group.id}`)
+        navigate(`/social/groups/${group.id}`)
       } else {
         toast.success('Join request sent. The owner will review it.')
       }
@@ -59,7 +59,7 @@ export default function JoinGroupPage() {
 
   return (
     <div className="mx-auto max-w-md py-2">
-      <button type="button" onClick={() => navigate('/home/groups')} className="mb-4 flex items-center gap-1 text-sm text-[#4d5666] hover:text-[#0A1931]">
+      <button type="button" onClick={() => navigate('/social/groups')} className="mb-4 flex items-center gap-1 text-sm text-[#4d5666] hover:text-[#0A1931]">
         <ArrowLeft className="h-4 w-4" /> All groups
       </button>
       <div className="bg-white p-6 text-center">
